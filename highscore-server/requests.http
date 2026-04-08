@@ -1,0 +1,47 @@
+### Hello World
+GET http://localhost:9001/
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Create user
+POST http://localhost:9001/users
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+{
+  "name": "Ekaterina",
+  "score": 100,
+  "email": "Ekaterina@test.com"
+}
+
+### Create user without email
+POST http://localhost:9001/users
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+{
+  "name": "Bob",
+  "score": 250
+}
+
+### Get user by ID
+GET http://localhost:9001/users/1
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Update user
+PUT http://localhost:9001/users/1
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+{
+  "name": "Alex",
+  "score": 999,
+  "email": "alex@test.com"
+}
+
+### Delete user
+DELETE http://localhost:9001/users/1
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Get highscores
+GET http://localhost:9001/highscores
+Authorization: Basic YWRtaW46YWRtaW4=
