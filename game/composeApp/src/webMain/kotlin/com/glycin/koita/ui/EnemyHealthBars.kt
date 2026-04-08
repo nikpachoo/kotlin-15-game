@@ -1,0 +1,52 @@
+package com.glycin.koita.ui
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import com.glycin.koita.core.Camera
+import com.glycin.koita.core.Player
+import com.glycin.koita.gameplay.GameSettings
+import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.enemies.EnemyManager
+
+@Composable
+fun EnemyHealthBars(
+    enemyManager: EnemyManager,
+    player: Player,
+    camera: Camera,
+    gameState: GameState,
+) {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val visionRange = (GameSettings.BASE_LIGHT_RADIUS * gameState.visionMultiplier) + GameSettings.FALL_OFF_DISTANCE
+        enemyManager.getEnemiesInRange(player.center, visionRange).forEach { enemy ->
+            val screenPos = camera.worldToScreen(enemy.position.x, enemy.position.y - (enemy.width / 2))
+            val barWidth = 24f
+            val barHeight = 4f
+            val healthPercentage = enemy.health / enemy.maxHealth
+
+            drawRect(
+                color = Color(0xFF440000),
+                topLeft = Offset(screenPos.x, screenPos.y),
+                size = Size(barWidth, barHeight)
+            )
+
+            drawRect(
+                color = Color(0xFF00FF00),
+                topLeft = Offset(screenPos.x, screenPos.y),
+                size = Size(barWidth * healthPercentage, barHeight)
+            )
+
+            drawRect(
+                color = Color.White,
+                topLeft = Offset(screenPos.x - 1f, screenPos.y - 1f),
+                size = Size(barWidth + 2f, barHeight + 2f),
+                style = Stroke(width = 1f)
+            )
+        }
+    }
+}

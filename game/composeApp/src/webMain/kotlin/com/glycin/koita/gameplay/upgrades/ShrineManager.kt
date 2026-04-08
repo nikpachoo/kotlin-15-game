@@ -1,0 +1,132 @@
+package com.glycin.koita.gameplay.upgrades
+
+import com.glycin.koita.audio.SoundManager
+import com.glycin.koita.audio.Sounds
+import com.glycin.koita.core.Player
+import com.glycin.koita.core.Vec2
+import com.glycin.koita.physics.CollisionDetector
+import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.util.explodeTerrain
+import com.glycin.koita.world.World
+import com.glycin.koita.world.WorldConstants
+import org.jetbrains.compose.resources.DrawableResource
+import kotlin.math.abs
+
+class ShrineManager(
+    private val player: Player,
+    private val upgradeRepository: UpgradeRepository,
+    private val particleSystem: ParticleSystem,
+    private val collisionDetector: CollisionDetector,
+    private val world: World,
+) {
+    private val shrines = mutableListOf<Shrine>()
+    private val orbs = mutableListOf<UnlockOrb>()
+    private var nextGroupId = 0
+
+    fun add(shrine: Shrine) {
+        shrines.add(shrine)
+    }
+
+    fun getShrinesInRange(position: Vec2, range: Float): List<Shrine> {
+        return shrines.filter { shrine ->
+            Vec2.distance(shrine.center, position) <= range
+        }
+    }
+
+    fun getOrbs() = orbs
+
+    //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
+    fun getDistinctSprites(): List<DrawableResource> {
+        return shrines.map { it.spriteAnimator.sprite }.distinct()
+    }
+
+    fun update(deltaTime: Float) {
+        shrines.firstOrNull { abs(it.position.y - player.position.y) <= it.height + 25 }?.let { shrineInRange ->
+            if(shrineInRange.overlapsPlayer(player)) {
+                shrineInRange.startActivation()
+            } else {
+                shrineInRange.cancelActivation()
+            }
+
+            shrineInRange.update(deltaTime)
+
+            if (shrineInRange.isActivated) {
+                explode(shrineInRange)
+                spawnOrbs(shrineInRange)
+                shrines.remove(shrineInRange)
+            }
+        }
+
+        orbs.forEach { it.update(deltaTime) }
+
+        val pickedOrb = orbs.firstOrNull { !it.isFlying && it.overlapsPlayer(player) }
+        if (pickedOrb != null) {
+            upgradeRepository.upgrade(pickedOrb.unlock.id)
+            orbs.removeAll { it.groupId == pickedOrb.groupId }
+        }
+    }
+
+    private fun explode(shrine: Shrine) {
+        val position = shrine.center
+        val impactRadius = 120f
+        val affectedTiles = collisionDetector.getTilesInRadius(position, impactRadius)
+        SoundManager.playOneShot(Sounds.EXPLODE)
+        explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
+    }
+
+    fun spawnFirstOrbs(origin: Vec2) {
+        val choices = upgradeRepository.getRandomAvailable(3)
+        if (choices.isEmpty()) return
+
+        val groupId = nextGroupId++
+        val horizontalSpacing = 220f
+        val totalWidth = (choices.size - 1) * horizontalSpacing
+        val startX = origin.x - totalWidth / 2f
+        val baseY = origin.y - 25f
+        val arcHeight = 40f
+
+        choices.forEachIndexed { index, upgrade ->
+            val targetX = startX + index * horizontalSpacing
+            val t = if (choices.size > 1) (2f * index / (choices.size - 1) - 1f) else 0f
+            val targetY = baseY - arcHeight * (1f - t * t)
+
+            orbs.add(
+                UnlockOrb(
+                    unlock = upgrade,
+                    startPosition = Vec2(origin.x, origin.y),
+                    targetPosition = Vec2(targetX, targetY),
+                    groupId = groupId,
+                )
+            )
+        }
+    }
+
+    private fun spawnOrbs(shrine: Shrine) {
+        val choices = upgradeRepository.getRandomAvailable(3)
+        if (choices.isEmpty()) return
+
+        val groupId = nextGroupId++
+        val shrineCenter = shrine.center
+        val worldMidX = WorldConstants.WORLD_WIDTH_PIXELS / 2f
+
+        val directionX = if (shrineCenter.x < worldMidX) 1f else -1f
+
+        val spreadDistance = 300f
+        val verticalSpacing = 120f
+        val verticalOffset = (choices.size - 1) * verticalSpacing / 2f
+
+        choices.forEachIndexed { index, upgrade ->
+            val targetX = shrineCenter.x + directionX * spreadDistance
+            val targetY = shrineCenter.y - verticalOffset + index * verticalSpacing
+
+            orbs.add(
+                UnlockOrb(
+                    unlock = upgrade,
+                    startPosition = Vec2(shrineCenter.x, shrineCenter.y),
+                    targetPosition = Vec2(targetX, targetY),
+                    groupId = groupId,
+                )
+            )
+        }
+    }
+}

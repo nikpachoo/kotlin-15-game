@@ -1,0 +1,144 @@
+package com.glycin.koita.gameplay.enemies
+
+import com.glycin.koita.core.Player
+import com.glycin.koita.core.Vec2
+import com.glycin.koita.gameplay.GameSettings
+import com.glycin.koita.gameplay.pickups.PickupManager
+import com.glycin.koita.physics.CollisionDetector
+import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.world.World
+import kotlin.math.abs
+
+class EnemyManager(
+    private val collisionDetector: CollisionDetector,
+    private val world: World,
+    private val particleSystem: ParticleSystem,
+    private val pickupManager: PickupManager,
+) {
+    private val enemies = mutableListOf<Enemy>()
+    private val activationRange = (GameSettings.BASE_LIGHT_RADIUS + GameSettings.FALL_OFF_DISTANCE) * 2
+
+    fun add(enemy: Enemy) {
+        enemies.add(enemy)
+    }
+
+    private fun isInRange(enemy: Enemy, playerY: Float): Boolean =
+        abs(enemy.position.y - playerY) <= activationRange
+
+    fun update(deltaTime: Float, player: Player) {
+        val playerPos = player.position
+        val playerW = player.width
+        val playerH = player.height
+
+        for (i in 0..<enemies.size) {
+            val enemy = enemies[i]
+            val shooter = enemy as? ShootingEnemy
+            shooter?.tickMissiles(deltaTime)
+
+            var skipMissiles = false
+            if (isInRange(enemy, playerPos.y)) {
+                enemy.update(deltaTime)
+                if (!enemy.isAlive) {
+                    skipMissiles = true
+                } else {
+                    if (enemy.contactDamage > 0 &&
+                        collisionDetector.checkAABBOverlap(enemy.position, enemy.width, enemy.height, playerPos, playerW, playerH) &&
+                        enemy.tryContactDamage()
+                    ) {
+                        player.takeDamage(enemy.contactDamage)
+                    }
+                    shooter?.tickAttack(deltaTime, playerPos)
+                }
+            }
+
+            if (shooter != null && !skipMissiles) {
+                val missiles = shooter.activeMissiles
+                for (j in 0..<missiles.size) {
+                    val m = missiles[j]
+                    if (m.isAlive && m.checkPlayerCollision(playerPos, playerW, playerH)) {
+                        m.isAlive = false
+                        player.takeDamage(1)
+                    }
+                }
+            }
+        }
+
+        for (i in enemies.size - 1 downTo 0) {
+            val enemy = enemies[i]
+            if (!enemy.isAlive) {
+                pickupManager.randomChanceSpawn(enemy.center, enemy.dropChance)
+                enemies.removeAt(i)
+            }
+        }
+    }
+
+    fun forEachMissile(action: (EnemyMissile) -> Unit) {
+        for (enemy in enemies) {
+            if (enemy is ShootingEnemy) {
+                val missiles = enemy.activeMissiles
+                for (i in 0..<missiles.size) {
+                    val m = missiles[i]
+                    if (m.isAlive) action(m)
+                }
+            }
+        }
+    }
+
+    fun clearAll() {
+        enemies.clear()
+    }
+
+    //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
+    fun getDistinctSprites() = enemies.map { it.spriteAnimator.sprite }.distinct()
+
+    //TODO: Optimization, dont use .filter
+    fun getEnemiesCollidingWith(pos: Vec2, width: Float, height: Float): List<Enemy> {
+        return enemies.filter { e ->
+            e.isAlive &&
+            pos.x < e.position.x + e.width &&
+            pos.x + width > e.position.x &&
+            pos.y < e.position.y + e.height &&
+            pos.y + height > e.position.y
+        }
+    }
+
+    //TODO: Optimization, instead of filtering each time we call this, on update mark enemies in range or not and filter based on that boolean
+    fun getEnemiesInRange(pos: Vec2, range: Float): List<Enemy> {
+        return enemies.filter { e ->
+            Vec2.distance(e.center, pos) <= range
+        }
+    }
+
+    fun findFirstEnemyCollidingWith(px: Float, py: Float, w: Float, h: Float): Enemy? {
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (e.isAlive &&
+                px < e.position.x + e.width &&
+                px + w > e.position.x &&
+                py < e.position.y + e.height &&
+                py + h > e.position.y
+            ) return e
+        }
+        return null
+    }
+
+    fun findNearestAliveEnemy(pos: Vec2, range: Float): Enemy? =
+        findNearestAliveEnemy(pos.x, pos.y, range)
+
+    fun findNearestAliveEnemy(x: Float, y: Float, range: Float): Enemy? {
+        var nearest: Enemy? = null
+        var nearestDistSq = range * range
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (!e.isAlive) continue
+            val dx = e.center.x - x
+            val dy = e.center.y - y
+            val distSq = dx * dx + dy * dy
+            if (distSq <= nearestDistSq) {
+                nearestDistSq = distSq
+                nearest = e
+            }
+        }
+        return nearest
+    }
+}
