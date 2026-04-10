@@ -87,9 +87,11 @@ fun WorldRenderer(
     val outlineStyle = TextStyle(fontFamily = pixelFont(), color = Color.Black)
 
     Canvas(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
         val _tick = frameCount // Hack to trigger recomposition, so it needs to remain here even if unused
+        val canvasWidth = camera.canvasWidth
+        val canvasHeight = camera.canvasHeight
+
+        with(camera) { withVirtualViewport {
 
         if (!gameState.passedPortal) {
             parallaxBackground.render(this)
@@ -490,6 +492,8 @@ fun WorldRenderer(
                 size = Size(15f, 15f),
             )
         }
+
+        } }
     }
 }
 

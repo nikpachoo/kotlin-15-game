@@ -71,10 +71,12 @@ class ParallaxBackground(
             val parallaxOffsetX = camera.position.x
             val parallaxOffsetY = camera.position.y * scrollSpeed
 
-            val startChunkX = ((parallaxOffsetX - size.width / 2) / backgroundChunkPixelSize).toInt() - 1
-            val endChunkX = ((parallaxOffsetX + size.width / 2) / backgroundChunkPixelSize).toInt() + 1
-            val startChunkY = ((parallaxOffsetY - size.height / 2) / backgroundChunkPixelSize).toInt() - 1
-            val endChunkY = ((parallaxOffsetY + size.height / 2) / backgroundChunkPixelSize).toInt() + 1
+            val viewWidth = camera.canvasWidth
+            val viewHeight = camera.canvasHeight
+            val startChunkX = ((parallaxOffsetX - viewWidth / 2) / backgroundChunkPixelSize).toInt() - 1
+            val endChunkX = ((parallaxOffsetX + viewWidth / 2) / backgroundChunkPixelSize).toInt() + 1
+            val startChunkY = ((parallaxOffsetY - viewHeight / 2) / backgroundChunkPixelSize).toInt() - 1
+            val endChunkY = ((parallaxOffsetY + viewHeight / 2) / backgroundChunkPixelSize).toInt() + 1
             val worldMaxChunkX = (WorldConstants.WORLD_WIDTH_TILES * WorldConstants.TILE_SIZE / backgroundChunkPixelSize)
             val worldMaxChunkY = (WorldConstants.WORLD_HEIGHT_TILES * WorldConstants.TILE_SIZE / backgroundChunkPixelSize)
 
@@ -89,8 +91,8 @@ class ParallaxBackground(
                     val chunkWorldX = chunkX * backgroundChunkPixelSize.toFloat()
                     val chunkWorldY = chunkY * backgroundChunkPixelSize.toFloat()
 
-                    val screenX = chunkWorldX - parallaxOffsetX + size.width / 2
-                    val screenY = chunkWorldY - parallaxOffsetY + size.height / 2
+                    val screenX = chunkWorldX - parallaxOffsetX + viewWidth / 2
+                    val screenY = chunkWorldY - parallaxOffsetY + viewHeight / 2
 
                     drawImage(
                         image = chunkBitmap,

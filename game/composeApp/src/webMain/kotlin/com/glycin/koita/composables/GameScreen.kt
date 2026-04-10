@@ -176,15 +176,15 @@ fun GameScreen(gameState: GameState) {
         .focusRequester(focusRequester)
         .focusable()
         .onSizeChanged { newSize ->
-            camera.canvasWidth = newSize.width.toFloat()
-            camera.canvasHeight = newSize.height.toFloat()
+            camera.updateViewport(newSize.width.toFloat(), newSize.height.toFloat())
         }
         .pointerInput(Unit) {
             awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent()
-                    val mousePos = event.changes.first().position
-                    mouse.updatePosition(mousePos, camera.screenToWorld(mousePos.x, mousePos.y))
+                    val rawPos = event.changes.first().position
+                    val virtualPos = camera.actualToVirtual(rawPos.x, rawPos.y)
+                    mouse.updatePosition(virtualPos, camera.screenToWorld(virtualPos.x, virtualPos.y))
                     mouse.updateButtons(
                         leftPressed = event.buttons.isPrimaryPressed,
                         rightPressed = event.buttons.isSecondaryPressed

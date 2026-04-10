@@ -1,29 +1,81 @@
 package com.glycin.koita.core
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import com.glycin.koita.world.WorldConstants
+import kotlin.math.min
 
 class Camera(
     var position: Vec2,
     var canvasWidth: Float = 0f,
     var canvasHeight: Float = 0f,
 ) {
-    val screenPosition get() = Offset(
-        canvasWidth / 2f,
-        canvasHeight / 2f,
-    )
+    var scale: Float = 1f
+        private set
+    var offsetX: Float = 0f
+        private set
+    var offsetY: Float = 0f
+        private set
+    var actualWidth: Float = 0f
+        private set
+    var actualHeight: Float = 0f
+        private set
+
+    private var halfWidth: Float = 0f
+    private var halfHeight: Float = 0f
+
+    val screenPosition get() = Offset(halfWidth, halfHeight)
+
+    fun updateViewport(newActualWidth: Float, newActualHeight: Float) {
+        actualWidth = newActualWidth
+        actualHeight = newActualHeight
+        scale = min(
+            newActualWidth / WorldConstants.VIRTUAL_WIDTH,
+            newActualHeight / WorldConstants.VIRTUAL_HEIGHT,
+        )
+        offsetX = (newActualWidth - WorldConstants.VIRTUAL_WIDTH * scale) / 2f
+        offsetY = (newActualHeight - WorldConstants.VIRTUAL_HEIGHT * scale) / 2f
+        canvasWidth = WorldConstants.VIRTUAL_WIDTH
+        canvasHeight = WorldConstants.VIRTUAL_HEIGHT
+        halfWidth = canvasWidth / 2f
+        halfHeight = canvasHeight / 2f
+    }
+
+    fun actualToVirtual(actualX: Float, actualY: Float): Offset {
+        return Offset(
+            (actualX - offsetX) / scale,
+            (actualY - offsetY) / scale,
+        )
+    }
+
+    fun virtualToActual(virtualX: Float, virtualY: Float): Offset {
+        return Offset(
+            virtualX * scale + offsetX,
+            virtualY * scale + offsetY,
+        )
+    }
+
+    inline fun DrawScope.withVirtualViewport(block: DrawScope.() -> Unit) {
+        translate(left = offsetX, top = offsetY) {
+            scale(scale = this@Camera.scale, pivot = Offset.Zero) {
+                block()
+            }
+        }
+    }
 
     fun worldToScreen(worldX: Float, worldY: Float): Offset {
         return Offset(
-            worldX - position.x + canvasWidth / 2f,
-            worldY - position.y + canvasHeight / 2f,
+            worldX - position.x + halfWidth,
+            worldY - position.y + halfHeight,
         )
     }
 
     fun screenToWorld(screenX: Float, screenY: Float): Vec2 {
         return Vec2(
-            x = screenX - canvasWidth / 2f + position.x,
-            y = screenY - canvasHeight / 2f + position.y,
+            x = screenX - halfWidth + position.x,
+            y = screenY - halfHeight + position.y,
         )
     }
 

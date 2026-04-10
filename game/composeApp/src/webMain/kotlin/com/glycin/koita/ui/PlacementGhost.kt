@@ -21,27 +21,29 @@ fun PlacementGhost(
     if (currentWeapon !is BuildMode) return
 
     Canvas(modifier = Modifier.fillMaxSize()) {
-        currentWeapon.ghostTileX?.let { ghostX ->
-            currentWeapon.ghostTileY?.let { ghostY ->
-                val ghostWorldX = ghostX * WorldConstants.TILE_SIZE.toFloat()
-                val ghostWorldY = ghostY * WorldConstants.TILE_SIZE.toFloat()
-                val ghostScreenPos = camera.worldToScreen(ghostWorldX, ghostWorldY)
+        with(camera) { withVirtualViewport {
+            currentWeapon.ghostTileX?.let { ghostX ->
+                currentWeapon.ghostTileY?.let { ghostY ->
+                    val ghostWorldX = ghostX * WorldConstants.TILE_SIZE.toFloat()
+                    val ghostWorldY = ghostY * WorldConstants.TILE_SIZE.toFloat()
+                    val ghostScreenPos = camera.worldToScreen(ghostWorldX, ghostWorldY)
 
-                val ghostColor = if (currentWeapon.isGhostValid) {
-                    Color.Green.copy(alpha = 0.5f)
-                } else {
-                    Color.Red.copy(alpha = 0.5f)
-                }
+                    val ghostColor = if (currentWeapon.isGhostValid) {
+                        Color.Green.copy(alpha = 0.5f)
+                    } else {
+                        Color.Red.copy(alpha = 0.5f)
+                    }
 
-                drawRect(
-                    color = ghostColor,
-                    topLeft = ghostScreenPos,
-                    size = Size(
-                        5f * WorldConstants.TILE_SIZE.toFloat(),
-                        5f * WorldConstants.TILE_SIZE.toFloat(),
+                    drawRect(
+                        color = ghostColor,
+                        topLeft = ghostScreenPos,
+                        size = Size(
+                            5f * WorldConstants.TILE_SIZE.toFloat(),
+                            5f * WorldConstants.TILE_SIZE.toFloat(),
+                        )
                     )
-                )
+                }
             }
-        }
+        } }
     }
 }

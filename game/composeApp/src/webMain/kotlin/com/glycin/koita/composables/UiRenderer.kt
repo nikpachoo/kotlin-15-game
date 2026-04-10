@@ -38,8 +38,9 @@ fun UiRenderer(
 ) {
     val padding = 20f
 
-    val worldTopScreen = camera.worldToScreen(0f, 0f).y
-    val uiTopBound = worldTopScreen.coerceAtLeast(padding)
+    val worldTopVirtual = camera.worldToScreen(0f, 0f).y
+    val worldTopActual = camera.virtualToActual(0f, worldTopVirtual).y
+    val uiTopBound = worldTopActual.coerceAtLeast(padding)
 
     val leftPadding = padding.dp
     val rightPadding = padding.dp
@@ -104,7 +105,7 @@ fun UiRenderer(
 
         HotkeyBar(
             offsetX = leftPadding,
-            offsetY = (camera.canvasHeight - padding - 192f).dp,
+            offsetY = (camera.actualHeight - padding - 192f).dp,
             selectedIndex = gameState.selectedHotkeyIndex,
             items = listOf(
                 Res.drawable.icon_pickaxe_unselected to Res.drawable.icon_pickaxe_selected,
@@ -115,8 +116,8 @@ fun UiRenderer(
 
         CollectibleCounter(
             collectableCount = gameState.collectedStones,
-            offsetX = (camera.canvasWidth - padding - 100f).dp,
-            offsetY = (camera.canvasHeight - padding - 30f).dp,
+            offsetX = (camera.actualWidth - padding - 100f).dp,
+            offsetY = (camera.actualHeight - padding - 30f).dp,
         )
 
         PlacementGhost(
@@ -127,6 +128,7 @@ fun UiRenderer(
         TurretChargeIndicator(
             player = player,
             mouse = mouse,
+            camera = camera,
         )
 
         EnemyHealthBars(
