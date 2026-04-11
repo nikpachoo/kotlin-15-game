@@ -221,7 +221,7 @@ fun WorldRenderer(
                 e.forEachPulledTile { x, y ->
                     val tileScreenPos = camera.worldToScreen(x, y)
                     drawRect(
-                        color = Color(0xFFAA44FF),
+                        color = WorldRendererColors.CONFUSER_TILE,
                         topLeft = tileScreenPos,
                         size = WorldConstants.STANDARD_SIZE,
                     )
@@ -241,7 +241,7 @@ fun WorldRenderer(
         enemyManager.forEachMissile { missile ->
             val screenPos = camera.worldToScreen(missile.position.x, missile.position.y)
             drawRect(
-                color = Color(0xFFFFC118),
+                color = WorldRendererColors.ENEMY_MISSILE,
                 topLeft = screenPos,
                 size = Size(missile.size, missile.size),
             )
@@ -282,12 +282,12 @@ fun WorldRenderer(
             drawText(titleResult, topLeft = Offset(titleX, titleY))
 
             drawOval(
-                color = Color(0x446c63ff),
+                color = WorldRendererColors.ORB_OUTER,
                 topLeft = Offset(screenPos.x - 4f, screenPos.y - 4f),
                 size = Size(orb.size + 8f, orb.size + 8f),
             )
             drawOval(
-                color = Color(0xFF8c83ff),
+                color = WorldRendererColors.ORB_INNER,
                 topLeft = screenPos,
                 size = Size(orb.size, orb.size),
             )
@@ -340,7 +340,7 @@ fun WorldRenderer(
         turretManager.forEachTurret { turret ->
             val screenPos = camera.worldToScreen(turret.position.x, turret.position.y)
             drawOval(
-                color = Color(0xFF00CED1),
+                color = WorldRendererColors.TURRET,
                 topLeft = screenPos,
                 size = Size(Turret.SPHERE_SIZE, Turret.SPHERE_SIZE),
             )
@@ -349,7 +349,7 @@ fun WorldRenderer(
         turretManager.forEachMissile { missile ->
             val screenPos = camera.worldToScreen(missile.position.x, missile.position.y)
             drawRect(
-                color = Color(0xFF00E5FF),
+                color = WorldRendererColors.TURRET_MISSILE,
                 topLeft = screenPos,
                 size = Size(TurretMissile.SIZE, TurretMissile.SIZE),
             )
@@ -375,7 +375,7 @@ fun WorldRenderer(
                 is Rocket -> {
                     val rScreenPos = camera.worldToScreen(attack.position.x, attack.position.y)
                     drawRect(
-                        color = Color(0xFFFF6600),
+                        color = WorldRendererColors.ROCKET,
                         topLeft = rScreenPos,
                         size = Size(Rocket.BASE_SIZE, Rocket.BASE_SIZE),
                     )
@@ -403,14 +403,14 @@ fun WorldRenderer(
                         val leftEnd = camera.worldToScreen(attack.guideLineLeft.x, attack.guideLineLeft.y)
                         val rightEnd = camera.worldToScreen(attack.guideLineRight.x, attack.guideLineRight.y)
                         drawLine(
-                            color = Color(0x66FFDD44),
+                            color = WorldRendererColors.SNIPER_GUIDE,
                             start = start,
                             end = leftEnd,
                             strokeWidth = 1f,
                             cap = StrokeCap.Round,
                         )
                         drawLine(
-                            color = Color(0x66FFDD44),
+                            color = WorldRendererColors.SNIPER_GUIDE,
                             start = start,
                             end = rightEnd,
                             strokeWidth = 1f,
@@ -423,11 +423,11 @@ fun WorldRenderer(
                         drawGlowLine(
                             start = bStart,
                             end = bEnd,
-                            outerColor = Color(0x33FFDD44),
+                            outerColor = WorldRendererColors.SNIPER_BULLET_OUTER,
                             outerWidth = 8f,
-                            middleColor = Color(0xAAFFEE66),
+                            middleColor = WorldRendererColors.SNIPER_BULLET_MIDDLE,
                             middleWidth = 3f,
-                            coreColor = Color(0xFFFFFFCC),
+                            coreColor = WorldRendererColors.SNIPER_BULLET_CORE,
                         )
                     }
                 }
@@ -451,7 +451,7 @@ fun WorldRenderer(
             }
 
             drawOval(
-                color = Color(0xFFCC44FF),
+                color = WorldRendererColors.BOSS,
                 topLeft = bossScreenPos,
                 size = Size(boss.drawWidth, boss.drawHeight),
             )
@@ -511,14 +511,14 @@ private fun DrawScope.drawLaser(laserStart: Offset, laserEnd: Offset) {
     drawGlowLine(
         start = laserStart,
         end = laserEnd,
-        outerColor = Color(0x33FF4444),
+        outerColor = WorldRendererColors.LASER_OUTER,
         outerWidth = 12f,
-        middleColor = Color(0xAAFF2222),
+        middleColor = WorldRendererColors.LASER_MIDDLE,
         middleWidth = 5f,
-        coreColor = Color(0xFFFFAAAA),
+        coreColor = WorldRendererColors.LASER_CORE,
     )
     drawOval(
-        color = Color(0xCCFF4444),
+        color = WorldRendererColors.LASER_IMPACT,
         topLeft = Offset(laserEnd.x - 6f, laserEnd.y - 6f),
         size = Size(12f, 12f),
     )
@@ -528,10 +528,10 @@ private fun DrawScope.drawBossLaser(start: Offset, end: Offset) {
     drawGlowLine(
         start = start,
         end = end,
-        outerColor = Color(0x33CC44FF),
+        outerColor = WorldRendererColors.BOSS_LASER_OUTER,
         outerWidth = 14f,
-        middleColor = Color(0xAA9933DD),
+        middleColor = WorldRendererColors.BOSS_LASER_MIDDLE,
         middleWidth = 6f,
-        coreColor = Color(0xFFEEBBFF),
+        coreColor = WorldRendererColors.BOSS_LASER_CORE,
     )
 }

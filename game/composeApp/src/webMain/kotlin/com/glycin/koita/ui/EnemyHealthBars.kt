@@ -14,6 +14,9 @@ import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 
+private val BAR_BACKGROUND_COLOR = Color(0xFF440000)
+private val BAR_FILL_COLOR = Color(0xFF00FF00)
+
 @Composable
 fun EnemyHealthBars(
     enemyManager: EnemyManager,
@@ -31,13 +34,13 @@ fun EnemyHealthBars(
                 val healthPercentage = enemy.health / enemy.maxHealth
 
                 drawRect(
-                    color = Color(0xFF440000),
+                    color = BAR_BACKGROUND_COLOR,
                     topLeft = Offset(screenPos.x, screenPos.y),
                     size = Size(barWidth, barHeight)
                 )
 
                 drawRect(
-                    color = Color(0xFF00FF00),
+                    color = BAR_FILL_COLOR,
                     topLeft = Offset(screenPos.x, screenPos.y),
                     size = Size(barWidth * healthPercentage, barHeight)
                 )

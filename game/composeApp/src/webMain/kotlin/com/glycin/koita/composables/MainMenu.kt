@@ -22,13 +22,12 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.ui.pixelFont
 
-//TODO: Extract colors to central object
 @Composable
 fun MainMenu(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A2E)),
+            .background(MenuColors.BACKGROUND),
         contentAlignment = Alignment.Center,
     ) {
         Column(

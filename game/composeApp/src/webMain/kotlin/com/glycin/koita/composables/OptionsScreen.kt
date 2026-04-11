@@ -28,7 +28,7 @@ fun OptionsScreen(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A2E)),
+            .background(MenuColors.BACKGROUND),
         contentAlignment = Alignment.Center,
     ) {
         Column(

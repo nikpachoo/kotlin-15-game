@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.isActive
 
+private val FPS_TEXT_COLOR = Color(0xFF00FF00)
+
 @Composable
 fun BoxScope.FpsCounter(modifier: Modifier = Modifier) {
     var fps by remember { mutableIntStateOf(0) }
@@ -45,7 +47,7 @@ fun BoxScope.FpsCounter(modifier: Modifier = Modifier) {
 
     Text(
         text = "FPS: $fps",
-        color = Color(0xFF00FF00),
+        color = FPS_TEXT_COLOR,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
         modifier = modifier

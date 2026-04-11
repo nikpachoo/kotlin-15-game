@@ -9,6 +9,10 @@ import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.util.lerp
 import com.glycin.koita.util.pulse
 
+private val AURA_OUTER_COLOR = Color(0x1800FFAA)
+private val AURA_MIDDLE_COLOR = Color(0x3300FFAA)
+private val AURA_CORE_COLOR = Color(0x5500FFAA)
+
 class GiantForm(
     private val gameState: GameState,
     private val enemyManager: EnemyManager,
@@ -78,19 +82,19 @@ class GiantForm(
         val radius = AURA_RADIUS * currentScale * pulse
 
         drawCircle(
-            color = Color(0x1800FFAA),
+            color = AURA_OUTER_COLOR,
             radius = radius,
             center = cx,
         )
 
         drawCircle(
-            color = Color(0x3300FFAA),
+            color = AURA_MIDDLE_COLOR,
             radius = radius * 0.7f,
             center = cx,
         )
 
         drawCircle(
-            color = Color(0x5500FFAA),
+            color = AURA_CORE_COLOR,
             radius = radius * 0.3f,
             center = cx,
         )

@@ -23,6 +23,13 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
+private val AURA_FILL_COLOR = Color(0x22FF4400)
+private val AURA_RING_COLOR = Color(0x33FF4400)
+private val ROCKET_BODY_COLOR = Color(0xFFCC2200)
+private val ROCKET_FIN_COLOR = Color(0xFF991100)
+private val NOSE_COLOR = Color(0xFFFFEE44)
+private val NOSE_CORE_COLOR = Color(0xFFFFFFCC)
+
 class RocketRide(
     private val world: World,
     private val collisionDetector: CollisionDetector,
@@ -147,12 +154,12 @@ class RocketRide(
         // Destruction radius aura
         val pulse = t.pulse(0.15f, 0.1f)
         drawCircle(
-            color = Color(0x22FF4400),
+            color = AURA_FILL_COLOR,
             radius = DESTRUCTION_RADIUS * pulse,
             center = cx,
         )
         drawCircle(
-            color = Color(0x33FF4400),
+            color = AURA_RING_COLOR,
             radius = DESTRUCTION_RADIUS,
             center = cx,
             style = Stroke(width = 1.5f),
@@ -161,13 +168,13 @@ class RocketRide(
         // Rocket body (rotated oval)
         rotate(degrees = angle, pivot = cx) {
             drawOval(
-                color = Color(0xFFCC2200),
+                color = ROCKET_BODY_COLOR,
                 topLeft = Offset(cx.x - 24f, cx.y - 10f),
                 size = Size(48f, 20f),
             )
             // Fins
             drawRect(
-                color = Color(0xFF991100),
+                color = ROCKET_FIN_COLOR,
                 topLeft = Offset(cx.x - 24f, cx.y - 14f),
                 size = Size(10f, 28f),
             )
@@ -177,12 +184,12 @@ class RocketRide(
         val noseX = cx.x + dirX * 24f
         val noseY = cx.y + dirY * 24f
         drawCircle(
-            color = Color(0xFFFFEE44),
+            color = NOSE_COLOR,
             radius = 6f,
             center = Offset(noseX, noseY),
         )
         drawCircle(
-            color = Color(0xFFFFFFCC),
+            color = NOSE_CORE_COLOR,
             radius = 3f,
             center = Offset(noseX, noseY),
         )

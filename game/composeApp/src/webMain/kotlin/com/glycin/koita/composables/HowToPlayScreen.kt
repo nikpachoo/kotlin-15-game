@@ -27,7 +27,7 @@ fun HowToPlayScreen(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A2E)),
+            .background(MenuColors.BACKGROUND),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -87,7 +87,7 @@ private fun SectionTitle(text: String) {
         text = text,
         fontFamily = pixelFont(),
         fontSize = 20.sp,
-        color = Color(0xFFCCCCFF),
+        color = MenuColors.SECTION_TITLE,
     )
     Spacer(modifier = Modifier.height(8.dp))
 }

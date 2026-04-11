@@ -34,7 +34,7 @@ fun PauseMenu(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x99000000)),
+            .background(MenuColors.PAUSE_OVERLAY),
         contentAlignment = Alignment.Center,
     ) {
         Column(

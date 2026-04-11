@@ -16,6 +16,12 @@ import com.glycin.koita.util.pulse
 import com.glycin.koita.world.World
 import kotlin.math.sin
 
+private val AURA_OUTER_COLOR = Color(0x22FFD700)
+private val FLAME_COLOR = Color(0x44FFAA00)
+private val GLOW_COLOR = Color(0xAAFFEE44)
+private val CORE_COLOR = Color(0xFFFFFFCC)
+private val AURA_RING_COLOR = Color(0x33FFD700)
+
 class SuperSaiyanDash(
     private val world: World,
     private val collisionDetector: CollisionDetector,
@@ -84,31 +90,31 @@ class SuperSaiyanDash(
 
         val pulse = t.pulse(0.15f, 0.12f)
         drawCircle(
-            color = Color(0x22FFD700),
+            color = AURA_OUTER_COLOR,
             radius = DESTRUCTION_RADIUS * pulse,
             center = cx,
         )
 
         val flameStretch = t.pulse(0.2f, 0.08f)
         drawOval(
-            color = Color(0x44FFAA00),
+            color = FLAME_COLOR,
             topLeft = Offset(cx.x - 40f, cx.y - 70f * flameStretch),
             size = Size(80f, 140f * flameStretch),
         )
 
         drawCircle(
-            color = Color(0xAAFFEE44),
+            color = GLOW_COLOR,
             radius = 20f,
             center = cx,
         )
         drawCircle(
-            color = Color(0xFFFFFFCC),
+            color = CORE_COLOR,
             radius = 8f,
             center = cx,
         )
 
         drawCircle(
-            color = Color(0x33FFD700),
+            color = AURA_RING_COLOR,
             radius = DESTRUCTION_RADIUS,
             center = cx,
             style = Stroke(width = 1.5f),

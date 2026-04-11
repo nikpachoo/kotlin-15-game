@@ -18,6 +18,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+private val BAR_BACKGROUND_COLOR = Color(0xFF220000)
+private val BAR_FILL_COLOR = Color(0xFFCC44FF)
+
 @Composable
 fun BossHealthBar(
     healthPercent: Float,
@@ -50,7 +53,7 @@ fun BossHealthBar(
         ) {
             // Background
             drawRoundRect(
-                color = Color(0xFF220000),
+                color = BAR_BACKGROUND_COLOR,
                 size = size,
                 cornerRadius = CornerRadius(4f, 4f),
             )
@@ -58,7 +61,7 @@ fun BossHealthBar(
             // Health fill
             if (healthPercent > 0f) {
                 drawRoundRect(
-                    color = Color(0xFFCC44FF),
+                    color = BAR_FILL_COLOR,
                     size = Size(size.width * healthPercent, size.height),
                     cornerRadius = CornerRadius(4f, 4f),
                 )

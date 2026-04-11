@@ -111,40 +111,24 @@ class ParallaxBackground(
 
         val detailMultiplier = when {
             // Deep caves
-            depth > 0.80f && detailValue > 0.6f -> {
-                Color(1.3f, 1.1f, 0.9f)
-            }
-            depth > 0.80f && detailValue > 0.3f -> {
-                Color(1.1f, 0.9f, 0.9f)
-            }
+            depth > 0.80f && detailValue > 0.6f -> BackgroundColors.DEEP_CAVE_BRIGHT
+            depth > 0.80f && detailValue > 0.3f -> BackgroundColors.DEEP_CAVE_WARM
 
             // Mid-deep
-            depth > 0.60f && detailValue > 0.7f -> {
-                Color(1.2f, 1.0f, 1.0f)
-            }
-            depth > 0.60f && detailValue > 0.4f -> {
-                Color(0.9f, 0.9f, 0.9f)
-            }
+            depth > 0.60f && detailValue > 0.7f -> BackgroundColors.MID_DEEP_BRIGHT
+            depth > 0.60f && detailValue > 0.4f -> BackgroundColors.MID_DEEP_DIM
 
             // Mid caves
-            depth > 0.40f && detailValue > 0.65f -> {
-                Color(1.0f, 1.0f, 1.2f)
-            }
+            depth > 0.40f && detailValue > 0.65f -> BackgroundColors.MID_CAVE_COOL
 
             // Upper caves
-            depth > 0.20f && detailValue > 0.6f -> {
-                Color(0.9f, 1.1f, 1.0f)
-            }
+            depth > 0.20f && detailValue > 0.6f -> BackgroundColors.UPPER_CAVE_GREEN
 
             // Surface
-            depth <= 0.20f && detailValue > 0.5f -> {
-                Color(0.85f, 1.0f, 0.95f)
-            }
-            depth <= 0.20f && detailValue < -0.2f -> {
-                Color(0.8f, 0.8f, 0.8f)
-            }
+            depth <= 0.20f && detailValue > 0.5f -> BackgroundColors.SURFACE_LIGHT
+            depth <= 0.20f && detailValue < -0.2f -> BackgroundColors.SURFACE_SHADOW
 
-            else -> Color(1.0f, 1.0f, 1.0f)
+            else -> BackgroundColors.NEUTRAL
         }
 
         return Color(
@@ -157,12 +141,12 @@ class ParallaxBackground(
 
     private fun interpolateDepthColor(depth: Float): Color {
         val stops = listOf(
-            0.00f to Color(0xFF3a5555),
-            0.20f to Color(0xFF4a4a55),
-            0.40f to Color(0xFF4a4050),
-            0.60f to Color(0xFF503a3a),
-            0.80f to Color(0xFF553030),
-            1.00f to Color(0xFF502020)
+            0.00f to BackgroundColors.DEPTH_0,
+            0.20f to BackgroundColors.DEPTH_20,
+            0.40f to BackgroundColors.DEPTH_40,
+            0.60f to BackgroundColors.DEPTH_60,
+            0.80f to BackgroundColors.DEPTH_80,
+            1.00f to BackgroundColors.DEPTH_100,
         )
 
         for (i in 0 until stops.size - 1) {

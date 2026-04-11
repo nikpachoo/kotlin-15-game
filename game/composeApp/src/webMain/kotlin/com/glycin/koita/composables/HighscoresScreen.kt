@@ -50,7 +50,7 @@ fun HighscoresScreen(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A2E)),
+            .background(MenuColors.BACKGROUND),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -80,7 +80,7 @@ fun HighscoresScreen(gameState: GameState) {
                         text = "Could not load highscores",
                         fontFamily = pixelFont(),
                         fontSize = 16.sp,
-                        color = Color(0xFFFF6666),
+                        color = MenuColors.ERROR_TEXT,
                     )
                 }
                 else -> {
@@ -133,9 +133,9 @@ private fun HighscoreRow(rank: Int, entry: HighscoreEntry) {
             fontFamily = pixelFont(),
             fontSize = 16.sp,
             color = when (rank) {
-                1 -> Color(0xFFFFD700)
-                2 -> Color(0xFFC0C0C0)
-                3 -> Color(0xFFCD7F32)
+                1 -> MenuColors.RANK_GOLD
+                2 -> MenuColors.RANK_SILVER
+                3 -> MenuColors.RANK_BRONZE
                 else -> Color.White
             },
         )

@@ -20,6 +20,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
+private val AURA_OUTER_COLOR = Color(0x33FF4444)
+private val AURA_INNER_COLOR = Color(0xAAFF6600)
+private val MISSILE_COLOR = Color(0xFFFF4400)
+private val MISSILE_CORE_COLOR = Color(0xFFFFCC00)
+private val MISSILE_TAIL_COLOR = Color(0x66FF6600)
+
 class SwarmBarrage(
     private val world: World,
     private val collisionDetector: CollisionDetector,
@@ -151,12 +157,12 @@ class SwarmBarrage(
 
         val pulse = t.pulse(0.2f, 0.15f)
         drawCircle(
-            color = Color(0x33FF4444),
+            color = AURA_OUTER_COLOR,
             radius = 60f * pulse,
             center = cx,
         )
         drawCircle(
-            color = Color(0xAAFF6600),
+            color = AURA_INNER_COLOR,
             radius = 12f,
             center = cx,
         )
@@ -166,17 +172,17 @@ class SwarmBarrage(
             val i2 = i * 2
             val screenPos = camera.worldToScreen(missilePositions[i2], missilePositions[i2 + 1])
             drawCircle(
-                color = Color(0xFFFF4400),
+                color = MISSILE_COLOR,
                 radius = 5f,
                 center = screenPos,
             )
             drawCircle(
-                color = Color(0xFFFFCC00),
+                color = MISSILE_CORE_COLOR,
                 radius = 2.5f,
                 center = screenPos,
             )
             drawRect(
-                color = Color(0x66FF6600),
+                color = MISSILE_TAIL_COLOR,
                 topLeft = Offset(screenPos.x - missileDirections[i2] * 12f - 2f, screenPos.y - missileDirections[i2 + 1] * 12f - 2f),
                 size = Size(4f, 4f),
             )

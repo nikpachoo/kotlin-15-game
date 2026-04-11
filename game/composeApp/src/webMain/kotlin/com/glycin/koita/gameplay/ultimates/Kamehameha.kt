@@ -19,6 +19,13 @@ import com.glycin.koita.world.WorldConstants
 import kotlin.math.abs
 import com.glycin.koita.util.pulse
 
+private val CHARGE_AURA_COLOR = Color(0x4400AAFF)
+private val INNER_GLOW_COLOR = Color(0xAA44CCFF)
+private val BEAM_OUTER_COLOR = Color(0x220088FF)
+private val BEAM_GLOW_COLOR = Color(0x660088FF)
+private val BEAM_CORE_COLOR = Color(0xFFCCEEFF)
+private val BEAM_END_GLOW_COLOR = Color(0x6600AAFF)
+
 class Kamehameha(
     private val world: World,
     private val collisionDetector: CollisionDetector,
@@ -157,12 +164,12 @@ class Kamehameha(
     private fun DrawScope.renderGroundPound(cx: Offset, t: Float) {
         val pulse = t.pulse(0.3f, 0.2f)
         drawCircle(
-            color = Color(0x4400AAFF),
+            color = CHARGE_AURA_COLOR,
             radius = 40f * pulse,
             center = cx,
         )
         drawCircle(
-            color = Color(0xAA44CCFF),
+            color = INNER_GLOW_COLOR,
             radius = 14f,
             center = cx,
         )
@@ -176,28 +183,28 @@ class Kamehameha(
         val pulse = t.pulse(0.25f, 0.15f)
 
         drawLine(
-            color = Color(0x220088FF),
+            color = BEAM_OUTER_COLOR,
             start = cx,
             end = endScreen,
             strokeWidth = 96f * pulse,
         )
 
         drawLine(
-            color = Color(0x660088FF),
+            color = BEAM_GLOW_COLOR,
             start = cx,
             end = endScreen,
             strokeWidth = 48f * pulse,
         )
 
         drawLine(
-            color = Color(0xAA44CCFF),
+            color = INNER_GLOW_COLOR,
             start = cx,
             end = endScreen,
             strokeWidth = 24f * pulse,
         )
 
         drawLine(
-            color = Color(0xFFCCEEFF),
+            color = BEAM_CORE_COLOR,
             start = cx,
             end = endScreen,
             strokeWidth = 8f,
@@ -205,23 +212,23 @@ class Kamehameha(
 
         val chargePulse = t.pulse(0.2f, 0.3f)
         drawCircle(
-            color = Color(0x4400AAFF),
+            color = CHARGE_AURA_COLOR,
             radius = 60f * chargePulse,
             center = cx,
         )
         drawCircle(
-            color = Color(0xFFCCEEFF),
+            color = BEAM_CORE_COLOR,
             radius = 20f,
             center = cx,
         )
 
         drawCircle(
-            color = Color(0x6600AAFF),
+            color = BEAM_END_GLOW_COLOR,
             radius = 40f * pulse,
             center = endScreen,
         )
         drawCircle(
-            color = Color(0xAA44CCFF),
+            color = INNER_GLOW_COLOR,
             radius = 16f,
             center = endScreen,
         )
