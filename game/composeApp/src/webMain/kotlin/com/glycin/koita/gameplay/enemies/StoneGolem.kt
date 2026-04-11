@@ -22,8 +22,8 @@ class StoneGolem(
     position = position,
     width = 32f,
     height = 32f,
-    drawWidth = 256f,
-    drawHeight = 256f,
+    drawWidth = 128f,
+    drawHeight = 128f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -36,18 +36,18 @@ class StoneGolem(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.stone_golem_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
+        frameWidth = 128,
+        frameHeight = 128,
         columns = 10,
-        totalSprites = 200,
-        frameDuration = 0.05f,
+        totalSprites = 50,
+        frameDuration = 0.15f,
     )
 
-    private val attackFrames = 0..25
-    private val deathFrames = 30..55
-    private val hurtFrames = 60..77
-    private val idleFrames = 80..140
-    private val moveFrames = 150..169
+    private val attackFrames = 0..8
+    private val deathFrames = 10..18
+    private val hurtFrames = 20..27
+    private val idleFrames = 30..32
+    private val moveFrames = 40..45
 
     private val digRadius = 2
     private val maxFallSpeed = 500f

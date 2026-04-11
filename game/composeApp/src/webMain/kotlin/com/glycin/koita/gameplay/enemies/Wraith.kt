@@ -18,8 +18,8 @@ class Wraith(
     position = position,
     width = 64f,
     height = 64f,
-    drawWidth = 256f,
-    drawHeight = 256f,
+    drawWidth = 64f,
+    drawHeight = 64f,
     health = health,
     collisionDetector = collisionDetector,
     world = world,
@@ -31,18 +31,18 @@ class Wraith(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.wraith_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 10,
-        totalSprites = 220,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 14,
+        totalSprites = 42,
         frameDuration = 0.1f,
     )
 
-    private val attackFrames = 0..37
-    private val deathFrames = 40..48
-    private val hurtFrames = 50..71
-    private val idleFrames = 80..160
-    private val moveFrames = 170..210
+    private val attackFrames = 0..8
+    private val deathFrames = 14..20
+    private val hurtFrames = 21..27
+    private val idleFrames = 28..30
+    private val moveFrames = 31..38
 
     override fun updateBehavior(deltaTime: Float) {
     }

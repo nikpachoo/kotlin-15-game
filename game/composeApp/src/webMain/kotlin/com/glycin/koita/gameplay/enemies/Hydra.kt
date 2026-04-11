@@ -20,8 +20,8 @@ class Hydra( //TODO: Find some different behaviour for the hydra
     position = position,
     width = 32f,
     height = 32f,
-    drawWidth = 256f,
-    drawHeight = 256f,
+    drawWidth = 128f,
+    drawHeight = 128f,
     health = health,
     collisionDetector = collisionDetector,
     world = world,
@@ -33,18 +33,18 @@ class Hydra( //TODO: Find some different behaviour for the hydra
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.hydra_sheet,
-        frameWidth = 512,
-        frameHeight = 512,
-        columns = 10,
-        totalSprites = 160,
-        frameDuration = 0.05f,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 16,
+        totalSprites = 32,
+        frameDuration = 0.2f,
     )
 
-    private val attackFrames = 0..40
-    private val deathFrames = 50..69
-    private val hurtFrames = 50..69
-    private val idleFrames = 70..140
-    private val moveFrames = 140..159
+    private val attackFrames = 0..6
+    private val deathFrames = 7..15
+    private val hurtFrames = 16..20
+    private val idleFrames = 21..23
+    private val moveFrames = 24..27
 
     private val startPosition = position
     private var movingToTarget = true

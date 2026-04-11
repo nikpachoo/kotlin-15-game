@@ -22,8 +22,8 @@ class Slime(
     position = position,
     width = 32f,
     height = 32f,
-    drawWidth = 128f,
-    drawHeight = 128f,
+    drawWidth = 64f,
+    drawHeight = 64f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -36,18 +36,18 @@ class Slime(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.slime_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 10,
-        totalSprites = 280,
-        frameDuration = 0.05f,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 16,
+        totalSprites = 32,
+        frameDuration = 0.1f,
     )
 
-    private val deathFrames = 40..94
-    private val hurtFrames = 100..117
-    private val idleFrames = 120..195
-    private val moveFrames = 0..32
-    private val fallingFrame = 4
+    private val deathFrames = 16..23
+    private val hurtFrames = 9..14
+    private val idleFrames = 0..2
+    private val moveFrames = 24..32
+    private val fallingFrame = 25
 
     private val maxFallSpeed = 500f
     private val jumpForce = 350f

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import com.glycin.koita.BuildConfig
 import com.glycin.koita.audio.SoundManager
@@ -26,7 +25,6 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import koita.composeapp.generated.resources.Res
-import koita.composeapp.generated.resources.runzo_sprite_sheet
 
 class Player(
     var position: Vec2,
@@ -91,7 +89,6 @@ class Player(
         private set
 
     var dronePosition: Vec2 = Vec2(position.x + width / 2f, position.y + height / 2f) + Vec2.up * 2.0f
-    var droneColor = Color.Blue
 
     private val droneRangeX = 40f
     private val droneRangeY = 30f
@@ -100,16 +97,10 @@ class Player(
 
     private val onHurtComplete: () -> Unit = {
         state = PlayerState.IDLE
-        droneSpriteAnimator.setFrame(1)
+        droneState = getDroneIdleState()
     }
-    val droneSpriteAnimator = SpriteAnimator(
-        sprite = Res.drawable.runzo_sprite_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 3,
-        totalSprites = 3,
-        frameDuration = 1f,
-    )
+    val droneAnimator = DroneAnimator()
+    var droneState = DroneState.MINING_IDLE
 
     //TODO: Keep attacks here or inject the weapons in the renderer?
     val weapons = mutableStateListOf<Weapon>()
@@ -136,6 +127,7 @@ class Player(
         updateDrone(center)
         resourceShield.update(deltaTime)
         animator.update(deltaTime, state, onHurtComplete)
+        droneAnimator.update(deltaTime, droneState)
     }
 
     private fun updateTimers(deltaTime: Float) {
@@ -145,7 +137,7 @@ class Player(
                 attackTimer = 0f
                 if (state == PlayerState.ATTACKING) {
                     state = PlayerState.IDLE
-                    droneSpriteAnimator.setFrame(1)
+                    droneState = getDroneIdleState()
                 }
             }
         }
@@ -156,7 +148,7 @@ class Player(
         currentWeapon.use()
         state = PlayerState.ATTACKING
         attackTimer = attackDuration
-        droneSpriteAnimator.setFrame(2)
+        droneState = getDroneActiveState()
         when(val weapon = currentWeapon) {
             is AttackMode -> {
                 val activeWeapons = weapon.getActiveWeapon()
@@ -171,14 +163,9 @@ class Player(
 
     fun equip(weaponIndex: Int) {
         currentWeapon = drone.modes[weaponIndex]
-        droneSpriteAnimator.setFrame(1)
+        droneState = getDroneIdleState()
         when(val weapon = currentWeapon) {
-            is MiningMode -> droneColor = Color.Blue
-            is BuildMode -> {
-                droneColor = Color.Red
-                weapon.onEquipped()
-            }
-            is AttackMode -> droneColor = Color.Green
+            is BuildMode -> weapon.onEquipped()
         }
     }
 
@@ -187,7 +174,7 @@ class Player(
         if (isAnchorLocked) return
         health = (health - amount).coerceAtLeast(0)
         state = PlayerState.HURT
-        droneSpriteAnimator.setFrame(0)
+        droneState = getDroneIdleState()
     }
 
     // TODO: im rechecking the neighboroing tiles multiple times here, maybe check them once for each frame and memoize the result
@@ -619,6 +606,20 @@ class Player(
         )
 
         drone.getAttackMode()?.dronePosition = dronePosition
+    }
+
+    private fun getDroneIdleState(): DroneState = when (currentWeapon) {
+        is MiningMode -> DroneState.MINING_IDLE
+        is BuildMode -> DroneState.BUILD_IDLE
+        is AttackMode -> DroneState.ATTACK_IDLE
+        else -> DroneState.MINING_IDLE
+    }
+
+    private fun getDroneActiveState(): DroneState = when (currentWeapon) {
+        is MiningMode -> DroneState.MINING_ACTIVE
+        is BuildMode -> DroneState.BUILD_ACTIVE
+        is AttackMode -> DroneState.ATTACK_ACTIVE
+        else -> DroneState.MINING_ACTIVE
     }
 
 }

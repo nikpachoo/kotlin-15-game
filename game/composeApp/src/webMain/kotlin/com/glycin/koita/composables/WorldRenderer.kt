@@ -7,9 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -76,7 +74,7 @@ fun WorldRenderer(
 ) {
 
     val playerSheet = imageResource(player.animator.spriteAnimator.sprite)
-    val droneSheet = imageResource(player.droneSpriteAnimator.sprite)
+    val droneSheet = imageResource(player.droneAnimator.sprite)
     val enemySheets = enemyManager.getDistinctSprites().associateWith { imageResource(it) }
     val shrineSheets = shrineManager.getDistinctSprites().associateWith { imageResource(it) }
     val pickupSheets = pickupManager.getDistinctSprites().associateWith { imageResource(it) }
@@ -152,18 +150,15 @@ fun WorldRenderer(
             }
 
             val droneScreenPos = camera.worldToScreen(dronePosition.x, dronePosition.y)
-            val droneSrcOffsetX = droneSpriteAnimator.srcX
-            val droneSrcOffsetY = droneSpriteAnimator.srcY
-            val droneSize = 15
+            val droneSize = 32
 
             drawImage(
                 image = droneSheet,
-                srcOffset = IntOffset(droneSrcOffsetX, droneSrcOffsetY),
-                srcSize = IntSize(droneSpriteAnimator.frameWidth, droneSpriteAnimator.frameWidth),
+                srcOffset = IntOffset(droneAnimator.srcX, droneAnimator.srcY),
+                srcSize = IntSize(droneAnimator.frameWidth, droneAnimator.frameHeight),
                 dstOffset = IntOffset(droneScreenPos.x.toInt(), droneScreenPos.y.toInt()),
                 dstSize = IntSize(droneSize, droneSize),
                 filterQuality = FilterQuality.None,
-                colorFilter = ColorFilter.tint(droneColor, BlendMode.Modulate),
             )
             
             // Anchor overlay

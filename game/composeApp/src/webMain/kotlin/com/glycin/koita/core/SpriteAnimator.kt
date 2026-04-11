@@ -12,7 +12,7 @@ class SpriteAnimator(
 ) {
     private var currentFrame = 0
     private var elapsed = 0f
-    private var range = 0..totalSprites - 1
+    private var range = 0..<totalSprites
 
     private var oneShot = false
     private var onOneShotComplete: (() -> Unit)? = null

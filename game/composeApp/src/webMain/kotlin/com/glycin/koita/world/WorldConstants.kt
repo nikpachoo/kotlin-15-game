@@ -3,8 +3,8 @@ package com.glycin.koita.world
 import androidx.compose.ui.geometry.Size
 
 object WorldConstants {
-    const val VIRTUAL_WIDTH = 512f
-    const val VIRTUAL_HEIGHT = 384f
+    const val VIRTUAL_WIDTH = 1024f
+    const val VIRTUAL_HEIGHT = 768f
 
     const val TILE_SIZE = 4
     const val CHUNK_SIZE = 32

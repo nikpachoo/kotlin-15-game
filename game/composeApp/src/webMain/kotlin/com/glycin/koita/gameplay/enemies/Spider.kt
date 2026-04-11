@@ -23,8 +23,8 @@ class Spider(
     position = position,
     width = 24f,
     height = 24f,
-    drawWidth = 128f,
-    drawHeight = 128f,
+    drawWidth = 64f,
+    drawHeight = 64f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -37,18 +37,18 @@ class Spider(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.spider_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 10,
-        totalSprites = 220,
-        frameDuration = 0.05f,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 9,
+        totalSprites = 36,
+        frameDuration = 0.1f,
     )
 
-    private val attackFrames = 0..27
-    private val deathFrames = 30..83
-    private val hurtFrames = 90..107
-    private val idleFrames = 110..190
-    private val moveFrames = 200..213
+    private val attackFrames = 9..17
+    private val deathFrames = 18..26
+    private val hurtFrames = 3..7
+    private val idleFrames = 0..2
+    private val moveFrames = 27..35
 
     private var webCooldown = Random.nextFloat() * 3f + 2f
     private val webInterval = 2f

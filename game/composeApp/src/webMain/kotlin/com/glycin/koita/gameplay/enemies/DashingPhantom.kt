@@ -26,8 +26,8 @@ class DashingPhantom(
     position = position,
     width = 32f,
     height = 32f,
-    drawWidth = 256f,
-    drawHeight = 256f,
+    drawWidth = 128f,
+    drawHeight = 128f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -40,18 +40,18 @@ class DashingPhantom(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.null_phantom_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 10,
-        totalSprites = 270,
-        frameDuration = 0.05f,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 16,
+        totalSprites = 32,
+        frameDuration = 0.1f,
     )
 
-    private val attackFrames = 0..20
-    private val deathFrames = 30..50
-    private val hurtFrames = 80..92
-    private val idleFrames = 100..159
-    private val moveFrames = 210..269
+    private val attackFrames = 0..8
+    private val deathFrames = 9..15
+    private val hurtFrames = 16..21
+    private val idleFrames = 22..24
+    private val moveFrames = 25..30
 
     private enum class WraithPhase { HOVERING, SHAKING, DASHING, COOLDOWN }
 

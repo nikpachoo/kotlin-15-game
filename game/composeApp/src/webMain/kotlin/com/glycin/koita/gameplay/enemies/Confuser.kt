@@ -28,8 +28,8 @@ class Confuser(
     position = position,
     width = 48f,
     height = 48f,
-    drawWidth = 384f,
-    drawHeight = 384f,
+    drawWidth = 192f,
+    drawHeight = 192f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -42,18 +42,18 @@ class Confuser(
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.confuser_sheet,
-        frameWidth = 256,
-        frameHeight = 256,
-        columns = 10,
-        totalSprites = 200,
-        frameDuration = 0.05f,
+        frameWidth = 128,
+        frameHeight = 128,
+        columns = 14,
+        totalSprites = 42,
+        frameDuration = 0.1f,
     )
 
-    private val attackFrames = 0..38
-    private val deathFrames = 30..66
-    private val hurtFrames = 70..96
-    private val idleFrames = 130..160
-    private val moveFrames = 190..199
+    private val attackFrames = 0..8
+    private val deathFrames = 14..20
+    private val hurtFrames = 21..27
+    private val idleFrames = 28..30
+    private val moveFrames = 31..40
 
     private val floatSpeed = 30f
     private val pullRadius = 150f
