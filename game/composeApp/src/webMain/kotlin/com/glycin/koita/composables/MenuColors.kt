@@ -10,4 +10,9 @@ internal object MenuColors {
     val RANK_GOLD = Color(0xFFFFD700)
     val RANK_SILVER = Color(0xFFC0C0C0)
     val RANK_BRONZE = Color(0xFFCD7F32)
+
+    val SIDEBAR = Color(0xFFFF5530)
+    val MAIN_BACKGROUND_DARK = Color(0xFF1A0A2E)
+    val MAIN_BACKGROUND_MID = Color(0xFF4B0AC9)
+    val MAIN_BACKGROUND_LIGHT = Color(0xFF6B30F9)
 }
