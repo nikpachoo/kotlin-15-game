@@ -21,8 +21,8 @@ class Spider(
     health: Float = 4f,
 ) : Enemy(
     position = position,
-    width = 24f,
-    height = 24f,
+    width = 64f,
+    height = 32f,
     drawWidth = 64f,
     drawHeight = 64f,
     health = health,
@@ -33,7 +33,7 @@ class Spider(
     override val canAttack = false
     override val contactDamage = 1
     override val dropChance = 0.02f
-    override val spriteOffsetY = -32f
+    override val spriteOffsetY = 0f
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.spider_sheet,

@@ -18,8 +18,8 @@ class Wraith(
     position = position,
     width = 64f,
     height = 64f,
-    drawWidth = 64f,
-    drawHeight = 64f,
+    drawWidth = 128f,
+    drawHeight = 128f,
     health = health,
     collisionDetector = collisionDetector,
     world = world,
@@ -27,7 +27,7 @@ class Wraith(
 ) {
     override val contactDamage = 2
     override val dropChance = 0.05f
-    override val spriteOffsetY = -32f
+    override val spriteOffsetY = 0f
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.wraith_sheet,

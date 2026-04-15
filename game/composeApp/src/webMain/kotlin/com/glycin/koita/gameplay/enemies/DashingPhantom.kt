@@ -26,8 +26,8 @@ class DashingPhantom(
     position = position,
     width = 32f,
     height = 32f,
-    drawWidth = 128f,
-    drawHeight = 128f,
+    drawWidth = 100f,
+    drawHeight = 100f,
     health = health,
     maxHealth = health,
     collisionDetector = collisionDetector,
@@ -36,7 +36,7 @@ class DashingPhantom(
     override val canAttack = false
     override val contactDamage = 2
     override val dropChance = 0.07f
-    override val spriteOffsetY = -32f
+    override val spriteOffsetY = -24f
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.null_phantom_sheet,
