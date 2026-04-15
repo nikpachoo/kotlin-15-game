@@ -6,23 +6,23 @@ import org.jetbrains.compose.resources.DrawableResource
 
 class PlayerAnimator(
     sprite: DrawableResource = Res.drawable.kodee_sheet,
-    sheetWidth: Int = 2560,
-    sheetHeight: Int = 6144,
+    sheetWidth: Int = 4096,
+    sheetHeight: Int = 1280,
     frameWidth: Int = 256,
     frameHeight: Int = 256,
-    frameDuration: Float = 0.05f,
+    frameDuration: Float = 0.1f,
 ) {
     private val columns = sheetWidth / frameWidth
     private val totalSprites = columns * (sheetHeight / frameHeight)
 
-    private val walkFrames: IntRange = 170..185
-    private val idleFrames: IntRange = 90..110
-    private val jumpFrames: IntRange = 130..140
-    private val fallFrames: IntRange = 50..65
-    private val attackFrames: IntRange = 200..209
-    private val hurtFrames: IntRange = 71..81
-    private val boostFrames: IntRange = 0..15
-    private val deathFrames: IntRange = 20..45
+    private val walkFrames: IntRange = 64..71
+    private val idleFrames: IntRange = 39..41
+    private val jumpFrames: IntRange = 51..53
+    private val fallFrames: IntRange = 26..28
+    private val attackFrames: IntRange = 72..79
+    private val hurtFrames: IntRange = 32..41
+    private val boostFrames: IntRange = 0..9
+    private val deathFrames: IntRange = 16..25
 
     val spriteAnimator = SpriteAnimator(
         sprite = sprite,
