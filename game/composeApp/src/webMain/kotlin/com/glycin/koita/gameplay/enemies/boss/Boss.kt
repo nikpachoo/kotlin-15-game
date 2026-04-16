@@ -1,6 +1,7 @@
 package com.glycin.koita.gameplay.enemies.boss
 
 import com.glycin.koita.core.Player
+import com.glycin.koita.core.SpriteAnimator
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.weapon.Laser
@@ -15,10 +16,14 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import com.glycin.koita.util.TWO_PI
+import koita.composeapp.generated.resources.Res
+import koita.composeapp.generated.resources.boss_sheet
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+
+enum class BossAnimState { IDLE, ATTACK_1, ATTACK_2 }
 
 fun interface BossCommand {
     fun update(deltaTime: Float): Boolean
@@ -26,6 +31,10 @@ fun interface BossCommand {
 
 class Boss(
     val position: Vec2,
+    val width: Float = 64f,
+    val height: Float = 64f,
+    val drawWidth: Float = 128f,
+    val drawHeight: Float = 128f,
     private val world: World,
     private val player: Player,
     private val fluidSimulator: FluidSimulator,
@@ -34,10 +43,22 @@ class Boss(
     private val gameState: GameState,
     private val maxHealth: Float = 100f,
 ) {
-    val width = SIZE
-    val height = SIZE
-    val drawWidth = SIZE
-    val drawHeight = SIZE
+
+    val spriteAnimator = SpriteAnimator(
+        sprite = Res.drawable.boss_sheet,
+        frameWidth = 64,
+        frameHeight = 64,
+        columns = 16,
+        totalSprites = 48,
+        frameDuration = 0.1f,
+    )
+
+    val eye = BossEye()
+
+    private val idleFrames = 0..9
+    private val attack1Frames = 16..31
+    private val attack2Frames = 32..47
+    private var animState = BossAnimState.IDLE
 
     var health = maxHealth
         private set
@@ -62,7 +83,6 @@ class Boss(
     private val lavaSpawnInterval = 0.01f
     private val lavaStreamDuration = 3f
 
-    private val hands = mutableListOf<BossHand>()
     private var activeLaser: BossLaser? = null
     private var activeImplosion: BossImplosion? = null
 
@@ -94,6 +114,7 @@ class Boss(
             if (commandQueue.isNotEmpty()) {
                 currentCommand = commandQueue.removeFirst()
             } else {
+                animState = BossAnimState.IDLE
                 idleTimer += deltaTime
                 if (idleTimer >= nextIdleInterval) {
                     idleTimer = 0f
@@ -123,9 +144,8 @@ class Boss(
             if (!implosion.alive) activeImplosion = null
         }
 
-        hands.forEach { it.update(deltaTime, player, world) }
-        hands.removeAll { !it.alive }
-
+        eye.update(center, player.center)
+        updateAnimation(deltaTime)
         checkWeaponCollisions()
     }
 
@@ -145,14 +165,13 @@ class Boss(
     }
 
     private fun pickRandomAttack(): BossCommand {
-        val options = (0 until 4).filter { it != lastAttack }
+        val options = (0 until 3).filter { it != lastAttack }
         val pick = options[Random.nextInt(options.size)]
         lastAttack = pick
         return when (pick) {
-            0 -> handAttackCommand()
-            1 -> laserAttackCommand()
-            2 -> implosionCommand()
-            else -> lavaStreamCommand()
+            0 -> { animState = BossAnimState.ATTACK_2; laserAttackCommand() }
+            1 -> { animState = BossAnimState.ATTACK_2; implosionCommand() }
+            else -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
         }
     }
 
@@ -187,11 +206,6 @@ class Boss(
             }
             streamTimer >= lavaStreamDuration
         }
-    }
-
-    private fun handAttackCommand(): BossCommand {
-        spawnHandAttack()
-        return BossCommand { true }
     }
 
     private fun implosionCommand(): BossCommand {
@@ -319,13 +333,6 @@ class Boss(
         }
     }
 
-    private fun spawnHandAttack() {
-        val tileSize = WorldConstants.TILE_SIZE
-        val startTX = ((player.center.x - HAND_WIDTH * tileSize / 2f) / tileSize).toInt()
-        val startTY = ((player.center.y - 200f) / tileSize).toInt()
-        hands.add(BossHand(startTX, startTY, world))
-    }
-
     private fun spawnLavaTile() {
         val tileSize = WorldConstants.TILE_SIZE
         val bossTX = (center.x / tileSize).toInt()
@@ -341,16 +348,18 @@ class Boss(
         }
     }
 
+    private fun updateAnimation(deltaTime: Float) {
+        when (animState) {
+            BossAnimState.IDLE -> spriteAnimator.animate(deltaTime, idleFrames)
+            BossAnimState.ATTACK_1 -> spriteAnimator.animate(deltaTime, attack1Frames)
+            BossAnimState.ATTACK_2 -> spriteAnimator.animate(deltaTime, attack2Frames)
+        }
+    }
+
     private fun findFreeSlot(): Int? {
         for (i in shieldActive.indices) {
             if (!shieldActive[i]) return i
         }
         return null
-    }
-
-    companion object {
-        const val SIZE = 32f
-        const val HAND_WIDTH = 18
-        const val HAND_HEIGHT = 16
     }
 }

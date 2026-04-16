@@ -72,27 +72,30 @@ class ParallaxBackground(
             val parallaxOffsetY = camera.position.y * scrollSpeed
 
             val viewWidth = camera.canvasWidth
-            val viewHeight = camera.canvasHeight
+            val viewHeight = camera.actualHeight / camera.scale
             val startChunkX = ((parallaxOffsetX - viewWidth / 2) / backgroundChunkPixelSize).toInt() - 1
             val endChunkX = ((parallaxOffsetX + viewWidth / 2) / backgroundChunkPixelSize).toInt() + 1
             val startChunkY = ((parallaxOffsetY - viewHeight / 2) / backgroundChunkPixelSize).toInt() - 1
             val endChunkY = ((parallaxOffsetY + viewHeight / 2) / backgroundChunkPixelSize).toInt() + 1
             val worldMaxChunkX = (WorldConstants.WORLD_WIDTH_TILES * WorldConstants.TILE_SIZE / backgroundChunkPixelSize)
             val worldMaxChunkY = (WorldConstants.WORLD_HEIGHT_TILES * WorldConstants.TILE_SIZE / backgroundChunkPixelSize)
+            val marginY = (viewHeight - camera.canvasHeight) / 2f
+            val halfCanvasWidth = camera.canvasWidth / 2
+            val screenYBase = camera.canvasHeight / 2 - marginY - parallaxOffsetY
 
             for (chunkY in startChunkY..endChunkY) {
                 if (chunkY < -1 || chunkY > worldMaxChunkY + 1) continue
 
                 for (chunkX in startChunkX..endChunkX) {
-                    if (chunkX < -1 || chunkX > worldMaxChunkX + 1) continue
+                    if (chunkX < 0 || chunkX >= worldMaxChunkX) continue
 
                     val chunkBitmap = generateChunk(chunkX, chunkY)
 
                     val chunkWorldX = chunkX * backgroundChunkPixelSize.toFloat()
                     val chunkWorldY = chunkY * backgroundChunkPixelSize.toFloat()
 
-                    val screenX = chunkWorldX - parallaxOffsetX + viewWidth / 2
-                    val screenY = chunkWorldY - parallaxOffsetY + viewHeight / 2
+                    val screenX = chunkWorldX - parallaxOffsetX + halfCanvasWidth
+                    val screenY = chunkWorldY + screenYBase
 
                     drawImage(
                         image = chunkBitmap,

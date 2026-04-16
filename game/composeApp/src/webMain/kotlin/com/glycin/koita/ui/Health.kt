@@ -4,11 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.heart
@@ -18,11 +16,10 @@ import org.jetbrains.compose.resources.painterResource
 fun Health(
     currentHp: Int,
     maxHp: Int,
-    offsetX: Dp,
-    offsetY: Dp,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.offset(x = offsetX, y = offsetY),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         val heartsPerRow = 10

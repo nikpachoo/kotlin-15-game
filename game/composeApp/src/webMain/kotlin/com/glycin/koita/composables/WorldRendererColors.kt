@@ -19,7 +19,7 @@ internal object WorldRendererColors {
     val SNIPER_BULLET_MIDDLE = Color(0xAAFFEE66)
     val SNIPER_BULLET_CORE = Color(0xFFFFFFCC)
 
-    val BOSS = Color(0xFFCC44FF)
+    val BOSS_EYE_PUPIL = Color(0xFF6600AA)
 
     val LASER_OUTER = Color(0x33FF4444)
     val LASER_MIDDLE = Color(0xAAFF2222)

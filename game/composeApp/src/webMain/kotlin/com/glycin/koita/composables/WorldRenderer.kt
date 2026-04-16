@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -78,10 +79,14 @@ fun WorldRenderer(
     val enemySheets = enemyManager.getDistinctSprites().associateWith { imageResource(it) }
     val shrineSheets = shrineManager.getDistinctSprites().associateWith { imageResource(it) }
     val pickupSheets = pickupManager.getDistinctSprites().associateWith { imageResource(it) }
+    val bossSheet = boss?.let { imageResource(it.spriteAnimator.sprite) }
 
     val textMeasurer = rememberTextMeasurer()
-    val orbTitleStyle = TextStyle(fontFamily = pixelFont(), fontSize = 14.sp, color = Color.White)
-    val orbDescStyle = TextStyle(fontFamily = pixelFont(), fontSize = 10.sp, color = Color.LightGray, textAlign = TextAlign.Center)
+    val density = LocalDensity.current.density
+    val titleFontSize = (14f / density).sp
+    val descFontSize = (10f / density).sp
+    val orbTitleStyle = TextStyle(fontFamily = pixelFont(), fontSize = titleFontSize, color = Color.White)
+    val orbDescStyle = TextStyle(fontFamily = pixelFont(), fontSize = descFontSize, color = Color.LightGray, textAlign = TextAlign.Center)
     val outlineStyle = TextStyle(fontFamily = pixelFont(), color = Color.Black)
 
     Canvas(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -275,7 +280,7 @@ fun WorldRenderer(
             val titleX = orbCenterX - titleResult.size.width / 2f
             val titleY = screenPos.y - titleResult.size.height - 6f
 
-            val titleOutline = textMeasurer.measure(orb.unlock.name, outlineStyle.copy(fontSize = 14.sp))
+            val titleOutline = textMeasurer.measure(orb.unlock.name, outlineStyle.copy(fontSize = titleFontSize))
             for ((dx, dy) in listOf(-1f to 0f, 1f to 0f, 0f to -1f, 0f to 1f)) {
                 drawText(titleOutline, topLeft = Offset(titleX + dx, titleY + dy))
             }
@@ -292,12 +297,12 @@ fun WorldRenderer(
                 size = Size(orb.size, orb.size),
             )
 
-            val descConstraints = Constraints(maxWidth = 200)
+            val descConstraints = Constraints(maxWidth = (200f / density).toInt())
             val descResult = textMeasurer.measure(orb.unlock.description, orbDescStyle, constraints = descConstraints)
             val descX = orbCenterX - descResult.size.width / 2f
             val descY = screenPos.y + orb.size + 6f
 
-            val descOutline = textMeasurer.measure(orb.unlock.description, outlineStyle.copy(fontSize = 10.sp, textAlign = TextAlign.Center), constraints = descConstraints)
+            val descOutline = textMeasurer.measure(orb.unlock.description, outlineStyle.copy(fontSize = descFontSize, textAlign = TextAlign.Center), constraints = descConstraints)
             for ((dx, dy) in listOf(-1f to 0f, 1f to 0f, 0f to -1f, 0f to 1f)) {
                 drawText(descOutline, topLeft = Offset(descX + dx, descY + dy))
             }
@@ -450,10 +455,31 @@ fun WorldRenderer(
                 )
             }
 
+            val sa = boss.spriteAnimator
+            val drawOffsetX = (boss.width - boss.drawWidth) / 2f
+            val drawOffsetY = (boss.height - boss.drawHeight) / 2f
+            val drawX = bossScreenPos.x + drawOffsetX
+            val drawY = bossScreenPos.y + drawOffsetY
+
+            if (bossSheet != null) {
+                drawImage(
+                    image = bossSheet,
+                    srcOffset = IntOffset(sa.srcX, sa.srcY),
+                    srcSize = IntSize(sa.frameWidth, sa.frameHeight),
+                    dstOffset = IntOffset(drawX.toInt(), drawY.toInt()),
+                    dstSize = IntSize(boss.drawWidth.toInt(), boss.drawHeight.toInt()),
+                    filterQuality = FilterQuality.None,
+                )
+            }
+
+            val eye = boss.eye
+            val irisCX = bossScreenPos.x + boss.width / 2f + eye.irisOffset.x
+            val irisCY = bossScreenPos.y + boss.height / 2f + eye.irisOffset.y
+            val r = eye.irisRadius
             drawOval(
-                color = WorldRendererColors.BOSS,
-                topLeft = bossScreenPos,
-                size = Size(boss.drawWidth, boss.drawHeight),
+                color = WorldRendererColors.BOSS_EYE_PUPIL,
+                topLeft = Offset(irisCX - r, irisCY - r),
+                size = Size(r * 2f, r * 2f),
             )
 
             boss.forEachLaser { sx, sy, ex, ey ->

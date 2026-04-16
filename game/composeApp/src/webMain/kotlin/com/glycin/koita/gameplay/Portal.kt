@@ -41,7 +41,7 @@ class Portal(
         if (!gameState.bossSpawned) {
             bossSpawnTimer += deltaTime
             if (bossSpawnTimer >= 3f) {
-                val bossX = WorldConstants.WORLD_WIDTH_PIXELS / 2f - Boss.SIZE / 2f
+                val bossX = WorldConstants.WORLD_WIDTH_PIXELS / 2f - 64f / 2f
                 val bossY = player.position.y - 50f * WorldConstants.TILE_SIZE
                 boss = Boss(
                     position = Vec2(bossX, bossY),

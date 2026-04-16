@@ -291,7 +291,5 @@ fun GameScreen(gameState: GameState) {
                 }
             }
         }
-
-        // TODO: Maybe add a launchedEffect that cleans up collectible and particle system arrays?
     }
 }
