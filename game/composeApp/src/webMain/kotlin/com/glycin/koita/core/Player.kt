@@ -30,8 +30,8 @@ class Player(
     var position: Vec2,
     var width: Float = 32f,
     var height: Float = 32f,
-    val drawWidth: Float = 64f,
-    val drawHeight: Float = 64f,
+    val drawWidth: Float = 90f,
+    val drawHeight: Float = 90f,
     val spriteFeetRatio: Float = 0.75f, // How far down the sprite frame the feet are. This because there is quite some empty space in the spritesheets
     private val drone: Drone,
     private val gameState: GameState,
