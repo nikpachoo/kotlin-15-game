@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,37 +41,35 @@ fun MainMenu(gameState: GameState) {
         )
     }
 
-    Row(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundBrush),
+        contentAlignment = Alignment.Center,
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxHeight()
-                .width(320.dp)
+                .width(480.dp)
                 .background(MenuColors.SIDEBAR)
-                .padding(horizontal = 32.dp, vertical = 28.dp),
+                .padding(horizontal = 48.dp, vertical = 42.dp),
         ) {
-            KotlinLogo()
+            KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.size(36.dp))
 
             MenuItem("Start") { gameState.currentScreen = Screen.GAME }
             MenuItem("How to Play") { gameState.currentScreen = Screen.HOW_TO_PLAY }
             MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
             MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
         }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(backgroundBrush),
-        )
     }
 }
 
 @Composable
-private fun KotlinLogo() {
+private fun KotlinLogo(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .size(64.dp)
+        modifier = modifier
+            .size(96.dp)
             .drawWithCache {
                 val logoPath = Path().apply {
                     moveTo(0f, 0f)
@@ -96,19 +93,19 @@ private fun MenuItem(text: String, onClick: () -> Unit) {
         modifier = Modifier
             .hoverable(interactionSource)
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (hovered) {
-            Box(modifier = Modifier.size(14.dp).background(Color.Black))
+            Box(modifier = Modifier.size(20.dp).background(Color.Black))
         } else {
-            Spacer(modifier = Modifier.size(14.dp))
+            Spacer(modifier = Modifier.size(20.dp))
         }
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(18.dp))
         Text(
             text = text,
             fontFamily = pixelFont(),
-            fontSize = 22.sp,
+            fontSize = 32.sp,
             color = Color.Black,
         )
     }

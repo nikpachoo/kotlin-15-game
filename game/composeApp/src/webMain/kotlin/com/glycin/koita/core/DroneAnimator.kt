@@ -27,7 +27,7 @@ class DroneAnimator {
         frameHeight = 64,
         columns = 31,
         totalSprites = 31,
-        frameDuration = 0.05f,
+        frameDuration = 0.5f,
     )
 
     val sprite get() = spriteAnimator.sprite
