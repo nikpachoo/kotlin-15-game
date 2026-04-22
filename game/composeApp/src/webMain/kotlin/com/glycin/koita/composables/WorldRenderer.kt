@@ -165,13 +165,29 @@ fun WorldRenderer(
                 dstSize = IntSize(droneSize, droneSize),
                 filterQuality = FilterQuality.None,
             )
-            
+
             // Anchor overlay
             if (isAnchorLocked) {
                 drawRect(
                     color = Color.Gray.copy(alpha = 0.5f),
                     topLeft = pScreenPos,
                     size = Size(width, height),
+                )
+            }
+
+            if (BuildConfig.isDev) {
+                val playerHitboxScreenPos = camera.worldToScreen(position.x, position.y)
+                drawRect(
+                    color = Color.Green,
+                    topLeft = playerHitboxScreenPos,
+                    size = Size(width, height),
+                    style = Stroke(),
+                )
+                drawRect(
+                    color = Color.Magenta,
+                    topLeft = droneScreenPos,
+                    size = Size(droneSize.toFloat(), droneSize.toFloat()),
+                    style = Stroke(),
                 )
             }
 

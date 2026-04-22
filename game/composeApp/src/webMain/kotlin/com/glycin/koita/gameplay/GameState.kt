@@ -20,6 +20,8 @@ class GameState {
     var collectedStones by mutableStateOf(0)
     var elapsedTimeSeconds by mutableStateOf(0)
     var selectedHotkeyIndex by mutableStateOf(0)
+    var selectedBlockIndex by mutableStateOf(0)
+    var selectedWeaponIndex by mutableStateOf(0)
     var isPaused by mutableStateOf(false)
     var musicVolume by mutableStateOf(0.25f)
     var sfxVolume by mutableStateOf(1f)
