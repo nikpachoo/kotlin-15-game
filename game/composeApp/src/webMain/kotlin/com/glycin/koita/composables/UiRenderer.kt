@@ -22,6 +22,8 @@ import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.modes.AttackWeapon
+import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.Carousel
@@ -33,7 +35,6 @@ import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
 import com.glycin.koita.ui.StatsPanel
-import com.glycin.koita.ui.TurretChargeIndicator
 import com.glycin.koita.ui.VirtualDpad
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.drone_sheet
@@ -43,20 +44,6 @@ private val HOTKEY_FRAMES = intArrayOf(
     DroneAnimator.ATTACK_ICON_FRAME,
     DroneAnimator.BUILD_ICON_FRAME,
 )
-
-private fun availableBlocks(gameState: GameState): List<String> = buildList {
-    add("Stone")
-    if (gameState.explosiveBlocks) add("Dynamite")
-    if (gameState.bouncyBlocks) add("Bouncy")
-}
-
-private fun availableWeapons(gameState: GameState): List<String> = buildList {
-    add("Missile")
-    if (gameState.laserWeapon) add("Laser")
-    if (gameState.rocketLauncher) add("Rocket")
-    if (gameState.superSoaker) add("Soaker")
-    if (gameState.sniperWeapon) add("Sniper")
-}
 
 @Composable
 fun UiRenderer(
@@ -122,9 +109,10 @@ fun UiRenderer(
 
             Carousel(
                 label = "BLOCK",
-                items = availableBlocks(gameState),
-                selectedIndex = gameState.selectedBlockIndex,
-                onSelect = { gameState.selectedBlockIndex = it },
+                items = BuildBlock.availableFor(gameState),
+                selected = gameState.selectedBlock,
+                onSelect = { gameState.selectedBlock = it },
+                labelOf = { it.displayName },
                 input = input,
             )
 
@@ -132,9 +120,10 @@ fun UiRenderer(
 
             Carousel(
                 label = "WEAPON",
-                items = availableWeapons(gameState),
-                selectedIndex = gameState.selectedWeaponIndex,
-                onSelect = { gameState.selectedWeaponIndex = it },
+                items = AttackWeapon.availableFor(gameState),
+                selected = gameState.selectedWeapon,
+                onSelect = { gameState.selectedWeapon = it },
+                labelOf = { it.displayName },
                 input = input,
             )
 
@@ -191,12 +180,6 @@ fun UiRenderer(
 
         PlacementGhost(
             player = player,
-            camera = camera,
-        )
-
-        TurretChargeIndicator(
-            player = player,
-            mouse = input.mouse,
             camera = camera,
         )
 

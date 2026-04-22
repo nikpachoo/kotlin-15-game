@@ -24,17 +24,19 @@ private val DISPLAY_WIDTH = 120.dp
 private val DISPLAY_HEIGHT = 36.dp
 
 @Composable
-fun Carousel(
+fun <T> Carousel(
     label: String,
-    items: List<String>,
-    selectedIndex: Int,
-    onSelect: (Int) -> Unit,
+    items: List<T>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    labelOf: (T) -> String,
     input: Input,
     modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) return
     val size = items.size
-    val current = selectedIndex.coerceIn(0, size - 1)
+    val current = items.indexOf(selected).takeIf { it >= 0 } ?: 0
+    val currentItem = items[current]
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,7 +53,7 @@ fun Carousel(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CarouselArrow(label, isPrev = true, input = input) {
-                onSelect((current - 1 + size) % size)
+                onSelect(items[(current - 1 + size) % size])
             }
             Box(
                 modifier = Modifier
@@ -61,14 +63,14 @@ fun Carousel(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = items[current],
+                    text = labelOf(currentItem),
                     fontFamily = pixelFont(),
                     fontSize = 14.sp,
                     color = HudColors.PANEL_ACCENT,
                 )
             }
             CarouselArrow(label, isPrev = false, input = input) {
-                onSelect((current + 1) % size)
+                onSelect(items[(current + 1) % size])
             }
         }
     }

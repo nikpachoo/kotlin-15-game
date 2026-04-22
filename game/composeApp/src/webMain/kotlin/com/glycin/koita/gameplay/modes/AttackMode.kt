@@ -41,21 +41,21 @@ class AttackMode(
     private var superSoaker: SuperSoaker? = null
     private var sniper: Sniper? = null
 
-    fun getActiveWeapon(): List<Weapon> = when {
-        gameState.sniperWeapon && sniper?.isAlive == true -> listOf(sniper!!)
-        gameState.superSoaker && superSoaker?.isActive == true -> listOf(superSoaker!!)
-        gameState.laserWeapon && laser?.isActive == true -> listOf(laser!!)
-        gameState.rocketLauncher -> rockets
-        else -> missiles
+    fun getActiveWeapon(): List<Weapon> = when (gameState.selectedWeapon) {
+        AttackWeapon.SNIPER -> if (sniper?.isAlive == true) listOf(sniper!!) else emptyList()
+        AttackWeapon.SOAKER -> if (superSoaker?.isActive == true) listOf(superSoaker!!) else emptyList()
+        AttackWeapon.LASER -> if (laser?.isActive == true) listOf(laser!!) else emptyList()
+        AttackWeapon.ROCKET -> rockets
+        AttackWeapon.MISSILE -> missiles
     }
 
     override fun use() {
-        when {
-            gameState.sniperWeapon -> useSniper()
-            gameState.superSoaker -> useSuperSoaker()
-            gameState.laserWeapon -> useLaser()
-            gameState.rocketLauncher -> useRocket()
-            else -> useMissile()
+        when (gameState.selectedWeapon) {
+            AttackWeapon.SNIPER -> useSniper()
+            AttackWeapon.SOAKER -> useSuperSoaker()
+            AttackWeapon.LASER -> useLaser()
+            AttackWeapon.ROCKET -> useRocket()
+            AttackWeapon.MISSILE -> useMissile()
         }
     }
 

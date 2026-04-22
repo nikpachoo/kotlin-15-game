@@ -80,7 +80,7 @@ class UpgradeRepository(
                     Unlock(
                         id = "turret",
                         name = "Delegation",
-                        description = "Hold to place a turret that shoots enemies.",
+                        description = "Unlocks a turret block that shoots enemies.",
                         onUnlock = { gameState.turretUnlocked = true }
                     ),
                     Unlock(

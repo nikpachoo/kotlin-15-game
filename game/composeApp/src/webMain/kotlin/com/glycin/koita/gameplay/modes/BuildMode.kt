@@ -1,8 +1,5 @@
 package com.glycin.koita.gameplay.modes
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
@@ -32,8 +29,6 @@ class BuildMode(
     override val coolDownMs: Long = 150L
 
     private var swingProgress = 0f
-    private var dynamiteCooldownCount = 0 // Amount of blocks placed
-    private var holdTimer = 0f
     private var waitForRelease = true
 
     private val swingDuration = 0.2f
@@ -47,8 +42,6 @@ class BuildMode(
         private set
     var isGhostValid: Boolean = false
         private set
-    var holdProgress by mutableStateOf(0f)
-        private set
 
     fun onEquipped() {
         waitForRelease = true
@@ -59,7 +52,6 @@ class BuildMode(
         if (!canUse()) return
         swingProgress = 0f
         used()
-        if (isTurretReady()) return
         placeBlock()
     }
 
@@ -69,27 +61,14 @@ class BuildMode(
             waitForRelease = false
         }
 
-        if (gameState.turretUnlocked && mouse.isLeftPressed) {
-            holdTimer += deltaTime
-            holdProgress = (holdTimer / TURRET_HOLD_TIME).coerceAtMost(1f)
-        } else {
-            resetTurretHold()
-        }
-
         val baseRotation = pivotPoint.angleTo(mouse.worldPosition) + 90f
 
         val isMouseOnRight = mouse.worldPosition.x >= pivotPoint.x
         val swingDirection = if (isMouseOnRight) 1f else -1f
 
-        val previousProgress = swingProgress
-
         if (swingProgress < 1f) {
             swingProgress += deltaTime / swingDuration
             swingProgress = swingProgress.coerceAtMost(1f)
-
-            if (previousProgress < 0.7f && swingProgress >= 0.7f) {
-                onSwingImpact()
-            }
 
             val easedProgress = sin(swingProgress * PI.toFloat() / 2f)
             val swingOffset = (easedProgress - 0.5f) * swingAngle * swingDirection
@@ -102,30 +81,15 @@ class BuildMode(
     }
 
     private fun placeBlock() {
-        if (!isGhostValid || ghostTileX == null || ghostTileY == null) return
+        if (!isGhostValid) return
+        val tileX = ghostTileX ?: return
+        val tileY = ghostTileY ?: return
 
-        val selectedTile = when {
-            gameState.explosiveBlocks && dynamiteCooldownCount == 0 -> Tile.DYNAMITE
-            gameState.bouncyBlocks -> Tile.BOUNCY
-            else -> Tile.STONE
+        val selected = gameState.selectedBlock
+        writeTiles(selected.tile, tileX, tileY)
+        if (selected == BuildBlock.TURRET) {
+            turretManager.addTurret(tileX, tileY)
         }
-        writeTiles(selectedTile, ghostTileX!!, ghostTileY!!)
-
-        if (gameState.explosiveBlocks) {
-            dynamiteCooldownCount = (dynamiteCooldownCount + 1) % DYNAMITE_COOLDOWN_BLOCKS
-        }
-        gameState.collectedStones -= BLOCK_COST
-    }
-
-    // TODO: Turret placement is coupled to BuildMode's swing/hold cadence. Move it to its own input/action
-    //  (e.g. a modifier key or separate slot) so drag-to-build doesn't accidentally drop a turret after 1s of holding.
-    private fun onSwingImpact() {
-        if (!isGhostValid || ghostTileX == null || ghostTileY == null) return
-        if (!isTurretReady()) return
-
-        writeTiles(Tile.KOTLINIUM, ghostTileX!!, ghostTileY!!)
-        turretManager.addTurret(ghostTileX!!, ghostTileY!!)
-        resetTurretHold()
         gameState.collectedStones -= BLOCK_COST
     }
 
@@ -144,9 +108,6 @@ class BuildMode(
 
     private fun isCornerTile(dx: Int, dy: Int): Boolean =
         (dx == 0 || dx == tileSize - 1) && (dy == 0 || dy == tileSize - 1)
-
-    private fun isTurretReady(): Boolean =
-        gameState.turretUnlocked && holdTimer >= TURRET_HOLD_TIME
 
     private fun updateGhostTile() {
         val cursorTileX = (mouse.worldPosition.x / WorldConstants.TILE_SIZE).toInt()
@@ -198,14 +159,7 @@ class BuildMode(
         isGhostValid = true
     }
 
-    private fun resetTurretHold() {
-        holdTimer = 0f
-        holdProgress = 0f
-    }
-
     companion object {
-        private const val TURRET_HOLD_TIME = 1.0f
         private const val BLOCK_COST = 25
-        private const val DYNAMITE_COOLDOWN_BLOCKS = 6
     }
 }
