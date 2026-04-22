@@ -75,12 +75,24 @@ class Player(
 
     private var ultimateVelocityOverride: Vec2? = null
 
+    private var pullTimer = 0f
+    private var pullVelocityY = 0f
+
     fun applyUltimateVelocity(velocity: Vec2) {
         ultimateVelocityOverride = velocity
     }
 
     fun clearUltimateVelocity() {
         ultimateVelocityOverride = null
+    }
+
+    fun applyDigBoost(impactPoint: Vec2) {
+        if (isAnchorLocked || isGrounded || isDashing || isGroundPounding) return
+        if (impactPoint.y >= center.y) return
+
+        val direction = (impactPoint - center).normalized()
+        pullVelocityY = direction.y * PlayerSettings.MINING_BOOST_FORCE
+        pullTimer = PlayerSettings.MINING_PULL_DURATION
     }
 
     private var velocity = Vec2(0f, 0f)
@@ -117,6 +129,10 @@ class Player(
     private val attackDuration = 0.3f
 
     private val resourceShield = ResourceShield(this, gameState, world)
+
+    init {
+        drone.getMiningMode()?.onCollectHit = ::applyDigBoost
+    }
 
     fun update(deltaTime: Float) {
         center = Vec2(position.x + width / 2f, position.y + height / 2f) // Small optimization, calculate the center once each frame
@@ -265,7 +281,10 @@ class Player(
                 }
             }
 
-            if (isGroundPounding) {
+            if (pullTimer > 0f) {
+                pullTimer -= deltaTime
+                velocity = Vec2(velocity.x, pullVelocityY)
+            } else if (isGroundPounding) {
                 velocity = Vec2(0f, PlayerSettings.GROUND_POUND_SPEED)
             } else if (hoverEngaged && keyMap[Key.Spacebar] == true && hoverFuel > 0f) {
                 velocity = Vec2(velocity.x, (velocity.y + PhysicsConstants.GRAVITY * PlayerSettings.HOVER_GRAVITY_FACTOR * deltaTime).coerceAtMost(PlayerSettings.HOVER_MAX_FALL_SPEED))
@@ -382,11 +401,13 @@ class Player(
             SoundManager.playOneShot(Sounds.JUMP)
             isGrounded = false
             hasDoubleJumped = false
+            pullTimer = 0f
             return true
         } else if (gameState.canDoubleJump && !hasDoubleJumped) {
             velocity = Vec2(0f, -PlayerSettings.BASE_JUMP_FORCE * swimMultiplier * giantMultiplier)
             SoundManager.playOneShot(Sounds.JUMP)
             hasDoubleJumped = true
+            pullTimer = 0f
             return true
         }
 
@@ -412,6 +433,7 @@ class Player(
             && jetpackFuel > 0f
         ) {
             jetpackEngaged = true
+            pullTimer = 0f
         }
 
         if (jetpackEngaged && spaceDown && jetpackFuel > 0f) {
@@ -451,6 +473,7 @@ class Player(
             dashTimer = PlayerSettings.DASH_DURATION
             dashCooldownTimer = PlayerSettings.DASH_COOLDOWN
             velocity = Vec2.zero
+            pullTimer = 0f
         }
     }
 
@@ -527,6 +550,7 @@ class Player(
             hoverEngaged = false
             jetpackEngaged = false
             velocity = Vec2(0f, PlayerSettings.GROUND_POUND_SPEED)
+            pullTimer = 0f
         }
     }
 

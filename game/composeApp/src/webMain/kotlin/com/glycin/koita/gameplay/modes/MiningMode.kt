@@ -33,6 +33,8 @@ class MiningMode(
     private val swingAngle = 120f
     private val baseMiningRadius = 50f
 
+    var onCollectHit: ((impactPoint: Vec2) -> Unit)? = null
+
     override fun use() {
         if(!canUse()) return
         swingProgress = 0f
@@ -81,6 +83,7 @@ class MiningMode(
 
         if(hitSolid) {
             SoundManager.playOneShot(Sounds.DIG)
+            onCollectHit?.invoke(impactPoint)
         }
     }
 }

@@ -29,6 +29,9 @@ object PlayerSettings {
     // Jump
     const val JUMP_PAD_MULTIPLIER = 3f
 
+    const val MINING_BOOST_FORCE = 350f
+    const val MINING_PULL_DURATION = 0.15f
+
     // Anchor (Immutability)
     const val ANCHOR_EXIT_DELAY = 0.3f
 

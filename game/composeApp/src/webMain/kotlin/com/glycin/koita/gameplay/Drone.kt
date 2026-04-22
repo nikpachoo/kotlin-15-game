@@ -68,4 +68,6 @@ class Drone(
     fun getAttackMode(): AttackMode? = modes.filterIsInstance<AttackMode>().firstOrNull()
 
     fun getBuildMode(): BuildMode? = modes.filterIsInstance<BuildMode>().firstOrNull()
+
+    fun getMiningMode(): MiningMode? = modes.filterIsInstance<MiningMode>().firstOrNull()
 }
