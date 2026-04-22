@@ -17,7 +17,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.core.Camera
-import com.glycin.koita.core.Mouse
+import com.glycin.koita.core.DroneAnimator
+import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
@@ -30,15 +31,16 @@ import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
 import com.glycin.koita.ui.TurretChargeIndicator
-import com.glycin.koita.ui.WasdIndicator
+import com.glycin.koita.ui.VirtualDpad
 import com.glycin.koita.ui.pixelFont
 import koita.composeapp.generated.resources.Res
-import koita.composeapp.generated.resources.icon_hammer_selected
-import koita.composeapp.generated.resources.icon_hammer_unselected
-import koita.composeapp.generated.resources.icon_pickaxe_selected
-import koita.composeapp.generated.resources.icon_pickaxe_unselected
-import koita.composeapp.generated.resources.icon_staff_selected
-import koita.composeapp.generated.resources.icon_staff_unselected
+import koita.composeapp.generated.resources.drone_sheet
+
+private val HOTKEY_FRAMES = intArrayOf(
+    DroneAnimator.MINING_ICON_FRAME,
+    DroneAnimator.ATTACK_ICON_FRAME,
+    DroneAnimator.BUILD_ICON_FRAME,
+)
 
 @Composable
 fun UiRenderer(
@@ -46,7 +48,7 @@ fun UiRenderer(
     player: Player,
     camera: Camera,
     enemyManager: EnemyManager,
-    mouse: Mouse,
+    input: Input,
 ) {
     val panelWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
 
@@ -64,19 +66,19 @@ fun UiRenderer(
                 maxHp = player.maxHealth,
             )
 
-            Spacer(modifier = Modifier.weight(2f))
+            Spacer(modifier = Modifier.weight(5f))
 
-            WasdIndicator()
+            VirtualDpad(input = input)
 
             Spacer(modifier = Modifier.weight(1f))
 
             HotkeyBar(
                 selectedIndex = gameState.selectedHotkeyIndex,
-                items = listOf(
-                    Res.drawable.icon_pickaxe_unselected to Res.drawable.icon_pickaxe_selected,
-                    Res.drawable.icon_staff_unselected to Res.drawable.icon_staff_selected,
-                    Res.drawable.icon_hammer_unselected to Res.drawable.icon_hammer_selected,
-                ),
+                spriteSheet = Res.drawable.drone_sheet,
+                frameIndices = HOTKEY_FRAMES,
+                frameSize = DroneAnimator.FRAME_SIZE,
+                input = input,
+                onSelect = { player.equip(it) },
             )
         }
 
@@ -170,7 +172,7 @@ fun UiRenderer(
 
         TurretChargeIndicator(
             player = player,
-            mouse = mouse,
+            mouse = input.mouse,
             camera = camera,
         )
 

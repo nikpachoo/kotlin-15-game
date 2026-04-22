@@ -16,7 +16,7 @@ import com.glycin.koita.BuildConfig
 import com.glycin.koita.audio.Music
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.Camera
-import com.glycin.koita.core.Mouse
+import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.FogOfWar
@@ -45,8 +45,9 @@ fun GameScreen(gameState: GameState) {
     val startWorldPosX = (WorldConstants.WORLD_WIDTH_TILES * WorldConstants.TILE_SIZE) / 2f
     val startWorldPosY = (WorldConstants.WORLD_HEIGHT_TILES * WorldConstants.TILE_SIZE) - (WorldConstants.CHUNK_PIXEL_HEIGHT * 4f)
     val camera = remember { Camera(Vec2(startWorldPosX, startWorldPosY)) }
-    val keysPressed = remember { mutableStateMapOf<Key, Boolean>() }
-    val mouse = remember { Mouse() }
+    val input = remember { Input() }
+    val keysPressed = input.keyMap
+    val mouse = input.mouse
     var frameCount by remember { mutableLongStateOf(0) }
 
     val wg = remember { WorldGenerator() }
@@ -106,8 +107,7 @@ fun GameScreen(gameState: GameState) {
             particleSystem = particleSystem,
             enemyManager = enemyManager,
             world = world,
-            keyMap = keysPressed,
-            mouse = mouse,
+            input = input,
         )
     }
 
@@ -186,8 +186,8 @@ fun GameScreen(gameState: GameState) {
                     val virtualPos = camera.actualToVirtual(rawPos.x, rawPos.y)
                     mouse.updatePosition(virtualPos, camera.screenToWorld(virtualPos.x, virtualPos.y))
                     mouse.updateButtons(
-                        leftPressed = event.buttons.isPrimaryPressed,
-                        rightPressed = event.buttons.isSecondaryPressed
+                        leftPressed = event.buttons.isPrimaryPressed && !input.uiCapturing,
+                        rightPressed = event.buttons.isSecondaryPressed && !input.uiCapturing,
                     )
                 }
             }
@@ -204,18 +204,9 @@ fun GameScreen(gameState: GameState) {
                         Key.Escape -> {
                             gameState.isPaused = !gameState.isPaused
                         }
-                        Key.One -> {
-                            player.equip(0)
-                            gameState.selectedHotkeyIndex = 0
-                        }
-                        Key.Two -> {
-                            player.equip(1)
-                            gameState.selectedHotkeyIndex = 1
-                        }
-                        Key.Three ->  {
-                            player.equip(2)
-                            gameState.selectedHotkeyIndex = 2
-                        }
+                        Key.One -> player.equip(0)
+                        Key.Two -> player.equip(1)
+                        Key.Three -> player.equip(2)
                         Key.R -> {
                             ultimateManager.activateOrReactivate(player)
                         }
@@ -275,7 +266,7 @@ fun GameScreen(gameState: GameState) {
             portal.boss,
         )
 
-        UiRenderer(gameState, player, camera, enemyManager, mouse)
+        UiRenderer(gameState, player, camera, enemyManager, input)
 
         if (BuildConfig.isDev) {
             FpsCounter()

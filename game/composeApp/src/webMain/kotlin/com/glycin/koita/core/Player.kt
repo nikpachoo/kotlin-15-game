@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.input.key.Key
 import com.glycin.koita.BuildConfig
 import com.glycin.koita.audio.SoundManager
@@ -39,9 +38,11 @@ class Player(
     private val particleSystem: ParticleSystem,
     private val enemyManager: EnemyManager,
     private val world: World,
-    private val keyMap: SnapshotStateMap<Key, Boolean>,
-    private val mouse: Mouse,
+    private val input: Input,
 ) {
+    private val keyMap = input.keyMap
+    private val mouse = input.mouse
+
     private var isGrounded = false
     private var hasDoubleJumped = false
     private var jumpPressed = false
@@ -179,8 +180,9 @@ class Player(
 
     fun equip(weaponIndex: Int) {
         currentWeapon = drone.modes[weaponIndex]
+        gameState.selectedHotkeyIndex = weaponIndex
         droneState = getDroneIdleState()
-        when(val weapon = currentWeapon) {
+        when (val weapon = currentWeapon) {
             is BuildMode -> weapon.onEquipped()
         }
     }
