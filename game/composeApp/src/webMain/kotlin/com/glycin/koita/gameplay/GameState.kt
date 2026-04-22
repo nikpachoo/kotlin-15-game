@@ -52,6 +52,7 @@ class GameState {
     // Ultimates
     var ultimateAvailable by mutableStateOf<String?>(null)
     var ultimateActive by mutableStateOf(false)
+    var ultimateTriggered = false
 
     // Void
     var passedPortal by mutableStateOf(false)

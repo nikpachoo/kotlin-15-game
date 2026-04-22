@@ -3,25 +3,26 @@ package com.glycin.koita.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.DroneAnimator
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.CollectibleCounter
 import com.glycin.koita.ui.EnemyHealthBars
@@ -30,9 +31,9 @@ import com.glycin.koita.ui.HotkeyBar
 import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
+import com.glycin.koita.ui.StatsPanel
 import com.glycin.koita.ui.TurretChargeIndicator
 import com.glycin.koita.ui.VirtualDpad
-import com.glycin.koita.ui.pixelFont
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.drone_sheet
 
@@ -91,17 +92,9 @@ fun UiRenderer(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "${gameState.score}",
-                fontFamily = pixelFont(),
-                fontSize = 18.sp,
-                color = Color.White,
-            )
-            Text(
-                text = formatTime(gameState.elapsedTimeSeconds),
-                fontFamily = pixelFont(),
-                fontSize = 12.sp,
-                color = Color.LightGray,
+            StatsPanel(
+                score = gameState.score,
+                elapsedSeconds = gameState.elapsedTimeSeconds,
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -110,33 +103,29 @@ fun UiRenderer(
                 collectableCount = gameState.collectedStones,
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(5f))
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                val weaponName = when (gameState.selectedHotkeyIndex) {
-                    0 -> "Pickaxe"
-                    1 -> "Staff"
-                    2 -> "Hammer"
-                    else -> ""
-                }
-                Text(
-                    text = weaponName,
-                    fontFamily = pixelFont(),
-                    fontSize = 12.sp,
-                    color = Color.White,
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ActionButton(
+                    label = "Jump",
+                    keyHint = "Space",
+                    key = Key.Spacebar,
+                    input = input,
                 )
-                val ultimateText = gameState.ultimateAvailable
-                if (ultimateText != null) {
-                    Text(
-                        text = "R: $ultimateText",
-                        fontFamily = pixelFont(),
-                        fontSize = 10.sp,
-                        color = Color(0xFFCC44FF),
-                    )
-                }
+                ActionButton(
+                    label = "Heal",
+                    keyHint = "E",
+                    key = Key.E,
+                    input = input,
+                )
+                ActionButton(
+                    label = "Ult",
+                    keyHint = "R",
+                    key = Key.R,
+                    input = input,
+                    enabled = gameState.ultimateAvailable != null,
+                    onTap = { gameState.ultimateTriggered = true },
+                )
             }
         }
 
@@ -194,12 +183,4 @@ fun UiRenderer(
             PauseMenu(gameState)
         }
     }
-}
-
-private fun formatTime(seconds: Int): String {
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    val minutesStr = if (minutes < 10) "0$minutes" else "$minutes"
-    val secsStr = if (secs < 10) "0$secs" else "$secs"
-    return "$minutesStr:$secsStr"
 }

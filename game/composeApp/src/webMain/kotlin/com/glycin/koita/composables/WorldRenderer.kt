@@ -135,7 +135,7 @@ fun WorldRenderer(
             val scaledDrawWidth = (drawWidth * giantScale).toInt()
             val scaledDrawHeight = (drawHeight * giantScale).toInt()
             val offsetX = (drawWidth * giantScale - width) / 2f
-            val offsetY = (drawHeight - height) / 2f + (drawHeight * spriteFeetRatio * (giantScale - 1f))
+            val offsetY = drawHeight * spriteFeetRatio - height + (drawHeight * spriteFeetRatio * (giantScale - 1f))
             val pScreenPos = camera.worldToScreen(position.x - offsetX, position.y - offsetY)
             val scaleX = if(facing == PlayerFacing.RIGHT) 1f else -1f
 

@@ -207,9 +207,7 @@ fun GameScreen(gameState: GameState) {
                         Key.One -> player.equip(0)
                         Key.Two -> player.equip(1)
                         Key.Three -> player.equip(2)
-                        Key.R -> {
-                            ultimateManager.activateOrReactivate(player)
-                        }
+                        Key.R -> gameState.ultimateTriggered = true
                         Key.B -> {
                             if (BuildConfig.isDev) {
                                 player.position = Vec2(player.position.x, collisionDetector.portalY + collisionDetector.portalHeight + 16f)
@@ -236,6 +234,11 @@ fun GameScreen(gameState: GameState) {
                 turretManager.update(floatDeltaTime)
                 ultimateManager.update(floatDeltaTime, player)
                 pickupManager.update(floatDeltaTime, player)
+
+                if (gameState.ultimateTriggered) {
+                    ultimateManager.activateOrReactivate(player)
+                    gameState.ultimateTriggered = false
+                }
 
                 if (mouse.isLeftPressed) {
                     player.useWeapon()
