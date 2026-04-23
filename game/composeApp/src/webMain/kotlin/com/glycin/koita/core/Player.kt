@@ -1,5 +1,6 @@
 package com.glycin.koita.core
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,7 @@ class Player(
 
     private var isGroundPounding = false
     private var groundPoundCooldownTimer = 0f
+    private var healCooldownTimer by mutableStateOf(0f)
 
     private var lavaDamageTimer = 0f
 
@@ -158,6 +160,9 @@ class Player(
                 }
             }
         }
+        if (healCooldownTimer > 0f) {
+            healCooldownTimer = (healCooldownTimer - deltaTime).coerceAtLeast(0f)
+        }
     }
 
     fun useWeapon() {
@@ -193,6 +198,20 @@ class Player(
         health = (health - amount).coerceAtLeast(0)
         state = PlayerState.HURT
         droneState = getDroneIdleState()
+    }
+
+    val canHeal: Boolean by derivedStateOf {
+        healCooldownTimer <= 0f &&
+            gameState.collectedRich >= gameState.nextHealCost &&
+            health < maxHealth
+    }
+
+    fun heal() {
+        if (!canHeal) return
+        gameState.collectedRich -= gameState.nextHealCost
+        health = (health + 1).coerceAtMost(maxHealth)
+        healCooldownTimer = PlayerSettings.HEAL_COOLDOWN_SECONDS
+        gameState.nextHealCost *= 2
     }
 
     // TODO: im rechecking the neighboroing tiles multiple times here, maybe check them once for each frame and memoize the result

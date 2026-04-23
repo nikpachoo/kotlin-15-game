@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,13 +21,15 @@ fun HudButton(
     input: Input,
     key: Any = Unit,
     modifier: Modifier = Modifier,
+    fillWidth: Boolean = false,
     onPressChange: ((Boolean) -> Unit)? = null,
     onTap: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val sizing = if (fillWidth) Modifier.fillMaxWidth().height(size) else Modifier.size(size)
     Box(
         modifier = modifier
-            .size(size)
+            .then(sizing)
             .background(if (active) HudColors.BUTTON_ACTIVE else HudColors.BUTTON_IDLE)
             .border(2.dp, HudColors.BUTTON_BORDER)
             .uiPressable(

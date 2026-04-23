@@ -2,6 +2,7 @@ package com.glycin.koita.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,11 +25,13 @@ fun ActionButton(
     input: Input,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    fillWidth: Boolean = false,
     onTap: (() -> Unit)? = null,
 ) {
     val pressed = input.keyMap[key] == true
+    val columnModifier = if (fillWidth) modifier.fillMaxWidth() else modifier
     Column(
-        modifier = modifier.alpha(if (enabled) 1f else DISABLED_ALPHA),
+        modifier = columnModifier.alpha(if (enabled) 1f else DISABLED_ALPHA),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -43,6 +46,7 @@ fun ActionButton(
             active = enabled && pressed,
             input = input,
             key = key,
+            fillWidth = fillWidth,
             onPressChange = if (enabled && onTap == null) {
                 { down -> input.keyMap[key] = down }
             } else null,

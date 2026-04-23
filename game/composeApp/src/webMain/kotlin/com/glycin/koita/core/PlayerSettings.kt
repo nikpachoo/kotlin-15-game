@@ -45,4 +45,8 @@ object PlayerSettings {
     const val SUBMERGED_SPEED_MULTIPLIER = 0.5f
     const val SUBMERGED_GRAVITY_MULTIPLIER = 0.25f
     const val SUBMERGED_JUMP_MULTIPLIER = 0.5f
+
+    // Heal
+    const val HEAL_COST = 100
+    const val HEAL_COOLDOWN_SECONDS = 2f
 }

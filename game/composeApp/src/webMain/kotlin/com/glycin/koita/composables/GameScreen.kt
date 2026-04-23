@@ -208,6 +208,7 @@ fun GameScreen(gameState: GameState) {
                         Key.Two -> player.equip(1)
                         Key.Three -> player.equip(2)
                         Key.R -> gameState.ultimateTriggered = true
+                        Key.E -> player.heal()
                         Key.B -> {
                             if (BuildConfig.isDev) {
                                 player.position = Vec2(player.position.x, collisionDetector.portalY + collisionDetector.portalHeight + 16f)

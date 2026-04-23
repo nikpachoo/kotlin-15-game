@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
 
@@ -48,6 +49,8 @@ class GameState {
     var visionFallOfMultiplier = 1.0f
     
     var pickupNotification by mutableStateOf<String?>(null)
+
+    var nextHealCost by mutableStateOf(PlayerSettings.HEAL_COST)
 
     // Weapons
     var laserWeapon = false

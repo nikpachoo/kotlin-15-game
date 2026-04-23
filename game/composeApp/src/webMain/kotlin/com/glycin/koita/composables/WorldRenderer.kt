@@ -156,12 +156,16 @@ fun WorldRenderer(
 
             val droneScreenPos = camera.worldToScreen(dronePosition.x, dronePosition.y)
             val droneSize = 32
+            val droneHalf = droneSize / 2f
 
             drawImage(
                 image = droneSheet,
                 srcOffset = IntOffset(droneAnimator.srcX, droneAnimator.srcY),
                 srcSize = IntSize(droneAnimator.frameWidth, droneAnimator.frameHeight),
-                dstOffset = IntOffset(droneScreenPos.x.toInt(), droneScreenPos.y.toInt()),
+                dstOffset = IntOffset(
+                    (droneScreenPos.x - droneHalf).toInt(),
+                    (droneScreenPos.y - droneHalf).toInt(),
+                ),
                 dstSize = IntSize(droneSize, droneSize),
                 filterQuality = FilterQuality.None,
             )

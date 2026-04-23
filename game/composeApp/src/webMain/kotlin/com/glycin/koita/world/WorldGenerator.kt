@@ -115,6 +115,33 @@ class WorldGenerator(
         }
     }
 
+    private inline fun forEachEllipseTile(
+        cx: Int,
+        cy: Int,
+        rx: Int,
+        ry: Int,
+        margin: Int = 0,
+        action: (tx: Int, ty: Int, dx: Int, dy: Int, inside: Boolean) -> Unit,
+    ) {
+        val rxF = rx.toFloat()
+        val ryF = ry.toFloat()
+        for (dy in -ry - margin..ry + margin) {
+            val ny = dy / ryF
+            val nySq = ny * ny
+            for (dx in -rx - margin..rx + margin) {
+                val tx = cx + dx
+                val ty = cy + dy
+                if (!isValidTile(tx, ty)) continue
+                val nx = dx / rxF
+                val inside = nx * nx + nySq <= 1f
+                action(tx, ty, dx, dy, inside)
+            }
+        }
+    }
+
+    private fun depthPercent(tileY: Int): Float =
+        1f - (tileY.toFloat() / WorldConstants.WORLD_HEIGHT_TILES)
+
     fun spawnShrines(
         world: World,
         shrineManager: ShrineManager,
@@ -166,16 +193,19 @@ class WorldGenerator(
                 if (Vec2.distance(worldPos, spawnPosition) < minDistanceFromSpawn) continue
                 if (placedPositions.any { Vec2.distance(worldPos, it) < minDistanceBetweenShrines }) continue
 
-                for (dy in -carvePadding until shrineHeightTiles + carvePadding) {
-                    for (dx in -carvePadding until shrineWidthTiles + carvePadding) {
-                        val tileX = x + dx
-                        val tileY = y + dy
-                        if (isValidTile(tileX, tileY)) {
-                            val tile = world[tileX, tileY]
-                            if (!tile.isIndestructible) {
-                                world[tileX, tileY] = Tile.AIR
-                            }
-                        }
+                val centerX = x + shrineWidthTiles / 2
+                val centerY = y + shrineHeightTiles / 2
+                val radiusX = shrineWidthTiles / 2 + carvePadding
+                val radiusY = shrineHeightTiles / 2 + carvePadding
+                val shrineBottomY = y + shrineHeightTiles
+
+                forEachEllipseTile(centerX, centerY, radiusX, radiusY) { tx, ty, _, _, inside ->
+                    if (!inside) return@forEachEllipseTile
+                    if (world[tx, ty].isIndestructible) return@forEachEllipseTile
+                    world[tx, ty] = if (ty < shrineBottomY) {
+                        Tile.AIR
+                    } else {
+                        getTileForDepth(depthPercent(ty), tx, ty)
                     }
                 }
 
@@ -247,10 +277,13 @@ class WorldGenerator(
                 if (Vec2.distance(worldPos, spawnPosition) < minDistanceFromSpawn) continue
                 if (placedPositions.any { Vec2.distance(worldPos, it) < minDistanceBetweenPickups }) continue
 
-                for (dy in 0 until pickupTiles) {
-                    for (dx in 0 until pickupTiles) {
-                        world[x + dx, y + dy] = Tile.AIR
-                    }
+                val centerX = x + pickupTiles / 2
+                val centerY = y + pickupTiles / 2
+
+                forEachEllipseTile(centerX, centerY, pickupTiles, pickupTiles) { tx, ty, _, _, inside ->
+                    if (!inside) return@forEachEllipseTile
+                    if (world[tx, ty].isIndestructible) return@forEachEllipseTile
+                    world[tx, ty] = Tile.AIR
                 }
 
                 pickupManager.spawn(worldPos)
@@ -504,22 +537,23 @@ class WorldGenerator(
 
         val caveRadius = 60
         val caveHeight = 70
+        val halfHeight = caveHeight / 2
+        val shellThickness = 2
+        val innerRadius = (caveRadius - shellThickness).toFloat()
+        val innerHalfHeight = (halfHeight - shellThickness).toFloat()
+        val fluidMargin = 3
 
-        for (dy in -caveHeight/2 .. caveHeight/2) {
-            for (dx in -caveRadius .. caveRadius) {
-                val worldX = centerTileX + dx
-                val worldY = centerTileY + dy
-
-                if (worldX < 0 || worldX >= WorldConstants.WORLD_WIDTH_TILES ||
-                    worldY < 0 || worldY >= WorldConstants.WORLD_HEIGHT_TILES) continue
-
-                val normalizedX = dx.toFloat() / caveRadius
-                val normalizedY = dy.toFloat() / (caveHeight / 2f)
-
-                if (normalizedX * normalizedX + normalizedY * normalizedY <= 1.0f) {
-                    world[worldX, worldY] = Tile.AIR
-                }
+        forEachEllipseTile(centerTileX, centerTileY, caveRadius, halfHeight, fluidMargin) { tx, ty, dx, dy, inOuter ->
+            val tile = world[tx, ty]
+            if (tile.isIndestructible) return@forEachEllipseTile
+            if (!inOuter) {
+                if (tile == Tile.WATER || tile == Tile.LAVA) world[tx, ty] = Tile.STONE
+                return@forEachEllipseTile
             }
+            val nxInner = dx / innerRadius
+            val nyInner = dy / innerHalfHeight
+            val inInner = nxInner * nxInner + nyInner * nyInner <= 1f
+            world[tx, ty] = if (inInner) Tile.AIR else getTileForDepth(depthPercent(ty), tx, ty)
         }
     }
 
