@@ -4,9 +4,8 @@ import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.physics.PhysicsConstants.MAX_COLLECTIBLES
 import com.glycin.koita.world.Tile
+import com.glycin.koita.world.TileCategory
 import kotlin.math.sqrt
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 // Similar to particle system, but focuses on moving tiles and other objects towards the player
 class CollectibleSystem(
@@ -86,10 +85,22 @@ class CollectibleSystem(
     }
 
     private fun onCollected(tile: Tile) {
-        if(Random.nextInt(0..100) < 50) {
-            gameState.collectedStones++
+        val multiplier = when (tile.category) {
+            TileCategory.MINERALS -> {
+                gameState.collectedMinerals++
+                2
+            }
+            TileCategory.SIMPLE -> {
+                gameState.collectedSimple++
+                1
+            }
+            TileCategory.RICH -> {
+                gameState.collectedRich++
+                10
+            }
+            TileCategory.NONE -> 1
         }
-        gameState.score += tile.ordinal
+        gameState.score += tile.ordinal * multiplier
     }
 
     fun clear() {

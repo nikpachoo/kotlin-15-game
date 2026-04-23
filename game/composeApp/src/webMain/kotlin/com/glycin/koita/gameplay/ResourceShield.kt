@@ -75,8 +75,10 @@ class ResourceShield(
         }
 
         if (pendingRepairCost > 0) {
-            if (gameState.collectedStones < pendingRepairCost) return
-            gameState.collectedStones -= pendingRepairCost
+            if (gameState.collectedMinerals + gameState.collectedRich < pendingRepairCost) return
+            val fromMinerals = minOf(gameState.collectedMinerals, pendingRepairCost)
+            gameState.collectedMinerals -= fromMinerals
+            gameState.collectedRich -= (pendingRepairCost - fromMinerals)
             pendingRepairCost = 0
         }
 

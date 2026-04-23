@@ -19,7 +19,9 @@ enum class Screen {
 class GameState {
     var currentScreen by mutableStateOf(Screen.MAIN_MENU)
     var score by mutableStateOf(0)
-    var collectedStones by mutableStateOf(0)
+    var collectedMinerals by mutableStateOf(0)
+    var collectedSimple by mutableStateOf(0)
+    var collectedRich by mutableStateOf(0)
     var elapsedTimeSeconds by mutableStateOf(0)
     var selectedHotkeyIndex by mutableStateOf(0)
     var selectedBlock by mutableStateOf(BuildBlock.STONE)

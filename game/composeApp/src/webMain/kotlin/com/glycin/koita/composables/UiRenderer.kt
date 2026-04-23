@@ -27,7 +27,7 @@ import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.Carousel
-import com.glycin.koita.ui.CollectibleCounter
+import com.glycin.koita.ui.CollectiblesPanel
 import com.glycin.koita.ui.EnemyHealthBars
 import com.glycin.koita.ui.Health
 import com.glycin.koita.ui.HotkeyBar
@@ -101,8 +101,10 @@ fun UiRenderer(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            CollectibleCounter(
-                collectableCount = gameState.collectedStones,
+            CollectiblesPanel(
+                minerals = gameState.collectedMinerals,
+                simple = gameState.collectedSimple,
+                rich = gameState.collectedRich,
             )
 
             Spacer(modifier = Modifier.weight(5f))

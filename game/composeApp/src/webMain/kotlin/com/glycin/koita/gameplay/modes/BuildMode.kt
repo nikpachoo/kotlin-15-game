@@ -90,7 +90,7 @@ class BuildMode(
         if (selected == BuildBlock.TURRET) {
             turretManager.addTurret(tileX, tileY)
         }
-        gameState.collectedStones -= BLOCK_COST
+        gameState.collectedSimple -= BLOCK_COST
     }
 
     private fun writeTiles(tile: Tile, originTileX: Int, originTileY: Int) {
@@ -129,7 +129,7 @@ class BuildMode(
         ghostTileX = tileX
         ghostTileY = tileY
 
-        if (gameState.collectedStones < BLOCK_COST) {
+        if (gameState.collectedSimple < BLOCK_COST) {
             isGhostValid = false
             return
         }
@@ -160,6 +160,6 @@ class BuildMode(
     }
 
     companion object {
-        private const val BLOCK_COST = 25
+        private const val BLOCK_COST = 100
     }
 }
