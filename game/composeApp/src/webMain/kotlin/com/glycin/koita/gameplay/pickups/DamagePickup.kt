@@ -12,10 +12,10 @@ class DamagePickup(
     override val name = "Damage Up"
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.pickup_damage,
-        frameWidth = 128,
-        frameHeight = 128,
-        columns = 17,
-        totalSprites = 17,
+        frameWidth = 32,
+        frameHeight = 32,
+        columns = 6,
+        totalSprites = 6,
         frameDuration = 0.1f,
     )
 }

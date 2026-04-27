@@ -9,27 +9,27 @@ import koita.composeapp.generated.resources.kotlin_shrine_sprite_sheet
 
 class Shrine(
     val position: Vec2,
-    val width: Float = 32f,
-    val height: Float = 48f,
-    val drawWidth: Float = 64f,
-    val drawHeight: Float = 64f,
+    val width: Float = 64f,
+    val height: Float = 64f,
+    val drawWidth: Float = 100f,
+    val drawHeight: Float = 100f,
     val unlock: Unlock,
 ) {
+    private val idleFrame = 0
+    private val chargingFrames = 1..7
+
     val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.kotlin_shrine_sprite_sheet,
-        frameWidth = 64,
-        frameHeight = 64,
-        columns = 5,
-        totalSprites = 5,
-        frameDuration = 0.6f,
+        frameWidth = 256,
+        frameHeight = 256,
+        columns = 8,
+        totalSprites = 8,
+        frameDuration = ACTIVATION_TIME / (chargingFrames.last - chargingFrames.first + 1),
     )
 
     val center get() = Vec2(position.x + width / 2f, position.y + height / 2f)
 
-    private val idleFrame = 0
-    private val activatingFrames = 0..4
-
-    var isActivating = false
+    var state = ShrineState.IDLE
         private set
     var activationTimer = 0f
         private set
@@ -37,15 +37,15 @@ class Shrine(
         private set
 
     fun startActivation() {
-        if (!isActivating && !isActivated) {
-            isActivating = true
+        if (state == ShrineState.IDLE && !isActivated) {
+            state = ShrineState.CHARGING
             activationTimer = 0f
         }
     }
 
     fun cancelActivation() {
-        if (isActivating) {
-            isActivating = false
+        if (state == ShrineState.CHARGING) {
+            state = ShrineState.IDLE
             activationTimer = 0f
             spriteAnimator.setFrame(idleFrame)
         }
@@ -54,14 +54,12 @@ class Shrine(
     fun update(deltaTime: Float) {
         if (isActivated) return
 
-        if (isActivating) {
+        if (state == ShrineState.CHARGING) {
             activationTimer += deltaTime
-            spriteAnimator.animate(deltaTime, activatingFrames)
+            spriteAnimator.animate(deltaTime, chargingFrames)
             if (activationTimer >= ACTIVATION_TIME) {
                 isActivated = true
             }
-        } else {
-            spriteAnimator.setFrame(idleFrame)
         }
     }
 

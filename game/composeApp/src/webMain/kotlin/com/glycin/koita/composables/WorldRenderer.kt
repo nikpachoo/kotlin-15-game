@@ -128,6 +128,36 @@ fun WorldRenderer(
             }
         }
 
+        val nearbyShrines = shrineManager.getShrinesInRange(player.center, 1000f)
+        val shrineSheet = nearbyShrines.firstOrNull()?.spriteAnimator?.sprite?.let { shrineSheets[it] }
+        if (shrineSheet != null) nearbyShrines.forEach { shrine ->
+            val screenPos = camera.worldToScreen(shrine.position.x, shrine.position.y)
+            val sa = shrine.spriteAnimator
+
+            val drawOffsetX = (shrine.width - shrine.drawWidth) / 2f
+            val drawOffsetY = (shrine.height - shrine.drawHeight) / 2f
+            val drawX = screenPos.x + drawOffsetX
+            val drawY = screenPos.y + drawOffsetY
+
+            drawImage(
+                image = shrineSheet,
+                srcOffset = IntOffset(sa.srcX, sa.srcY),
+                srcSize = IntSize(sa.frameWidth, sa.frameHeight),
+                dstOffset = IntOffset(drawX.toInt(), drawY.toInt()),
+                dstSize = IntSize(shrine.drawWidth.toInt(), shrine.drawHeight.toInt()),
+                filterQuality = FilterQuality.None,
+            )
+
+            if (BuildConfig.isDev) {
+                drawRect(
+                    color = Color.Cyan,
+                    topLeft = screenPos,
+                    size = Size(shrine.width, shrine.height),
+                    style = Stroke(),
+                )
+            }
+        }
+
         with(player) {
             val sa =  animator.spriteAnimator
             val srcOffsetX = sa.srcX
@@ -269,26 +299,6 @@ fun WorldRenderer(
                 color = WorldRendererColors.ENEMY_MISSILE,
                 topLeft = screenPos,
                 size = Size(missile.size, missile.size),
-            )
-        }
-
-        shrineManager.getShrinesInRange(player.center, 1000f).forEach { shrine ->
-            val screenPos = camera.worldToScreen(shrine.position.x, shrine.position.y)
-            val sa = shrine.spriteAnimator
-            val shrineSheet = shrineSheets[sa.sprite] ?: return@forEach
-
-            val drawOffsetX = (shrine.width - shrine.drawWidth) / 2f
-            val drawOffsetY = (shrine.height - shrine.drawHeight) / 2f
-            val drawX = screenPos.x + drawOffsetX
-            val drawY = screenPos.y + drawOffsetY
-
-            drawImage(
-                image = shrineSheet,
-                srcOffset = IntOffset(sa.srcX, sa.srcY),
-                srcSize = IntSize(sa.frameWidth, sa.frameHeight),
-                dstOffset = IntOffset(drawX.toInt(), drawY.toInt()),
-                dstSize = IntSize(shrine.drawWidth.toInt(), shrine.drawHeight.toInt()),
-                filterQuality = FilterQuality.None,
             )
         }
 
