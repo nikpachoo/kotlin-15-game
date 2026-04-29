@@ -3,11 +3,11 @@ ktor:
     modules:
       - com.glycin.ApplicationKt.module
   deployment:
-    port: 9001
+    port: "$PORT:9001"
 postgres:
-  url: "jdbc:postgresql://localhost:5432/default"
-  user: username
-  password: "123"
+  url: "$POSTGRES_URL:jdbc:postgresql://localhost:5432/default"
+  user: "$POSTGRES_USER:username"
+  password: "$POSTGRES_PASSWORD:123"
 auth:
-  username: "admin"
-  password: "admin"
+  username: "$AUTH_USERNAME:admin"
+  password: "$AUTH_PASSWORD:admin"

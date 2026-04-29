@@ -8,7 +8,7 @@ fun Application.configureDatabases() {
     val user = environment.config.property("postgres.user").getString()
     val password = environment.config.property("postgres.password").getString()
 
-    log.info("Connecting to postgres: url=$url, user=$user, password=$password")
+    log.info("Connecting to postgres: url=$url, user=$user")
 
     val database = Database.connect(
         url = url,

@@ -43,3 +43,41 @@ If the server starts successfully, you'll see the following output:
 2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
 ```
 
+## Deploying to Google Cloud
+
+The server runs on **Cloud Run** backed by **Cloud SQL for PostgreSQL**. Two scripts in `scripts/` handle everything; you don't need to memorise any `gcloud` commands.
+
+### Prerequisites
+
+- A Google Cloud project with billing enabled.
+- The [`gcloud` CLI](https://cloud.google.com/sdk/docs/install) installed and authenticated (`gcloud auth login`).
+
+### First-time setup
+
+```bash
+cp scripts/gcp.env.example scripts/gcp.env
+# edit scripts/gcp.env — at minimum set PROJECT and REGION
+./scripts/setup.sh
+```
+
+`setup.sh` enables the required APIs, creates the Artifact Registry repo, the Cloud SQL instance + database + user, and stores `db-password` / `auth-password` in Secret Manager. It prompts for the two passwords (or reads them from `gcp.env` if you set them there). Every step is idempotent — re-running creates only what's missing. To rotate the DB or auth password, re-run with `ROTATE_PASSWORDS=yes ./scripts/setup.sh`.
+
+`scripts/gcp.env` is gitignored — don't commit it once it has real values.
+
+### Deploying
+
+```bash
+./scripts/deploy.sh
+```
+
+This builds the image via Cloud Build (no local Docker needed), pushes it to Artifact Registry, deploys a new Cloud Run revision wired to Cloud SQL, and prints the service URL. Run it any time you want to ship code changes.
+
+Verify the deploy:
+
+```bash
+curl -u "admin:<AUTH_PASSWORD>" "$(gcloud run services describe highscore-server --region=<REGION> --format='value(status.url)')/"
+# Expected: Hello World!
+```
+
+The Cloud Run service is deployed with `--allow-unauthenticated` — the app's HTTP basic auth is what actually gates every endpoint, so make sure `AUTH_PASSWORD` is strong.
+

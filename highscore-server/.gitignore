@@ -34,3 +34,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### GCP deploy config (contains passwords) ###
+scripts/gcp.env
+
+### macOS ###
+.DS_Store

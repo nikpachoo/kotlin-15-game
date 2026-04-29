@@ -1,5 +1,15 @@
+.git
+.gitignore
+.dockerignore
 .gradle
-build
-.idea
 .kotlin
+build
+out
+.idea
+.vscode
 *.iml
+.DS_Store
+scripts
+*.md
+requests.http
+docker-compose.yml
