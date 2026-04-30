@@ -10,21 +10,21 @@ import koita.composeapp.generated.resources.kotlin_shrine_sprite_sheet
 class Shrine(
     val position: Vec2,
     val width: Float = 64f,
-    val height: Float = 64f,
-    val drawWidth: Float = 100f,
-    val drawHeight: Float = 100f,
+    val height: Float = 128f,
+    val drawWidth: Float = 128f,
+    val drawHeight: Float = 128f,
     val unlock: Unlock,
 ) {
     private val idleFrame = 0
-    private val chargingFrames = 1..7
+    private val chargingFrames = 1..8
 
     val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.kotlin_shrine_sprite_sheet,
         frameWidth = 256,
         frameHeight = 256,
-        columns = 8,
-        totalSprites = 8,
-        frameDuration = ACTIVATION_TIME / (chargingFrames.last - chargingFrames.first + 1),
+        columns = 9,
+        totalSprites = 9,
+        frameDuration = ACTIVATION_TIME / chargingFrames.count(),
     )
 
     val center get() = Vec2(position.x + width / 2f, position.y + height / 2f)
@@ -39,6 +39,7 @@ class Shrine(
     fun startActivation() {
         if (state == ShrineState.IDLE && !isActivated) {
             state = ShrineState.CHARGING
+            spriteAnimator.setFrame(chargingFrames.first)
             activationTimer = 0f
         }
     }

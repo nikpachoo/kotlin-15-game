@@ -135,7 +135,7 @@ fun WorldRenderer(
             val sa = shrine.spriteAnimator
 
             val drawOffsetX = (shrine.width - shrine.drawWidth) / 2f
-            val drawOffsetY = (shrine.height - shrine.drawHeight) / 2f
+            val drawOffsetY = shrine.height - shrine.drawHeight
             val drawX = screenPos.x + drawOffsetX
             val drawY = screenPos.y + drawOffsetY
 
