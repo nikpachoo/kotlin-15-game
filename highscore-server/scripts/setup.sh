@@ -105,5 +105,15 @@ echo "==> Secrets"
 upsert_secret "$DB_PASSWORD_SECRET" "$DB_PASSWORD"
 upsert_secret "$AUTH_PASSWORD_SECRET" "$AUTH_PASSWORD"
 
+echo "==> Granting Cloud Run runtime service account access to secrets"
+project_number="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')"
+runtime_sa="${project_number}-compute@developer.gserviceaccount.com"
+for secret in "$DB_PASSWORD_SECRET" "$AUTH_PASSWORD_SECRET"; do
+  gcloud secrets add-iam-policy-binding "$secret" \
+    --member="serviceAccount:$runtime_sa" \
+    --role="roles/secretmanager.secretAccessor" >/dev/null
+  echo "    $runtime_sa -> roles/secretmanager.secretAccessor on '$secret'"
+done
+
 echo
 echo "Setup complete. Run scripts/deploy.sh to build and deploy."
