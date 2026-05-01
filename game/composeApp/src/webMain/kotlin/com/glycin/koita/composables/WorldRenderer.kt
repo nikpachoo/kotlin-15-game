@@ -27,6 +27,7 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.PlayerFacing
+import com.glycin.koita.core.drawSpriteFrame
 import com.glycin.koita.gameplay.FogOfWar
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.weapon.Laser
@@ -77,6 +78,7 @@ fun WorldRenderer(
     val droneSheet = imageResource(player.droneAnimator.sprite)
     val enemySheets = enemyManager.getDistinctSprites().associateWith { imageResource(it) }
     val shrineSheets = shrineManager.getDistinctSprites().associateWith { imageResource(it) }
+    val orbIconSheets = shrineManager.getDistinctOrbIconSprites().associateWith { imageResource(it) }
     val pickupSheets = pickupManager.getDistinctSprites().associateWith { imageResource(it) }
     val bossSheet = boss?.let { imageResource(it.spriteAnimator.sprite) }
 
@@ -325,6 +327,17 @@ fun WorldRenderer(
                 topLeft = screenPos,
                 size = Size(orb.size, orb.size),
             )
+
+            val orbIcon = orb.unlock.icon
+            val orbIconImage = orbIconSheets[orbIcon.sheet.sprite]
+            if (orbIconImage != null) {
+                drawSpriteFrame(
+                    image = orbIconImage,
+                    frame = orbIcon,
+                    dstOffset = IntOffset(screenPos.x.toInt(), screenPos.y.toInt()),
+                    dstSize = IntSize(orb.size.toInt(), orb.size.toInt()),
+                )
+            }
 
             val descConstraints = Constraints(maxWidth = (200f / density).toInt())
             val descResult = textMeasurer.measure(orb.unlock.description, orbDescStyle, constraints = descConstraints)

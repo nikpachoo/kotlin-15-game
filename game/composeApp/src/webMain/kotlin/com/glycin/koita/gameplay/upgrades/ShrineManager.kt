@@ -42,6 +42,10 @@ class ShrineManager(
         return shrines.map { it.spriteAnimator.sprite }.distinct()
     }
 
+    fun getDistinctOrbIconSprites(): List<DrawableResource> {
+        return orbs.map { it.unlock.icon.sheet.sprite }.distinct()
+    }
+
     fun update(deltaTime: Float) {
         shrines.firstOrNull { abs(it.position.y - player.position.y) <= it.height + 25 }?.let { shrineInRange ->
             if(shrineInRange.overlapsPlayer(player)) {
