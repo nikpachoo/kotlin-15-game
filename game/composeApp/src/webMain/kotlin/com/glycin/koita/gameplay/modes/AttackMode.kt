@@ -62,12 +62,6 @@ class AttackMode(
     override fun update(deltaTime: Float) {
         rotation = position.angleTo(mouse.worldPosition) + 90f
 
-        missiles.forEach { it.update(deltaTime) }
-        missiles.removeAll { !it.isAlive }
-
-        rockets.forEach { it.update(deltaTime) }
-        rockets.removeAll { !it.isAlive }
-
         laser?.let {
             if (it.isActive) it.update(deltaTime, dronePosition, mouse.worldPosition)
             it.isActive = false
@@ -82,6 +76,14 @@ class AttackMode(
             it.update(deltaTime, dronePosition, mouse.worldPosition)
             it.isActive = false
         }
+    }
+
+    override fun updateBackground(deltaTime: Float) {
+        missiles.forEach { it.update(deltaTime) }
+        missiles.removeAll { !it.isAlive }
+
+        rockets.forEach { it.update(deltaTime) }
+        rockets.removeAll { !it.isAlive }
     }
 
     private fun useSuperSoaker() {

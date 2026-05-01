@@ -27,6 +27,7 @@ abstract class Mode(
 
     abstract fun use()
     abstract fun update(deltaTime: Float)
+    open fun updateBackground(deltaTime: Float) {}
 
     fun canUse(): Boolean {
         val currentTime = Clock.System.now().toEpochMilliseconds()

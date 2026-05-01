@@ -640,6 +640,9 @@ class Player(
         currentWeapon.position = position
         currentWeapon.pivotPoint = centerVec2
         currentWeapon.update(deltaTime)
+        for (i in 0..<drone.modes.size) {
+            drone.modes[i].updateBackground(deltaTime)
+        }
     }
 
     private fun updateDrone(centerVec2: Vec2) {
