@@ -75,7 +75,7 @@ class Boss(
     private val shieldPositions = FloatArray(maxShieldTiles * 2)
     private val shieldActive = BooleanArray(maxShieldTiles)
     private var shieldCount = 0
-    private val shieldSpawnInterval = 0.1f
+    private val shieldSpawnInterval = 0.1f / 3f
     private val orbitRadius = 60f
     private val orbitSpeed = 3f
     private var orbitAngle = 0f
@@ -84,7 +84,7 @@ class Boss(
     private val lavaStreamDuration = 3f
 
     private var activeLaser: BossLaser? = null
-    private var activeImplosion: BossImplosion? = null
+    private var activeEyeBeam: BossEyeBeam? = null
 
     private val commandQueue = ArrayDeque<BossCommand>()
     private var currentCommand: BossCommand? = null
@@ -138,10 +138,10 @@ class Boss(
             if (!laser.alive) activeLaser = null
         }
 
-        val implosion = activeImplosion
-        if (implosion != null) {
-            implosion.update(deltaTime)
-            if (!implosion.alive) activeImplosion = null
+        val eyeBeam = activeEyeBeam
+        if (eyeBeam != null) {
+            eyeBeam.update(deltaTime)
+            if (!eyeBeam.alive) activeEyeBeam = null
         }
 
         eye.update(center, player.center)
@@ -170,7 +170,7 @@ class Boss(
         lastAttack = pick
         return when (pick) {
             0 -> { animState = BossAnimState.ATTACK_2; laserAttackCommand() }
-            1 -> { animState = BossAnimState.ATTACK_2; implosionCommand() }
+            1 -> { animState = BossAnimState.ATTACK_2; eyeBeamCommand() }
             else -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
         }
     }
@@ -208,22 +208,6 @@ class Boss(
         }
     }
 
-    private fun implosionCommand(): BossCommand {
-        var started = false
-        return BossCommand { deltaTime ->
-            if (!started) {
-                started = true
-                activeImplosion = BossImplosion(
-                    origin = { center },
-                    world = world,
-                    collisionDetector = collisionDetector,
-                    particleSystem = particleSystem,
-                )
-            }
-            activeImplosion?.alive != true
-        }
-    }
-
     private fun laserAttackCommand(): BossCommand {
         var started = false
         return BossCommand { deltaTime ->
@@ -238,6 +222,23 @@ class Boss(
                 )
             }
             activeLaser?.alive != true
+        }
+    }
+
+    private fun eyeBeamCommand(): BossCommand {
+        var started = false
+        return BossCommand { deltaTime ->
+            if (!started) {
+                started = true
+                activeEyeBeam = BossEyeBeam(
+                    origin = { Vec2(center.x + eye.irisOffset.x, center.y + eye.irisOffset.y) },
+                    player = player,
+                    collisionDetector = collisionDetector,
+                    world = world,
+                    particleSystem = particleSystem,
+                )
+            }
+            activeEyeBeam?.alive != true
         }
     }
 
@@ -322,8 +323,8 @@ class Boss(
         activeLaser?.forEachLaser(action)
     }
 
-    fun forEachGatheredTile(action: (x: Float, y: Float) -> Unit) {
-        activeImplosion?.forEachGatheredTile(action)
+    fun forEachEyeBeam(action: (startX: Float, startY: Float, endX: Float, endY: Float, charging: Boolean) -> Unit) {
+        activeEyeBeam?.renderBeam(action)
     }
 
     fun forEachShieldTile(action: (x: Float, y: Float) -> Unit) {

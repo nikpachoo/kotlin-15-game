@@ -35,7 +35,7 @@ class PickupManager(
     }
 
     fun update(deltaTime: Float, player: Player) {
-        val testPos = Vec2()
+        val testPos = Vec2.zero
         val playerPos = player.position
         activePickups.forEach { pickup ->
             if (abs(pickup.position.y - playerPos.y) < 800f) {

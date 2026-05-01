@@ -521,13 +521,29 @@ fun WorldRenderer(
                 drawBossLaser(start, end)
             }
 
-            boss.forEachGatheredTile { x, y ->
-                val screenPos = camera.worldToScreen(x, y)
-                drawRect(
-                    color = Tile.LAVA.color,
-                    topLeft = screenPos,
-                    size = WorldConstants.STANDARD_SIZE,
-                )
+            boss.forEachEyeBeam { sx, sy, ex, ey, charging ->
+                val start = camera.worldToScreen(sx, sy)
+                val end = camera.worldToScreen(ex, ey)
+                if (charging) {
+                    drawLine(
+                        color = WorldRendererColors.BOSS_EYE_BEAM_CHARGE,
+                        start = start,
+                        end = end,
+                        strokeWidth = 1.5f,
+                        cap = StrokeCap.Round,
+                    )
+                } else {
+                    drawGlowLine(
+                        start = start,
+                        end = end,
+                        outerColor = WorldRendererColors.BOSS_LASER_OUTER,
+                        outerWidth = 32f,
+                        middleColor = WorldRendererColors.BOSS_LASER_MIDDLE,
+                        middleWidth = 16f,
+                        coreColor = WorldRendererColors.BOSS_LASER_CORE,
+                        coreWidth = 5f,
+                    )
+                }
             }
         }
 
