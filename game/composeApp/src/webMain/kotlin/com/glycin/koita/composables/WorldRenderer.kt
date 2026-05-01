@@ -201,15 +201,6 @@ fun WorldRenderer(
                 filterQuality = FilterQuality.None,
             )
 
-            // Anchor overlay
-            if (isAnchorLocked) {
-                drawRect(
-                    color = Color.Gray.copy(alpha = 0.5f),
-                    topLeft = pScreenPos,
-                    size = Size(width, height),
-                )
-            }
-
             if (gameState.devMode) {
                 val playerHitboxScreenPos = camera.worldToScreen(position.x, position.y)
                 drawRect(

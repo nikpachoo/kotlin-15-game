@@ -8,6 +8,7 @@ enum class PlayerState {
     ATTACKING,
     FALLING,
     BOOST,
+    IMMUTABLE,
 }
 
 enum class PlayerFacing {

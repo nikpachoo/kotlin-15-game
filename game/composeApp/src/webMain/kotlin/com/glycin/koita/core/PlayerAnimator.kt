@@ -23,6 +23,7 @@ class PlayerAnimator(
     private val hurtFrames: IntRange = 32..41
     private val boostFrames: IntRange = 0..9
     private val deathFrames: IntRange = 16..25
+    private val immutableFrame: Int = 55
 
     val spriteAnimator = SpriteAnimator(
         sprite = sprite,
@@ -42,6 +43,7 @@ class PlayerAnimator(
             PlayerState.ATTACKING -> spriteAnimator.animate(deltaTime, attackFrames)
             PlayerState.HURT -> spriteAnimator.animateOneShot(deltaTime, hurtFrames, onHurtComplete)
             PlayerState.BOOST -> spriteAnimator.animate(deltaTime, boostFrames)
+            PlayerState.IMMUTABLE -> spriteAnimator.setFrame(immutableFrame)
         }
     }
 }

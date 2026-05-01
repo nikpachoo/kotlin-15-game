@@ -232,7 +232,7 @@ class Player(
         if (isAnchorLocked) {
             velocity = Vec2.zero
             currentWeapon.position = position
-            updateState(deltaTime, 0f)
+            state = PlayerState.IMMUTABLE
             return
         }
 
@@ -546,7 +546,7 @@ class Player(
             return
         }
 
-        if (!isAnchored && isGrounded && sDown && !isGroundPounding && !isDashing) {
+        if (!isAnchored && isGrounded && velocity.y <= 0f && sDown && !isGroundPounding && !isDashing) {
             isAnchored = true
             velocity = Vec2.zero
         }
