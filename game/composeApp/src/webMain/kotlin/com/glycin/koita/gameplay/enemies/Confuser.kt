@@ -105,7 +105,7 @@ class Confuser(
                 (Random.nextFloat() - 0.5f) * 6f,
             )
         } else {
-            Vec2.zero
+            Vec2.zero()
         }
 
         if (pulledCount >= maxPulledTiles) {

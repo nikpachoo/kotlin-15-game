@@ -17,8 +17,8 @@ class Laser(
     private val particleSystem: ParticleSystem,
     private val enemyManager: EnemyManager,
 ) : Weapon {
-    var start = Vec2.zero
-    var end = Vec2.zero
+    var start = Vec2.zero()
+    var end = Vec2.zero()
     var isActive = false
 
     override val isAlive: Boolean get() = isActive

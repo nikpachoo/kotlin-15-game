@@ -43,7 +43,7 @@ class RocketRide(
 ) {
     private var timer = 0f
     private var dismountRequested = false
-    private var currentDirection = Vec2.zero
+    private var currentDirection = Vec2.zero()
 
     override fun onReactivate(): Boolean {
         dismountRequested = true

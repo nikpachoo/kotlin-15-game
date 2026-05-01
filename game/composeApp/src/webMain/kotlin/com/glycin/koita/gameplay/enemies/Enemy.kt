@@ -37,7 +37,7 @@ abstract class Enemy(
     private val attackDuration = 0.4f
 
     val center get() = Vec2(position.x + width / 2f, position.y + height / 2f)
-    open var renderOffset: Vec2 = Vec2.zero
+    open var renderOffset: Vec2 = Vec2.zero()
         protected set
 
     fun update(deltaTime: Float) {

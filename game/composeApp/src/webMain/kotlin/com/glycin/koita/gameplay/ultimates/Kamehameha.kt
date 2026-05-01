@@ -40,7 +40,7 @@ class Kamehameha(
 ) {
     private var phase = Phase.INACTIVE
     private var beamTimer = 0f
-    private var beamDirection = Vec2.zero
+    private var beamDirection = Vec2.zero()
     private var beamEndDistance = 0f
 
     private enum class Phase { INACTIVE, GROUND_POUND, BEAM }
@@ -78,7 +78,7 @@ class Kamehameha(
 
         phase = Phase.BEAM
         beamTimer = BEAM_DURATION
-        player.applyUltimateVelocity(Vec2.zero)
+        player.applyUltimateVelocity(Vec2.zero())
     }
 
     private fun updateBeam(deltaTime: Float, player: Player) {

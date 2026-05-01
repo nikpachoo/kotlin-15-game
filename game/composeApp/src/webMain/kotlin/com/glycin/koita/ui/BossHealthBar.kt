@@ -1,10 +1,10 @@
 package com.glycin.koita.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -26,39 +26,31 @@ fun BossHealthBar(
     healthPercent: Float,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 80.dp),
-        contentAlignment = Alignment.BottomCenter,
+            .padding(top = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        val barWidth = 600.dp
-        val barHeight = 16.dp
-
         Text(
             text = "The Final Void",
             fontFamily = pixelFont(),
             fontSize = 22.sp,
             color = Color.White,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = -(barHeight + 8.dp)),
         )
 
         Canvas(
             modifier = Modifier
-                .width(barWidth)
-                .height(barHeight)
-                .align(Alignment.BottomCenter),
+                .width(600.dp)
+                .height(16.dp),
         ) {
-            // Background
             drawRoundRect(
                 color = BAR_BACKGROUND_COLOR,
                 size = size,
                 cornerRadius = CornerRadius(4f, 4f),
             )
 
-            // Health fill
             if (healthPercent > 0f) {
                 drawRoundRect(
                     color = BAR_FILL_COLOR,
@@ -67,7 +59,6 @@ fun BossHealthBar(
                 )
             }
 
-            // Border
             drawRoundRect(
                 color = Color.White,
                 size = size,

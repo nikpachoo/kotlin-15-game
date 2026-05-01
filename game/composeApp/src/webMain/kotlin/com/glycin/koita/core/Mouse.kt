@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 
 class Mouse(
     var position: Offset = Offset.Zero,
-    var worldPosition: Vec2 = Vec2.zero,
+    var worldPosition: Vec2 = Vec2.zero(),
     var isLeftPressed: Boolean = false,
     var isRightPressed: Boolean = false,
     var isLeftJustPressed: Boolean = false,

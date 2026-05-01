@@ -71,7 +71,7 @@ class DashingPhantom(
     ).normalized()
     private var hoverChangeTimer = 0f
 
-    private var dashDirection = Vec2.zero
+    private var dashDirection = Vec2.zero()
     private var dashMaxDistance = 0f
     private var dashTravelled = 0f
     private var hasHitPlayer = false
@@ -125,7 +125,7 @@ class DashingPhantom(
         enemyFacing = if (player.center.x >= center.x) EnemyFacing.RIGHT else EnemyFacing.LEFT
 
         if (phaseTimer <= 0f) {
-            renderOffset = Vec2.zero
+            renderOffset = Vec2.zero()
             dashDirection = (player.center - center).normalized()
             dashMaxDistance = Vec2.distance(center, player.center) + 50f
             dashTravelled = 0f

@@ -30,17 +30,17 @@ class Sniper(
     var chargeTime = 0f
         private set
 
-    var guideStart = Vec2.zero
+    var guideStart = Vec2.zero()
         private set
-    var guideLineLeft = Vec2.zero
+    var guideLineLeft = Vec2.zero()
         private set
-    var guideLineRight = Vec2.zero
+    var guideLineRight = Vec2.zero()
         private set
 
     var bulletActive = false
-    var bulletStart = Vec2.zero
+    var bulletStart = Vec2.zero()
         private set
-    var bulletEnd = Vec2.zero
+    var bulletEnd = Vec2.zero()
         private set
     var bulletDamage = 0f
         private set
@@ -50,7 +50,7 @@ class Sniper(
 
     private var wasActive = false
     private var bulletFlashTimer = 0f
-    private var lastOrigin = Vec2.zero
+    private var lastOrigin = Vec2.zero()
     private var lastBaseAngle = 0f
 
     companion object {

@@ -64,7 +64,7 @@ class Boss(
         private set
     var isAlive = true
         private set
-    var renderOffset: Vec2 = Vec2.zero
+    var renderOffset: Vec2 = Vec2.zero()
         private set
 
     val center get() = Vec2(position.x + width / 2f, position.y + height / 2f)

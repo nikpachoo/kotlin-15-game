@@ -7,12 +7,12 @@ data class Vec2(
     var y: Float = 0f,
 ) {
     companion object {
-        val zero = Vec2(0f, 0f)
-        val one = Vec2(1f, 1f)
-        val up = Vec2(0f, -1f)
-        val down = Vec2(0f, 1f)
-        val left = Vec2(-1f, 0f)
-        val right = Vec2(1f, 0f)
+        fun zero() = Vec2(0f, 0f)
+        fun one() = Vec2(1f, 1f)
+        fun up() = Vec2(0f, -1f)
+        fun down() = Vec2(0f, 1f)
+        fun left() = Vec2(-1f, 0f)
+        fun right() = Vec2(1f, 0f)
 
         fun distance(a: Vec2, b: Vec2): Float {
             val dx = b.x - a.x
@@ -39,6 +39,6 @@ data class Vec2(
 
     fun normalized(): Vec2 {
         val mag = magnitude()
-        return if (mag != 0f) this / mag else zero
+        return if (mag != 0f) this / mag else zero()
     }
 }

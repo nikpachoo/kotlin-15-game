@@ -53,7 +53,7 @@ class Player(
 
     private var dashTimer = 0f
     private var dashCooldownTimer = 0f
-    private var dashDirection = Vec2.zero
+    private var dashDirection = Vec2.zero()
     private var isDashing = false
     private var shiftPressed = false
 
@@ -102,7 +102,7 @@ class Player(
     var facing = PlayerFacing.RIGHT
         private set
 
-    var dronePosition: Vec2 = Vec2(position.x + width / 2f, position.y + height / 2f) + Vec2.up * 2.0f
+    var dronePosition: Vec2 = Vec2(position.x + width / 2f, position.y + height / 2f) + Vec2.up() * 2.0f
 
     private val droneRangeX = 40f
     private val droneRangeY = 30f
@@ -222,7 +222,7 @@ class Player(
                 x = position.x.coerceIn(0f, WorldConstants.WORLD_WIDTH_PIXELS - width),
                 y = position.y.coerceIn(0f, WorldConstants.WORLD_HEIGHT_PIXELS - height),
             )
-            velocity = Vec2.zero
+            velocity = Vec2.zero()
             isGrounded = false
             currentWeapon.position = position
             return
@@ -230,7 +230,7 @@ class Player(
 
         handleAnchor(deltaTime)
         if (isAnchorLocked) {
-            velocity = Vec2.zero
+            velocity = Vec2.zero()
             currentWeapon.position = position
             state = PlayerState.IMMUTABLE
             return
@@ -362,7 +362,7 @@ class Player(
             if (position.y + height > cd.portalY && position.y < cd.portalY + cd.portalHeight) {
                 if (position.x + width > cd.portalX && position.x < cd.portalX + cd.portalWidth) {
                     position = Vec2(position.x, cd.portalDestY)
-                    velocity = Vec2.zero
+                    velocity = Vec2.zero()
                     isGrounded = false
                     gameState.passedPortal = true
                 }
@@ -375,7 +375,7 @@ class Player(
         )
 
         if (position.y >= WorldConstants.WORLD_HEIGHT_PIXELS - height) {
-            velocity = Vec2.zero
+            velocity = Vec2.zero()
             isGrounded = true
         }
 
@@ -384,7 +384,7 @@ class Player(
         // DEBUG
         if(gameState.devMode && keyMap[Key.AltLeft] == true && keyMap[Key.W] == true) {
             val debugSpeed = PlayerSettings.BASE_SPEED * 10
-            position += Vec2.up * debugSpeed * deltaTime
+            position += Vec2.up() * debugSpeed * deltaTime
         }
 
         updateState(deltaTime, horizontalInput)
@@ -478,7 +478,7 @@ class Player(
             dashTimer -= deltaTime
             if (dashTimer <= 0f) {
                 isDashing = false
-                velocity = Vec2.zero
+                velocity = Vec2.zero()
             }
             return
         }
@@ -492,7 +492,7 @@ class Player(
             isDashing = true
             dashTimer = PlayerSettings.DASH_DURATION
             dashCooldownTimer = PlayerSettings.DASH_COOLDOWN
-            velocity = Vec2.zero
+            velocity = Vec2.zero()
             pullTimer = 0f
         }
     }
@@ -548,7 +548,7 @@ class Player(
 
         if (!isAnchored && isGrounded && velocity.y <= 0f && sDown && !isGroundPounding && !isDashing) {
             isAnchored = true
-            velocity = Vec2.zero
+            velocity = Vec2.zero()
         }
     }
 

@@ -30,7 +30,7 @@ class ResourceShield(
         val facing = (player.dronePosition - player.center).normalized()
 
         val desiredTiles = mutableSetOf<Long>()
-        val origin = Vec2.zero
+        val origin = Vec2.zero()
 
         for (dy in -shieldRadius..shieldRadius) {
             for (dx in -shieldRadius..shieldRadius) {
