@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
-import com.glycin.koita.BuildConfig
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.gameplay.weapon.Weapon
@@ -383,7 +382,7 @@ class Player(
         currentWeapon.position = position
 
         // DEBUG
-        if(BuildConfig.isDev && keyMap[Key.AltLeft] == true && keyMap[Key.W] == true) {
+        if(gameState.devMode && keyMap[Key.AltLeft] == true && keyMap[Key.W] == true) {
             val debugSpeed = PlayerSettings.BASE_SPEED * 10
             position += Vec2.up * debugSpeed * deltaTime
         }

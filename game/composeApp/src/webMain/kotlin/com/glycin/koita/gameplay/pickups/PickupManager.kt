@@ -1,6 +1,5 @@
 package com.glycin.koita.gameplay.pickups
 
-import com.glycin.koita.BuildConfig
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
@@ -20,7 +19,7 @@ class PickupManager(
     private val maxFallSpeed = 400f
     private val activePickups = mutableListOf<Pickup>()
     fun randomChanceSpawn(position: Vec2, dropChance: Float = 0.2f) {
-        val chance = if (BuildConfig.isDev) 1.0f else dropChance
+        val chance = if (gameState.devMode) 1.0f else dropChance
         if (Random.nextFloat() > chance) return
         spawn(position)
     }

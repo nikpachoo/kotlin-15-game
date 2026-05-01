@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -62,6 +63,13 @@ fun OptionsScreen(gameState: GameState) {
                     gameState.sfxVolume = newVolume
                     SoundManager.sfxVolume = newVolume
                 },
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            DevModeToggle(
+                value = gameState.devMode,
+                onValueChange = { gameState.devMode = it },
             )
 
             Spacer(modifier = Modifier.height(32.dp))

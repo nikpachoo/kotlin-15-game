@@ -9,37 +9,6 @@ plugins {
 
 compose.resources { }
 
-abstract class GenerateBuildConfigTask : DefaultTask() {
-    @get:Input
-    abstract val env: Property<String>
-
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @TaskAction
-    fun generate() {
-        val dir = outputDir.get().asFile.resolve("com/glycin/koita")
-        dir.mkdirs()
-        dir.resolve("BuildConfig.kt").writeText(
-            """
-            |package com.glycin.koita
-            |
-            |object BuildConfig {
-            |    const val BUILD_ENV: String = "${env.get()}"
-            |    val isDev: Boolean = BUILD_ENV == "dev"
-            |    val isTest: Boolean = BUILD_ENV == "test"
-            |    val isProd: Boolean = BUILD_ENV == "prod"
-            |}
-            """.trimMargin()
-        )
-    }
-}
-
-val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
-    env.set(providers.gradleProperty("buildEnv").getOrElse("dev"))
-    outputDir.set(layout.buildDirectory.dir("generated/buildconfig"))
-}
-
 kotlin {
     //TODO: Disabling so syntax highlighting works correct again, see https://youtrack.jetbrains.com/projects/KTIJ/issues/KTIJ-37075/K2-False-positive-on-ByteArray-methods-call-Cannot-access-Cloneable-which-is-a-supertype-of-ByteArray
     /*js {
@@ -54,9 +23,6 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            kotlin.srcDir(generateBuildConfig.map { it.outputs.files.singleFile })
-        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)

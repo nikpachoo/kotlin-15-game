@@ -12,7 +12,6 @@ import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import com.glycin.koita.BuildConfig
 import com.glycin.koita.audio.Music
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.Camera
@@ -210,7 +209,7 @@ fun GameScreen(gameState: GameState) {
                         Key.R -> gameState.ultimateTriggered = true
                         Key.E -> player.heal()
                         Key.B -> {
-                            if (BuildConfig.isDev) {
+                            if (gameState.devMode) {
                                 player.position = Vec2(player.position.x, collisionDetector.portalY + collisionDetector.portalHeight + 16f)
                             }
                         }
@@ -272,7 +271,7 @@ fun GameScreen(gameState: GameState) {
 
         UiRenderer(gameState, player, camera, enemyManager, input)
 
-        if (BuildConfig.isDev) {
+        if (gameState.devMode) {
             FpsCounter()
             DevUltimateButtons(ultimateManager, focusRequester)
         }
@@ -284,6 +283,13 @@ fun GameScreen(gameState: GameState) {
                 if (!gameState.isPaused) {
                     gameState.elapsedTimeSeconds++
                 }
+            }
+        }
+
+        LaunchedEffect(gameState.isPaused) {
+            if (!gameState.isPaused) {
+                focusRequester.requestFocus()
+                keysPressed.clear()
             }
         }
     }

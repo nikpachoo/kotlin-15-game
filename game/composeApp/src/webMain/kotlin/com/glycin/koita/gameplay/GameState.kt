@@ -30,6 +30,7 @@ class GameState {
     var isPaused by mutableStateOf(false)
     var musicVolume by mutableStateOf(0.25f)
     var sfxVolume by mutableStateOf(1f)
+    var devMode by mutableStateOf(false)
 
     var canDoubleJump = false
     var canJetpack = false

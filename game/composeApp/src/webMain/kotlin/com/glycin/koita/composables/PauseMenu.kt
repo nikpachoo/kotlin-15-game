@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -78,6 +80,13 @@ fun PauseMenu(gameState: GameState) {
                     SoundManager.sfxVolume = newVolume
                 },
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            DevModeToggle(
+                value = gameState.devMode,
+                onValueChange = { gameState.devMode = it },
+            )
         }
     }
 }
@@ -113,6 +122,50 @@ internal fun VolumeSlider(
 
         Text(
             text = "${(value * 100).toInt()}%",
+            fontFamily = pixelFont(),
+            fontSize = 14.sp,
+            color = Color.White,
+            modifier = Modifier.width(48.dp),
+        )
+    }
+}
+
+@Composable
+internal fun DevModeToggle(
+    value: Boolean,
+    onValueChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier.width(320.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Dev Mode",
+            fontFamily = pixelFont(),
+            fontSize = 14.sp,
+            color = Color.White,
+            modifier = Modifier.width(120.dp),
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Switch(
+            checked = value,
+            onCheckedChange = onValueChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = Color(0xFF6B30F9),
+                checkedBorderColor = Color.White,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color(0xFF3A3A4E),
+                uncheckedBorderColor = Color.White,
+            ),
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = if (value) "ON" else "OFF",
             fontFamily = pixelFont(),
             fontSize = 14.sp,
             color = Color.White,

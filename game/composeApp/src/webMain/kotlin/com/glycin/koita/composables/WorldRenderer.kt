@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.ui.pixelFont
-import com.glycin.koita.BuildConfig
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
@@ -53,7 +52,7 @@ import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import org.jetbrains.compose.resources.imageResource
 
-//TODO: Probably need to remove all the "isDev" checks in the rendering hot path
+//TODO: Probably need to remove all the "devMode" checks in the rendering hot path
 @Composable
 fun WorldRenderer(
     gameState: GameState,
@@ -117,7 +116,7 @@ fun WorldRenderer(
                 filterQuality = FilterQuality.None
             )
 
-            if (BuildConfig.isDev) {
+            if (gameState.devMode) {
                 //Debug rects
                 drawRect(
                     color = if(chunk.isDirty) Color.Red else Color.Yellow,
@@ -148,7 +147,7 @@ fun WorldRenderer(
                 filterQuality = FilterQuality.None,
             )
 
-            if (BuildConfig.isDev) {
+            if (gameState.devMode) {
                 drawRect(
                     color = Color.Cyan,
                     topLeft = screenPos,
@@ -209,7 +208,7 @@ fun WorldRenderer(
                 )
             }
 
-            if (BuildConfig.isDev) {
+            if (gameState.devMode) {
                 val playerHitboxScreenPos = camera.worldToScreen(position.x, position.y)
                 drawRect(
                     color = Color.Green,
@@ -238,7 +237,7 @@ fun WorldRenderer(
             val drawX = screenPos.x + drawOffsetX
             val drawY = screenPos.y + drawOffsetY
 
-            if(BuildConfig.isDev) {
+            if(gameState.devMode) {
                 drawRect(
                     color = Color.Red,
                     topLeft = screenPos,
@@ -528,7 +527,7 @@ fun WorldRenderer(
             }
         }
 
-        if (BuildConfig.isDev) {
+        if (gameState.devMode) {
             // Debug stuff:
             val cameraScreenPos = camera.screenPosition
             drawOval(
