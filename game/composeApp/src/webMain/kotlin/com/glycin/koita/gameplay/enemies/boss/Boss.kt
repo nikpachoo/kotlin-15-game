@@ -85,6 +85,7 @@ class Boss(
 
     private var activeLaser: BossLaser? = null
     private var activeEyeBeam: BossEyeBeam? = null
+    private var activeBombField: BossBombField? = null
 
     private val commandQueue = ArrayDeque<BossCommand>()
     private var currentCommand: BossCommand? = null
@@ -144,6 +145,12 @@ class Boss(
             if (!eyeBeam.alive) activeEyeBeam = null
         }
 
+        val bombField = activeBombField
+        if (bombField != null) {
+            bombField.update(deltaTime)
+            if (!bombField.alive) activeBombField = null
+        }
+
         eye.update(center, player.center)
         updateAnimation(deltaTime)
         checkWeaponCollisions()
@@ -165,13 +172,14 @@ class Boss(
     }
 
     private fun pickRandomAttack(): BossCommand {
-        val options = (0 until 3).filter { it != lastAttack }
-        val pick = options[Random.nextInt(options.size)]
+        val options = (0 until 4).filter { it != lastAttack }
+        val pick = options.random()
         lastAttack = pick
         return when (pick) {
             0 -> { animState = BossAnimState.ATTACK_2; laserAttackCommand() }
             1 -> { animState = BossAnimState.ATTACK_2; eyeBeamCommand() }
-            else -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
+            2 -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
+            else -> { animState = BossAnimState.ATTACK_1; bombFieldCommand() }
         }
     }
 
@@ -239,6 +247,22 @@ class Boss(
                 )
             }
             activeEyeBeam?.alive != true
+        }
+    }
+
+    private fun bombFieldCommand(): BossCommand {
+        var started = false
+        return BossCommand { deltaTime ->
+            if (!started) {
+                started = true
+                activeBombField = BossBombField(
+                    world = world,
+                    player = player,
+                    collisionDetector = collisionDetector,
+                    particleSystem = particleSystem,
+                )
+            }
+            activeBombField?.alive != true
         }
     }
 
@@ -325,6 +349,10 @@ class Boss(
 
     fun forEachEyeBeam(action: (startX: Float, startY: Float, endX: Float, endY: Float, charging: Boolean) -> Unit) {
         activeEyeBeam?.renderBeam(action)
+    }
+
+    fun forEachBomb(action: (topLeftX: Float, topLeftY: Float, sizePx: Float, flashAlpha: Float) -> Unit) {
+        activeBombField?.forEachBomb(action)
     }
 
     fun forEachShieldTile(action: (x: Float, y: Float) -> Unit) {

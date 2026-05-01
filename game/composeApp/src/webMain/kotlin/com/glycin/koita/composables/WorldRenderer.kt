@@ -545,6 +545,15 @@ fun WorldRenderer(
                     )
                 }
             }
+
+            boss.forEachBomb { tlx, tly, sizePx, flashAlpha ->
+                val topLeft = camera.worldToScreen(tlx, tly)
+                drawRect(
+                    color = WorldRendererColors.BOSS_BOMB_FLASH.copy(alpha = flashAlpha),
+                    topLeft = topLeft,
+                    size = Size(sizePx, sizePx),
+                )
+            }
         }
 
         if (gameState.devMode) {
