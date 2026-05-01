@@ -74,8 +74,11 @@ class Boss(
     private val maxShieldTiles = 128
     private val shieldPositions = FloatArray(maxShieldTiles * 2)
     private val shieldActive = BooleanArray(maxShieldTiles)
+    private val shieldRegenQueue = FloatArray(maxShieldTiles)
     private var shieldCount = 0
+    private var regenPending = 0
     private val shieldSpawnInterval = 0.1f / 3f
+    private val shieldRegenDelay = 5f
     private val orbitRadius = 60f
     private val orbitSpeed = 3f
     private var orbitAngle = 0f
@@ -110,6 +113,7 @@ class Boss(
         }
 
         updateShieldOrbit(deltaTime)
+        updateShieldRegen(deltaTime)
 
         if (currentCommand == null) {
             if (commandQueue.isNotEmpty()) {
@@ -270,32 +274,46 @@ class Boss(
         player.weapons.forEach { weapon ->
             when (weapon) {
                 is MagicMissile -> {
-                    if (weapon.isAlive && overlaps(weapon.position, weapon.baseSize, weapon.baseSize)) {
+                    if (!weapon.isAlive) return@forEach
+                    if (hitShield(weapon.position, weapon.baseSize, weapon.baseSize)) {
+                        weapon.isAlive = false
+                    } else if (overlaps(weapon.position, weapon.baseSize, weapon.baseSize)) {
                         takeDamage(2f * gameState.damageMultiplier)
                         weapon.isAlive = false
                     }
                 }
                 is Laser -> {
-                    if (weapon.isActive && overlaps(weapon.end, 8f, 8f)) {
+                    if (!weapon.isActive) return@forEach
+                    if (lineHitsShield(weapon.start, weapon.end)) return@forEach
+                    if (overlaps(weapon.end, 8f, 8f)) {
                         takeDamage(0.25f * gameState.damageMultiplier)
                     }
                 }
                 is SuperSoaker -> {
                     weapon.droplets.forEach { droplet ->
-                        if (droplet.alive && overlaps(droplet.position, 4f, 4f)) {
+                        if (!droplet.alive) return@forEach
+                        if (hitShield(droplet.position, 4f, 4f)) {
+                            droplet.alive = false
+                        } else if (overlaps(droplet.position, 4f, 4f)) {
                             takeDamage(0.15f * gameState.damageMultiplier)
                         }
                     }
                 }
 
                 is Rocket -> {
-                    if (weapon.isAlive && overlaps(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
+                    if (!weapon.isAlive) return@forEach
+                    if (hitShield(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
+                        weapon.isAlive = false
+                    } else if (overlaps(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
                         takeDamage(4f * gameState.damageMultiplier)
                         weapon.isAlive = false
                     }
                 }
                 is Sniper -> {
-                    if (weapon.bulletActive && lineOverlaps(
+                    if (!weapon.bulletActive) return@forEach
+                    if (lineHitsShield(weapon.bulletStart, weapon.bulletEnd)) {
+                        weapon.bulletActive = false
+                    } else if (lineOverlaps(
                             weapon.bulletStart, weapon.bulletEnd,
                             position, width, height,
                         )
@@ -305,6 +323,88 @@ class Boss(
                     }
                 }
             }
+        }
+    }
+
+    private fun hitShield(pos: Vec2, w: Float, h: Float): Boolean {
+        val tileSize = WorldConstants.TILE_SIZE.toFloat()
+        for (i in 0 until maxShieldTiles) {
+            if (!shieldActive[i]) continue
+            val sx = shieldPositions[i * 2]
+            val sy = shieldPositions[i * 2 + 1]
+            if (pos.x < sx + tileSize && pos.x + w > sx &&
+                pos.y < sy + tileSize && pos.y + h > sy) {
+                destroyShield(i)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun lineHitsShield(start: Vec2, end: Vec2): Boolean {
+        val dx = end.x - start.x
+        val dy = end.y - start.y
+        val len = sqrt(dx * dx + dy * dy)
+        if (len == 0f) return hitShield(start, 1f, 1f)
+        val tileSize = WorldConstants.TILE_SIZE.toFloat()
+        val steps = (len / (tileSize * 0.5f)).toInt().coerceAtLeast(20)
+        for (s in 0..steps) {
+            val t = s.toFloat() / steps
+            val px = start.x + dx * t
+            val py = start.y + dy * t
+            for (i in 0 until maxShieldTiles) {
+                if (!shieldActive[i]) continue
+                val sx = shieldPositions[i * 2]
+                val sy = shieldPositions[i * 2 + 1]
+                if (px >= sx && px < sx + tileSize && py >= sy && py < sy + tileSize) {
+                    destroyShield(i)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun destroyShield(i: Int) {
+        val sx = shieldPositions[i * 2]
+        val sy = shieldPositions[i * 2 + 1]
+        shieldActive[i] = false
+        shieldCount--
+        shieldRegenQueue[i] = shieldRegenDelay
+        regenPending++
+
+        val dx = sx - center.x
+        val dy = sy - center.y
+        val mag = sqrt(dx * dx + dy * dy)
+        val speed = 80f + Random.nextFloat() * 80f
+        val vx = if (mag > 0.001f) dx / mag * speed else 0f
+        val vy = if (mag > 0.001f) dy / mag * speed else -speed
+        particleSystem.addParticle(
+            position = Vec2(sx, sy),
+            velocity = Vec2(vx, vy),
+            tile = Tile.GOLD_ORE,
+        )
+    }
+
+    private fun updateShieldRegen(deltaTime: Float) {
+        if (regenPending == 0) return
+        val cx = center.x
+        val cy = center.y
+        for (i in 0 until maxShieldTiles) {
+            if (shieldActive[i]) continue
+            val timer = shieldRegenQueue[i]
+            if (timer <= 0f) continue
+            val next = timer - deltaTime
+            if (next > 0f) {
+                shieldRegenQueue[i] = next
+                continue
+            }
+            shieldRegenQueue[i] = 0f
+            shieldPositions[i * 2] = cx
+            shieldPositions[i * 2 + 1] = cy
+            shieldActive[i] = true
+            shieldCount++
+            regenPending--
         }
     }
 
