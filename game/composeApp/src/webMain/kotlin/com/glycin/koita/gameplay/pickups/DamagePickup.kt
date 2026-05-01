@@ -9,7 +9,7 @@ class DamagePickup(
     onPickup: () -> Unit,
     position: Vec2,
 ): Pickup(onPickup, position) {
-    override val name = "Damage Up"
+    override val name = PickupCatalog.DAMAGE_UP
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.pickup_damage,
         frameWidth = 32,

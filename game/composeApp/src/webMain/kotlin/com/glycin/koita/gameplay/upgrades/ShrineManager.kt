@@ -4,6 +4,7 @@ import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
+import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.explodeTerrain
@@ -18,6 +19,7 @@ class ShrineManager(
     private val particleSystem: ParticleSystem,
     private val collisionDetector: CollisionDetector,
     private val world: World,
+    private val gameState: GameState,
 ) {
     private val shrines = mutableListOf<Shrine>()
     private val orbs = mutableListOf<UnlockOrb>()
@@ -62,6 +64,7 @@ class ShrineManager(
         val pickedOrb = orbs.firstOrNull { !it.isFlying && it.overlapsPlayer(player) }
         if (pickedOrb != null) {
             upgradeRepository.upgrade(pickedOrb.unlock.id)
+            gameState.pickupNotification = "Unlocked ${pickedOrb.unlock.name}!"
             orbs.removeAll { it.groupId == pickedOrb.groupId }
         }
     }

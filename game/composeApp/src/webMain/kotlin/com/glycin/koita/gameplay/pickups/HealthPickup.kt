@@ -9,7 +9,7 @@ class HealthPickup(
     onPickup: () -> Unit,
     position: Vec2,
 ): Pickup(onPickup, position) {
-    override val name = "Health Up"
+    override val name = PickupCatalog.HEALTH_UP
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.pickup_heart,
         frameWidth = 32,

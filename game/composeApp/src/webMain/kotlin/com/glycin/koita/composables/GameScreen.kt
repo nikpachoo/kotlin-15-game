@@ -115,7 +115,7 @@ fun GameScreen(gameState: GameState) {
     }
 
     val upgradeRepository = remember { UpgradeRepository.getStandardRepository(gameState) }
-    val shrineManager = remember { ShrineManager(player, upgradeRepository, particleSystem, collisionDetector, world) }
+    val shrineManager = remember { ShrineManager(player, upgradeRepository, particleSystem, collisionDetector, world, gameState) }
     val ultimateManager = remember {
         UltimateManager.createStandard(
             gameState = gameState,
@@ -269,7 +269,7 @@ fun GameScreen(gameState: GameState) {
             portal.boss,
         )
 
-        UiRenderer(gameState, player, camera, enemyManager, input)
+        UiRenderer(gameState, player, camera, enemyManager, input, upgradeRepository)
 
         if (gameState.devMode) {
             FpsCounter()

@@ -23,6 +23,7 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
+import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.Carousel
@@ -50,6 +51,7 @@ fun UiRenderer(
     camera: Camera,
     enemyManager: EnemyManager,
     input: Input,
+    upgradeRepository: UpgradeRepository,
 ) {
     val panelWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
 
@@ -218,7 +220,7 @@ fun UiRenderer(
         }
 
         if (gameState.isPaused) {
-            PauseMenu(gameState)
+            PauseMenu(gameState, upgradeRepository)
         }
     }
 }

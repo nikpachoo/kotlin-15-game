@@ -58,6 +58,7 @@ class PickupManager(
             if (player.overlapsWith(pickup.position, pickup.size, pickup.size)) {
                 pickup.onPickup()
                 gameState.pickupNotification = pickup.name
+                gameState.pickupCounts[pickup.name] = (gameState.pickupCounts[pickup.name] ?: 0) + 1
                 true
             } else {
                 false

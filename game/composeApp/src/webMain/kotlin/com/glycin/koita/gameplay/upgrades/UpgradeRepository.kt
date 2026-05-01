@@ -11,6 +11,8 @@ class UpgradeRepository(
 
     fun getAll(): List<Unlock> = unlocks
 
+    fun getUnlocked(): List<Unlock> = unlocks.filter { it.id in unlocked }
+
     fun isUnlocked(id: String): Boolean = id in unlocked
 
     //TODO: Add logic to unlock ultimates

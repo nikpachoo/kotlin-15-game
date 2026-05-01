@@ -9,7 +9,7 @@ class VisionPickup(
     onPickup: () -> Unit,
     position: Vec2,
 ): Pickup(onPickup, position) {
-    override val name = "Vision Up"
+    override val name = PickupCatalog.VISION_UP
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.pickup_light,
         frameWidth = 32,

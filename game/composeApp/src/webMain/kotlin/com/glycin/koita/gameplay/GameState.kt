@@ -2,6 +2,7 @@ package com.glycin.koita.gameplay
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.glycin.koita.core.PlayerSettings
@@ -50,6 +51,7 @@ class GameState {
     var visionFallOfMultiplier = 1.0f
     
     var pickupNotification by mutableStateOf<String?>(null)
+    val pickupCounts = mutableStateMapOf<String, Int>()
 
     var nextHealCost by mutableStateOf(PlayerSettings.HEAL_COST)
 
