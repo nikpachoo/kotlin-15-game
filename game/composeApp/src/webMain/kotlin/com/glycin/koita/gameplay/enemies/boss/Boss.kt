@@ -89,6 +89,7 @@ class Boss(
     private var activeLaser: BossLaser? = null
     private var activeEyeBeam: BossEyeBeam? = null
     private var activeBombField: BossBombField? = null
+    private var activePolarityFlip: BossPolarityFlip? = null
 
     private val commandQueue = ArrayDeque<BossCommand>()
     private var currentCommand: BossCommand? = null
@@ -155,6 +156,12 @@ class Boss(
             if (!bombField.alive) activeBombField = null
         }
 
+        val polarityFlip = activePolarityFlip
+        if (polarityFlip != null) {
+            polarityFlip.update(deltaTime)
+            if (!polarityFlip.alive) activePolarityFlip = null
+        }
+
         eye.update(center, player.center)
         updateAnimation(deltaTime)
         checkWeaponCollisions()
@@ -176,14 +183,15 @@ class Boss(
     }
 
     private fun pickRandomAttack(): BossCommand {
-        val options = (0 until 4).filter { it != lastAttack }
+        val options = (0 until 5).filter { it != lastAttack }
         val pick = options.random()
         lastAttack = pick
         return when (pick) {
             0 -> { animState = BossAnimState.ATTACK_2; laserAttackCommand() }
             1 -> { animState = BossAnimState.ATTACK_2; eyeBeamCommand() }
             2 -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
-            else -> { animState = BossAnimState.ATTACK_1; bombFieldCommand() }
+            3 -> { animState = BossAnimState.ATTACK_1; bombFieldCommand() }
+            else -> { animState = BossAnimState.ATTACK_2; polarityFlipCommand() }
         }
     }
 
@@ -267,6 +275,22 @@ class Boss(
                 )
             }
             activeBombField?.alive != true
+        }
+    }
+
+    private fun polarityFlipCommand(): BossCommand {
+        var started = false
+        return BossCommand { deltaTime ->
+            if (!started) {
+                started = true
+                activePolarityFlip = BossPolarityFlip(
+                    world = world,
+                    player = player,
+                    fluidSimulator = fluidSimulator,
+                    bossCenter = center,
+                )
+            }
+            activePolarityFlip?.alive != true
         }
     }
 

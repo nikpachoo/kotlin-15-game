@@ -52,7 +52,7 @@ class Confuser(
     private val attackFrames = 0..8
     private val deathFrames = 14..20
     private val hurtFrames = 21..27
-    private val idleFrames = 28..30
+    private val idleFrames = 31..40
     private val moveFrames = 31..40
 
     private val floatSpeed = 30f
