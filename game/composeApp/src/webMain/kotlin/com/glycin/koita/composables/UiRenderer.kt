@@ -36,6 +36,7 @@ import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
 import com.glycin.koita.ui.StatsPanel
+import com.glycin.koita.ui.UltimateUnlockedBanner
 import com.glycin.koita.ui.VirtualDpad
 
 private val HOTKEY_ENTRIES = listOf(
@@ -182,13 +183,8 @@ fun UiRenderer(
             modifier = Modifier.align(Alignment.TopCenter),
         )
 
-        Notification(
-            text = gameState.ultimateAvailable?.let { "Ultimate ready: $it (Press R)" },
-            offsetY = 200.dp,
-            modifier = Modifier.align(Alignment.TopCenter),
-            fadeInMs = 500,
-            displayMs = 3000,
-            fadeOutMs = 500,
+        UltimateUnlockedBanner(
+            text = gameState.ultimateAvailable,
         )
 
         Notification(

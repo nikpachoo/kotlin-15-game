@@ -27,7 +27,7 @@ class MagicMissile(
 ) : Weapon {
     override var isAlive = true
 
-    private var direction = direction.normalized()
+    val direction = direction.normalized()
 
     companion object {
         private const val BASE_SPEED = 600f

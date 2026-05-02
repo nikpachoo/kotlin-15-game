@@ -2,6 +2,7 @@ package com.glycin.koita.gameplay.modes
 
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Vec2
+import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.turrets.TurretManager
 import com.glycin.koita.physics.CollisionDetector
@@ -91,7 +92,7 @@ class BuildMode(
         if (selected == BuildBlock.TURRET) {
             turretManager.addTurret(tileX, tileY)
         }
-        gameState.collectedSimple -= BLOCK_COST
+        gameState.collectedSimple -= costFor(selected)
     }
 
     private fun writeTiles(tile: Tile, originTileX: Int, originTileY: Int) {
@@ -128,7 +129,7 @@ class BuildMode(
         ghostTileX = tileX
         ghostTileY = tileY
 
-        if (gameState.collectedSimple < BLOCK_COST) {
+        if (gameState.collectedSimple < costFor(gameState.selectedBlock)) {
             isGhostValid = false
             return
         }
@@ -158,7 +159,10 @@ class BuildMode(
         isGhostValid = true
     }
 
-    companion object {
-        private const val BLOCK_COST = 100
+    private fun costFor(block: BuildBlock): Int = when (block) {
+        BuildBlock.TURRET -> GameSettings.TURRET_COST
+        BuildBlock.BOUNCY -> GameSettings.BOUNCY_COST
+        BuildBlock.DYNAMITE -> GameSettings.DYNAMITE_COST
+        BuildBlock.STONE -> GameSettings.BLOCK_COST
     }
 }

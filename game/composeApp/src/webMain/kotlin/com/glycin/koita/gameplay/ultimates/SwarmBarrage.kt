@@ -8,8 +8,8 @@ import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.glycin.koita.composables.WorldRendererColors
 import com.glycin.koita.core.Camera
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.world.isOutOfWorldBounds
@@ -20,12 +20,6 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
-
-private val AURA_OUTER_COLOR = Color(0x33FF4444)
-private val AURA_INNER_COLOR = Color(0xAAFF6600)
-private val MISSILE_COLOR = Color(0xFFFF4400)
-private val MISSILE_CORE_COLOR = Color(0xFFFFCC00)
-private val MISSILE_TAIL_COLOR = Color(0x66FF6600)
 
 class SwarmBarrage(
     private val world: World,
@@ -156,12 +150,12 @@ class SwarmBarrage(
 
         val pulse = t.pulse(0.2f, 0.15f)
         drawCircle(
-            color = AURA_OUTER_COLOR,
+            color = WorldRendererColors.MISSILE_AURA_OUTER,
             radius = 60f * pulse,
             center = cx,
         )
         drawCircle(
-            color = AURA_INNER_COLOR,
+            color = WorldRendererColors.MISSILE_AURA_INNER,
             radius = 12f,
             center = cx,
         )
@@ -171,17 +165,17 @@ class SwarmBarrage(
             val i2 = i * 2
             val screenPos = camera.worldToScreen(missilePositions[i2], missilePositions[i2 + 1])
             drawCircle(
-                color = MISSILE_COLOR,
+                color = WorldRendererColors.MISSILE,
                 radius = 5f,
                 center = screenPos,
             )
             drawCircle(
-                color = MISSILE_CORE_COLOR,
+                color = WorldRendererColors.MISSILE_CORE,
                 radius = 2.5f,
                 center = screenPos,
             )
             drawRect(
-                color = MISSILE_TAIL_COLOR,
+                color = WorldRendererColors.MISSILE_TAIL,
                 topLeft = Offset(screenPos.x - missileDirections[i2] * 12f - 2f, screenPos.y - missileDirections[i2 + 1] * 12f - 2f),
                 size = Size(4f, 4f),
             )

@@ -179,7 +179,7 @@ private fun UnlockCard(unlock: Unlock) {
             .width(140.dp)
             .height(140.dp)
             .background(MenuColors.BACKGROUND)
-            .border(2.dp, MenuColors.SIDEBAR)
+            .border(2.dp, MenuColors.cardBorder(unlock.group))
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

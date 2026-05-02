@@ -8,7 +8,7 @@ import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import com.glycin.koita.world.isOutOfWorldBounds
 
-inline fun Float.lerp(b: Float, t: Float) = this + t * (b - this)
+fun Float.lerp(b: Float, t: Float) = this + t * (b - this)
 
 fun Vec2.isOutOfWorldBounds(): Boolean = isOutOfWorldBounds(x, y)
 

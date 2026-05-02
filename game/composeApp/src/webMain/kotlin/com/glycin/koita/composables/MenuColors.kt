@@ -1,6 +1,7 @@
 package com.glycin.koita.composables
 
 import androidx.compose.ui.graphics.Color
+import com.glycin.koita.gameplay.upgrades.UnlockGroup
 
 internal object MenuColors {
     val BACKGROUND = Color(0xFF1A1A2E)
@@ -19,4 +20,14 @@ internal object MenuColors {
     val MAIN_BACKGROUND_DARK = Color(0xFF1A0A2E)
     val MAIN_BACKGROUND_MID = Color(0xFF4B0AC9)
     val MAIN_BACKGROUND_LIGHT = Color(0xFF6B30F9)
+
+    val CARD_MOVEMENT_BORDER = Color(0xFF8C83FF)
+    val CARD_BUILD_BORDER = Color(0xFF8CFF83)
+    val CARD_WEAPON_BORDER = Color(0xFFFF8C63)
+
+    fun cardBorder(group: UnlockGroup): Color = when (group) {
+        UnlockGroup.MOVEMENT -> CARD_MOVEMENT_BORDER
+        UnlockGroup.BUILD -> CARD_BUILD_BORDER
+        UnlockGroup.WEAPON -> CARD_WEAPON_BORDER
+    }
 }

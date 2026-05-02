@@ -308,13 +308,14 @@ fun WorldRenderer(
             }
             drawText(titleResult, topLeft = Offset(titleX, titleY))
 
+            val orbGroup = orb.unlock.group
             drawOval(
-                color = WorldRendererColors.ORB_OUTER,
+                color = WorldRendererColors.orbOuter(orbGroup),
                 topLeft = Offset(screenPos.x - 4f, screenPos.y - 4f),
                 size = Size(orb.size + 8f, orb.size + 8f),
             )
             drawOval(
-                color = WorldRendererColors.ORB_INNER,
+                color = WorldRendererColors.orbInner(orbGroup),
                 topLeft = screenPos,
                 size = Size(orb.size, orb.size),
             )
@@ -404,10 +405,23 @@ fun WorldRenderer(
             when (attack) {
                 is MagicMissile -> {
                     val aScreenPos = camera.worldToScreen(attack.position.x, attack.position.y)
+                    drawCircle(
+                        color = WorldRendererColors.MISSILE,
+                        radius = 5f,
+                        center = aScreenPos,
+                    )
+                    drawCircle(
+                        color = WorldRendererColors.MISSILE_CORE,
+                        radius = 2.5f,
+                        center = aScreenPos,
+                    )
                     drawRect(
-                        color = Color.Red,
-                        topLeft = aScreenPos,
-                        size = Size(attack.baseSize, attack.baseSize),
+                        color = WorldRendererColors.MISSILE_TAIL,
+                        topLeft = Offset(
+                            aScreenPos.x - attack.direction.x * 12f - 2f,
+                            aScreenPos.y - attack.direction.y * 12f - 2f,
+                        ),
+                        size = Size(4f, 4f),
                     )
                 }
                 is Rocket -> {
@@ -427,10 +441,15 @@ fun WorldRenderer(
                     attack.droplets.forEach { droplet ->
                         if (droplet.alive) {
                             val dScreenPos = camera.worldToScreen(droplet.position.x, droplet.position.y)
-                            drawRect(
-                                color = Tile.WATER.color,
-                                topLeft = dScreenPos,
-                                size = Size(4f, 4f),
+                            drawCircle(
+                                color = WorldRendererColors.SOAKER_DROPLET,
+                                radius = 3f,
+                                center = dScreenPos,
+                            )
+                            drawCircle(
+                                color = WorldRendererColors.SOAKER_DROPLET_CORE,
+                                radius = 1.5f,
+                                center = dScreenPos,
                             )
                         }
                     }
