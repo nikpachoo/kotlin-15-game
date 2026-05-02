@@ -69,9 +69,7 @@ class BossLaser(
             val hit = collisionDetector.raycast(center, farEnd, laserLength.toInt())
             laserEndX[i] = hit.x
             laserEndY[i] = hit.y
-            val dx = hit.x - center.x
-            val dy = hit.y - center.y
-            laserHitDistSq[i] = dx * dx + dy * dy
+            laserHitDistSq[i] = Vec2.fastDistance(hit, center)
         }
 
         if (terrainDamageTimer <= 0f) {

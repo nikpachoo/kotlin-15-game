@@ -111,8 +111,9 @@ class EnemyManager(
 
     //TODO: Optimization, instead of filtering each time we call this, on update mark enemies in range or not and filter based on that boolean
     fun getEnemiesInRange(pos: Vec2, range: Float): List<Enemy> {
+        val rangeSq = range * range
         return enemies.filter { e ->
-            Vec2.distance(e.center, pos) <= range
+            Vec2.fastDistance(e.center, pos) <= rangeSq
         }
     }
 
@@ -138,9 +139,7 @@ class EnemyManager(
         for (i in 0..<enemies.size) {
             val e = enemies[i]
             if (!e.isAlive) continue
-            val dx = e.center.x - x
-            val dy = e.center.y - y
-            val distSq = dx * dx + dy * dy
+            val distSq = Vec2.fastDistance(x, y, e.center.x, e.center.y)
             if (distSq <= nearestDistSq) {
                 nearestDistSq = distSq
                 nearest = e
@@ -151,26 +150,16 @@ class EnemyManager(
 
     fun damageInRange(pos: Vec2, range: Float, damage: Float) {
         val rangeSq = range * range
-        val px = pos.x
-        val py = pos.y
         for (i in 0..<enemies.size) {
             val e = enemies[i]
             if (!e.isAlive) continue
-            val ec = e.center
-            val dx = ec.x - px
-            val dy = ec.y - py
-            if (dx * dx + dy * dy <= rangeSq) {
+            if (Vec2.fastDistance(e.center, pos) <= rangeSq) {
                 e.takeDamage(damage)
             }
         }
         val b = boss
-        if (b != null && b.isAlive) {
-            val bc = b.center
-            val dx = bc.x - px
-            val dy = bc.y - py
-            if (dx * dx + dy * dy <= rangeSq) {
-                b.takeDamage(damage)
-            }
+        if (b != null && b.isAlive && Vec2.fastDistance(b.center, pos) <= rangeSq) {
+            b.takeDamage(damage)
         }
     }
 
@@ -228,9 +217,7 @@ class EnemyManager(
             val e = enemies[i]
             if (!e.isAlive) continue
             val ec = e.center
-            val dx = ec.x - x
-            val dy = ec.y - y
-            val distSq = dx * dx + dy * dy
+            val distSq = Vec2.fastDistance(x, y, ec.x, ec.y)
             if (distSq <= nearestDistSq) {
                 nearestDistSq = distSq
                 nearestCenter = ec
@@ -239,10 +226,7 @@ class EnemyManager(
         val b = boss
         if (b != null && b.isAlive) {
             val bc = b.center
-            val dx = bc.x - x
-            val dy = bc.y - y
-            val distSq = dx * dx + dy * dy
-            if (distSq <= nearestDistSq) {
+            if (Vec2.fastDistance(x, y, bc.x, bc.y) <= nearestDistSq) {
                 nearestCenter = bc
             }
         }

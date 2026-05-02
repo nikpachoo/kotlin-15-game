@@ -116,7 +116,7 @@ class Spider(
             enemyFacing = if (direction.x >= 0) EnemyFacing.RIGHT else EnemyFacing.LEFT
 
             val step = moveSpeed * deltaTime
-            if (Vec2.distance(position, target) <= step) {
+            if (Vec2.fastDistance(position, target) <= step * step) {
                 position = target
                 moveTarget = null
             } else {

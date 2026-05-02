@@ -30,8 +30,9 @@ class ShrineManager(
     }
 
     fun getShrinesInRange(position: Vec2, range: Float): List<Shrine> {
+        val rangeSq = range * range
         return shrines.filter { shrine ->
-            Vec2.distance(shrine.center, position) <= range
+            Vec2.fastDistance(shrine.center, position) <= rangeSq
         }
     }
 

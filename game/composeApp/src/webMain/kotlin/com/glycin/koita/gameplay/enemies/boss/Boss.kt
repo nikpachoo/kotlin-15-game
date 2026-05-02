@@ -495,9 +495,7 @@ class Boss(
             if (!shieldActive[i]) continue
             val sx = shieldPositions[i * 2] + halfTile
             val sy = shieldPositions[i * 2 + 1] + halfTile
-            val dx = sx - px
-            val dy = sy - py
-            if (dx * dx + dy * dy <= rSq) {
+            if (Vec2.fastDistance(px, py, sx, sy) <= rSq) {
                 destroyShield(i)
             }
         }

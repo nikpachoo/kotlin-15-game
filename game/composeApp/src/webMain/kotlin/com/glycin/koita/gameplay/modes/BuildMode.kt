@@ -35,6 +35,7 @@ class BuildMode(
     private val swingAngle = 90f
     private val tileSize = 5
     private val maxBuildDistance = 250f
+    private val maxBuildDistanceSq = maxBuildDistance * maxBuildDistance
 
     var ghostTileX: Int? = null
         private set
@@ -117,9 +118,7 @@ class BuildMode(
         val tileX = cursorTileX - tileSize / 2
         val tileY = cursorTileY - tileSize / 2
 
-        val distanceToPlayer = Vec2.distance(mouse.worldPosition, pivotPoint)
-
-        if (distanceToPlayer > maxBuildDistance || !isValidTile(tileX, tileY)) {
+        if (Vec2.fastDistance(mouse.worldPosition, pivotPoint) > maxBuildDistanceSq || !isValidTile(tileX, tileY)) {
             ghostTileX = null
             ghostTileY = null
             isGhostValid = false

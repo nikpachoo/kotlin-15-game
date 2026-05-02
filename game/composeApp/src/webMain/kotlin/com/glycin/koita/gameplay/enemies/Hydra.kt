@@ -48,30 +48,42 @@ class Hydra( //TODO: Find some different behaviour for the hydra
 
     private val startPosition = position
     private var movingToTarget = true
+    private var stuckCooldown = 0f
 
     override fun updateBehavior(deltaTime: Float) {
+        if (stuckCooldown > 0f) {
+            stuckCooldown -= deltaTime
+            enemyState = EnemyState.IDLE
+            return
+        }
+
         val targetPos = if (movingToTarget) targetPosition else startPosition
         val direction = (targetPos - position).normalized()
 
         enemyFacing = if (direction.x >= 0) EnemyFacing.RIGHT else EnemyFacing.LEFT
         enemyState = EnemyState.FLYING
 
-        val distanceToTarget = Vec2.distance(position, targetPos)
-        if (distanceToTarget < patrolSpeed * deltaTime) {
+        val step = patrolSpeed * deltaTime
+        if (Vec2.fastDistance(position, targetPos) < step * step) {
             position = targetPos
             movingToTarget = !movingToTarget
             return
         }
 
-        val moveVector = direction * (patrolSpeed * deltaTime)
+        val moveVector = direction * step
         val newPos = position + moveVector
 
         if (collisionDetector.checkAABB(newPos, width, height)) {
             movingToTarget = !movingToTarget
+            stuckCooldown = STUCK_COOLDOWN
             return
         }
 
         position = newPos
+    }
+
+    companion object {
+        private const val STUCK_COOLDOWN = 0.3f
     }
 
     override fun updateAnimation(deltaTime: Float) {

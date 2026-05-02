@@ -59,6 +59,7 @@ class Slime(
     private var stuckTimer = 0f
     private val stuckThreshold = 0.3f
     private val stuckDistanceMin = 2f
+    private val stuckDistanceMinSq = stuckDistanceMin * stuckDistanceMin
 
     private var trailCooldown = 0f
     private val trailInterval = 0.25f
@@ -109,8 +110,7 @@ class Slime(
         }
 
         // Stuck detection: if barely moved, jump
-        val distanceMoved = Vec2.distance(position, lastPosition)
-        if (distanceMoved < stuckDistanceMin) {
+        if (Vec2.fastDistance(position, lastPosition) < stuckDistanceMinSq) {
             stuckTimer += deltaTime
             if (stuckTimer >= stuckThreshold && isGrounded) {
                 velocity = Vec2(0f, -jumpForce)

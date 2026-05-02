@@ -157,6 +157,9 @@ class WorldGenerator(
         val shrineWidthTiles = (shrineWidth / WorldConstants.TILE_SIZE).toInt()
         val shrineHeightTiles = (shrineHeight / WorldConstants.TILE_SIZE).toInt()
 
+        val minDistanceFromSpawnSq = minDistanceFromSpawn * minDistanceFromSpawn
+        val minDistanceBetweenShrinesSq = minDistanceBetweenShrines * minDistanceBetweenShrines
+
         val placedPositions = mutableListOf<Vec2>()
         val upgrades = upgradeRepository.getAll().shuffled().toMutableList()
 
@@ -190,8 +193,8 @@ class WorldGenerator(
                     y = y * WorldConstants.TILE_SIZE.toFloat(),
                 )
 
-                if (Vec2.distance(worldPos, spawnPosition) < minDistanceFromSpawn) continue
-                if (placedPositions.any { Vec2.distance(worldPos, it) < minDistanceBetweenShrines }) continue
+                if (Vec2.fastDistance(worldPos, spawnPosition) < minDistanceFromSpawnSq) continue
+                if (placedPositions.any { Vec2.fastDistance(worldPos, it) < minDistanceBetweenShrinesSq }) continue
 
                 val centerX = x + shrineWidthTiles / 2
                 val centerY = y + shrineHeightTiles / 2
@@ -233,6 +236,8 @@ class WorldGenerator(
     ) {
         val pickupTiles = 32 / WorldConstants.TILE_SIZE
         val border = 1
+        val minDistanceFromSpawnSq = minDistanceFromSpawn * minDistanceFromSpawn
+        val minDistanceBetweenPickupsSq = minDistanceBetweenPickups * minDistanceBetweenPickups
         val placedPositions = mutableListOf<Vec2>()
 
         for (zone in SpawnSettings.ALL_ZONES) {
@@ -274,8 +279,8 @@ class WorldGenerator(
                     y = y * WorldConstants.TILE_SIZE.toFloat(),
                 )
 
-                if (Vec2.distance(worldPos, spawnPosition) < minDistanceFromSpawn) continue
-                if (placedPositions.any { Vec2.distance(worldPos, it) < minDistanceBetweenPickups }) continue
+                if (Vec2.fastDistance(worldPos, spawnPosition) < minDistanceFromSpawnSq) continue
+                if (placedPositions.any { Vec2.fastDistance(worldPos, it) < minDistanceBetweenPickupsSq }) continue
 
                 val centerX = x + pickupTiles / 2
                 val centerY = y + pickupTiles / 2
@@ -575,6 +580,9 @@ class WorldGenerator(
         val widthInTiles = (enemyWidth / WorldConstants.TILE_SIZE).toInt() + 1
         val heightInTiles = (enemyHeight / WorldConstants.TILE_SIZE).toInt() + 1
 
+        val minDistanceFromSpawnSq = minDistanceFromSpawn * minDistanceFromSpawn
+        val minDistanceBetweenEnemiesSq = minDistanceBetweenEnemies * minDistanceBetweenEnemies
+
         val clampedMinY = maxOf(minTileY, minSpawnTileY)
         val searchStep = 8
         val searchPositions = mutableListOf<Pair<Int, Int>>()
@@ -616,11 +624,11 @@ class WorldGenerator(
                 y = y * WorldConstants.TILE_SIZE.toFloat()
             )
 
-            if (Vec2.distance(worldPos, spawnPosition) < minDistanceFromSpawn) continue
+            if (Vec2.fastDistance(worldPos, spawnPosition) < minDistanceFromSpawnSq) continue
 
             var tooClose = false
             for (existingLocation in existingLocations) {
-                if (Vec2.distance(worldPos, existingLocation) < minDistanceBetweenEnemies) {
+                if (Vec2.fastDistance(worldPos, existingLocation) < minDistanceBetweenEnemiesSq) {
                     tooClose = true
                     break
                 }
@@ -628,7 +636,7 @@ class WorldGenerator(
             if (tooClose) continue
 
             for (newLocation in newLocations) {
-                if (Vec2.distance(worldPos, newLocation) < minDistanceBetweenEnemies) {
+                if (Vec2.fastDistance(worldPos, newLocation) < minDistanceBetweenEnemiesSq) {
                     tooClose = true
                     break
                 }
