@@ -11,6 +11,7 @@ import com.glycin.koita.core.Player
 import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.explodeTerrain
@@ -33,9 +34,9 @@ class Kamehameha(
     private val mouse: Mouse,
     private val camera: Camera,
 ) : UltimateAttack(
-    id = "kamehameha",
+    id = UltimateId.KAMEHAMEHA,
     name = "Kamehameha",
-    requiredUnlockIds = setOf("ground_pound", "sniper", "turret"),
+    requiredUnlockIds = setOf(UnlockId.GROUND_POUND, UnlockId.SNIPER, UnlockId.TURRET),
 ) {
     private var phase = Phase.INACTIVE
     private var beamTimer = 0f

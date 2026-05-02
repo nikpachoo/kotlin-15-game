@@ -10,7 +10,6 @@ import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.world.World
 
-//TODO: Ultimate attacks should be enums instead of strings
 class UltimateManager(
     private val gameState: GameState,
     private val upgradeRepository: UpgradeRepository,
@@ -20,17 +19,18 @@ class UltimateManager(
         private set
     var availableUltimate: UltimateAttack? = null
         private set
+    private val usedUltimateIds = mutableSetOf<UltimateId>()
 
     fun checkCombinations() {
         if (availableUltimate != null || activeUltimate != null) return
 
-        for (ultimate in ultimates) {
-            if (ultimate.requiredUnlockIds.all { upgradeRepository.isUnlocked(it) }) {
-                availableUltimate = ultimate
-                gameState.ultimateAvailable = ultimate.name
-                return
-            }
-        }
+        val ready = ultimates.firstOrNull { ultimate ->
+            ultimate.id !in usedUltimateIds &&
+                ultimate.requiredUnlockIds.all(upgradeRepository::isUnlocked)
+        } ?: return
+
+        availableUltimate = ready
+        gameState.ultimateAvailable = ready.name
     }
 
     fun activateOrReactivate(player: Player) {
@@ -51,14 +51,16 @@ class UltimateManager(
         active.update(deltaTime, player)
 
         if (active.isFinished()) {
+            usedUltimateIds.add(active.id)
             activeUltimate = null
             availableUltimate = null
             gameState.ultimateActive = false
             gameState.ultimateAvailable = null
+            checkCombinations()
         }
     }
 
-    fun devUnlock(id: String) {
+    fun devUnlock(id: UltimateId) {
         val ultimate = ultimates.firstOrNull { it.id == id } ?: return
         availableUltimate = ultimate
         gameState.ultimateAvailable = ultimate.name

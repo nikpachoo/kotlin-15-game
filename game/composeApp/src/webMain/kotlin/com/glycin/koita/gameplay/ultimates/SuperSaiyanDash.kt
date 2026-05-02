@@ -9,6 +9,7 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.explodeTerrain
@@ -28,9 +29,9 @@ class SuperSaiyanDash(
     private val particleSystem: ParticleSystem,
     private val enemyManager: EnemyManager,
 ) : UltimateAttack(
-    id = "super_saiyan_dash",
+    id = UltimateId.SUPER_SAIYAN_DASH,
     name = "Super Saiyan Dash",
-    requiredUnlockIds = setOf("dash", "laser", "bouncy_blocks"),
+    requiredUnlockIds = setOf(UnlockId.DASH, UnlockId.LASER, UnlockId.BOUNCY_BLOCKS),
 ) {
     private var timer = 0f
 

@@ -13,13 +13,13 @@ import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.util.angleTo
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.util.pulse
 import com.glycin.koita.world.World
-import kotlin.math.PI
-import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -37,9 +37,9 @@ class RocketRide(
     private val enemyManager: EnemyManager,
     private val mouse: Mouse,
 ) : UltimateAttack(
-    id = "rocket_ride",
+    id = UltimateId.ROCKET_RIDE,
     name = "Ride the Rocket",
-    requiredUnlockIds = setOf("jetpack", "exploding_blocks", "rocket_launcher"),
+    requiredUnlockIds = setOf(UnlockId.JETPACK, UnlockId.EXPLODING_BLOCKS, UnlockId.ROCKET_LAUNCHER),
 ) {
     private var timer = 0f
     private var dismountRequested = false
@@ -115,7 +115,7 @@ class RocketRide(
         val t = frameCount.toFloat()
         val dirX = currentDirection.x
         val dirY = currentDirection.y
-        val angle = atan2(dirY, dirX) * (180f / PI.toFloat())
+        val angle = angleTo(0f, 0f, dirX, dirY)
 
         // Exhaust trail behind the rocket
         for (i in 0 until 10) {

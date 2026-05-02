@@ -3,11 +3,12 @@ package com.glycin.koita.gameplay.ultimates
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Player
+import com.glycin.koita.gameplay.upgrades.UnlockId
 
 abstract class UltimateAttack(
-    val id: String,
+    val id: UltimateId,
     val name: String,
-    val requiredUnlockIds: Set<String>,
+    val requiredUnlockIds: Set<UnlockId>,
 ) {
     var isActive = false
         protected set

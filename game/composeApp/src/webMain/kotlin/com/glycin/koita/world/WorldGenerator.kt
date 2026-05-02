@@ -421,29 +421,42 @@ class WorldGenerator(
     }
 
     private fun generateLavaPools(world: World) {
-        val maxDepth = (WorldConstants.WORLD_HEIGHT_TILES * 0.75f).toInt()
+        val deepMin = (WorldConstants.WORLD_HEIGHT_TILES * 0.75f).toInt()
+        fillLavaInRange(world, deepMin, WorldConstants.WORLD_HEIGHT_TILES, solidThreshold = 0.85f, pourThreshold = 0.86f)
 
-        for (y in maxDepth until WorldConstants.WORLD_HEIGHT_TILES) {
+        val nearSurfaceMin = (WorldConstants.WORLD_HEIGHT_TILES * 0.10f).toInt()
+        val nearSurfaceMax = (WorldConstants.WORLD_HEIGHT_TILES * 0.30f).toInt()
+        fillLavaInRange(world, nearSurfaceMin, nearSurfaceMax, solidThreshold = 0.89f, pourThreshold = 0.90f)
+    }
+
+    private fun fillLavaInRange(
+        world: World,
+        minY: Int,
+        maxY: Int,
+        solidThreshold: Float,
+        pourThreshold: Float,
+    ) {
+        for (y in minY until maxY) {
             for (x in 0 until WorldConstants.WORLD_WIDTH_TILES) {
                 val lavaNoise = biomeNoise.noise(x / 30f, y / 30f)
 
-                if (world[x, y].isSolid && lavaNoise > 0.85f) {
+                if (world[x, y].isSolid && lavaNoise > solidThreshold) {
                     world[x, y] = Tile.LAVA
                 }
 
                 if (world[x, y] == Tile.AIR && y < WorldConstants.WORLD_HEIGHT_TILES - 1) {
                     val below = world[x, y + 1]
 
-                    if (below.isSolid && lavaNoise > 0.86f) {
+                    if (below.isSolid && lavaNoise > pourThreshold) {
                         world[x, y] = Tile.LAVA
 
                         if (x > 0 && world[x - 1, y] == Tile.AIR &&
-                            world[x - 1, y + 1].isSolid && lavaNoise > 0.86f) {
+                            world[x - 1, y + 1].isSolid && lavaNoise > pourThreshold) {
                             world[x - 1, y] = Tile.LAVA
                         }
                         if (x < WorldConstants.WORLD_WIDTH_TILES - 1 &&
                             world[x + 1, y] == Tile.AIR &&
-                            world[x + 1, y + 1].isSolid && lavaNoise > 0.86f) {
+                            world[x + 1, y + 1].isSolid && lavaNoise > pourThreshold) {
                             world[x + 1, y] = Tile.LAVA
                         }
                     }

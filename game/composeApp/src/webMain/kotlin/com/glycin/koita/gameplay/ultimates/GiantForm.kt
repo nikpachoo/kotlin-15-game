@@ -6,6 +6,7 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.util.lerp
 import com.glycin.koita.util.pulse
 
@@ -17,9 +18,9 @@ class GiantForm(
     private val gameState: GameState,
     private val enemyManager: EnemyManager,
 ) : UltimateAttack(
-    id = "giant_form",
+    id = UltimateId.GIANT_FORM,
     name = "Giant Form",
-    requiredUnlockIds = setOf("slow_fall", "super_soaker", "resource_shield"),
+    requiredUnlockIds = setOf(UnlockId.SLOW_FALL, UnlockId.SUPER_SOAKER, UnlockId.RESOURCE_SHIELD),
 ) {
     private var timer = 0f
     private var currentScale = 1f

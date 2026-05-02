@@ -3,6 +3,7 @@ package com.glycin.koita.gameplay.ultimates
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import androidx.compose.ui.geometry.Offset
@@ -32,9 +33,9 @@ class SwarmBarrage(
     private val particleSystem: ParticleSystem,
     private val enemyManager: EnemyManager,
 ) : UltimateAttack(
-    id = "swarm_barrage",
+    id = UltimateId.SWARM_BARRAGE,
     name = "Swarm Barrage",
-    requiredUnlockIds = setOf("double_jump", "homing_missiles", "immutability"),
+    requiredUnlockIds = setOf(UnlockId.DOUBLE_JUMP, UnlockId.HOMING_MISSILES, UnlockId.INVULNERABLE),
 ) {
     private val missilePositions = FloatArray(MISSILE_POOL_SIZE * 2)
     private val missileDirections = FloatArray(MISSILE_POOL_SIZE * 2)

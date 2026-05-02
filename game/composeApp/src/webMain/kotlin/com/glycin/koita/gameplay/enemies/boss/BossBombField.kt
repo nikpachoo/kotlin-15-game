@@ -8,6 +8,7 @@ import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.TWO_PI
 import com.glycin.koita.util.explodeTerrain
+import com.glycin.koita.util.lerp
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
@@ -75,7 +76,7 @@ class BossBombField(
             fuseTimers[i] -= deltaTime
             val urgency = urgencyOf(i)
             if (urgency > 0f) {
-                pulsePhases[i] += (basePulse + urgency * (maxPulse - basePulse)) * deltaTime
+                pulsePhases[i] += basePulse.lerp(maxPulse, urgency) * deltaTime
             }
             if (fuseTimers[i] <= 0f) detonate(i)
         }
