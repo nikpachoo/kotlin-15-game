@@ -19,6 +19,18 @@ data class Vec2(
             val dy = b.y - a.y
             return sqrt(dx * dx + dy * dy)
         }
+
+        fun fastDistance(a: Vec2, b: Vec2): Float {
+            val dx = b.x - a.x
+            val dy = b.y - a.y
+            return dx * dx + dy * dy
+        }
+
+        fun fastDistance(ax: Float, ay: Float, bx: Float, by: Float): Float {
+            val dx = bx - ax
+            val dy = by - ay
+            return dx * dx + dy * dy
+        }
     }
 
     operator fun plus(other: Vec2) = Vec2(x + other.x, y + other.y)

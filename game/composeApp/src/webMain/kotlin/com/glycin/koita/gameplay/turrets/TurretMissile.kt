@@ -38,9 +38,7 @@ class TurretMissile(
 
         position = newPos
 
-        val enemy = enemyManager.findFirstEnemyCollidingWith(position.x, position.y, SIZE, SIZE)
-        if (enemy != null) {
-            enemy.takeDamage(DAMAGE * gameState.damageMultiplier)
+        if (enemyManager.damageFirstColliding(position.x, position.y, SIZE, SIZE, DAMAGE * gameState.damageMultiplier)) {
             isAlive = false
         }
     }

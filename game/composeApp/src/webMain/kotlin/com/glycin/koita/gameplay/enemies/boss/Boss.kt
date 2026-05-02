@@ -302,7 +302,7 @@ class Boss(
                     if (hitShield(weapon.position, weapon.baseSize, weapon.baseSize)) {
                         weapon.isAlive = false
                     } else if (overlaps(weapon.position, weapon.baseSize, weapon.baseSize)) {
-                        takeDamage(2f * gameState.damageMultiplier)
+                        applyDamage(2f * gameState.damageMultiplier)
                         weapon.isAlive = false
                     }
                 }
@@ -310,7 +310,7 @@ class Boss(
                     if (!weapon.isActive) return@forEach
                     if (lineHitsShield(weapon.start, weapon.end)) return@forEach
                     if (overlaps(weapon.end, 8f, 8f)) {
-                        takeDamage(0.25f * gameState.damageMultiplier)
+                        applyDamage(0.25f * gameState.damageMultiplier)
                     }
                 }
                 is SuperSoaker -> {
@@ -319,7 +319,7 @@ class Boss(
                         if (hitShield(droplet.position, 4f, 4f)) {
                             droplet.alive = false
                         } else if (overlaps(droplet.position, 4f, 4f)) {
-                            takeDamage(0.15f * gameState.damageMultiplier)
+                            applyDamage(0.15f * gameState.damageMultiplier)
                         }
                     }
                 }
@@ -327,9 +327,9 @@ class Boss(
                 is Rocket -> {
                     if (!weapon.isAlive) return@forEach
                     if (hitShield(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
-                        weapon.isAlive = false
+                        weapon.detonate()
                     } else if (overlaps(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
-                        takeDamage(4f * gameState.damageMultiplier)
+                        applyDamage(4f * gameState.damageMultiplier)
                         weapon.isAlive = false
                     }
                 }
@@ -342,7 +342,7 @@ class Boss(
                             position, width, height,
                         )
                     ) {
-                        takeDamage(weapon.bulletDamage * gameState.damageMultiplier)
+                        applyDamage(weapon.bulletDamage * gameState.damageMultiplier)
                         weapon.bulletActive = false
                     }
                 }
@@ -459,11 +459,47 @@ class Boss(
 
     fun takeDamage(amount: Float) {
         if (!isAlive) return
+        if (shieldCount > 0) {
+            consumeFirstActiveShield()
+            return
+        }
+        applyDamage(amount)
+    }
+
+    private fun applyDamage(amount: Float) {
+        if (!isAlive) return
         health -= amount
         if (health <= 0f) {
             health = 0f
             isAlive = false
             gameState.bossHealthPercent = 0f
+        }
+    }
+
+    private fun consumeFirstActiveShield() {
+        for (i in 0 until maxShieldTiles) {
+            if (shieldActive[i]) {
+                destroyShield(i)
+                return
+            }
+        }
+    }
+
+    fun destroyShieldsInRadius(pos: Vec2, radius: Float) {
+        if (shieldCount == 0) return
+        val px = pos.x
+        val py = pos.y
+        val rSq = radius * radius
+        val halfTile = WorldConstants.TILE_SIZE * 0.5f
+        for (i in 0 until maxShieldTiles) {
+            if (!shieldActive[i]) continue
+            val sx = shieldPositions[i * 2] + halfTile
+            val sy = shieldPositions[i * 2 + 1] + halfTile
+            val dx = sx - px
+            val dy = sy - py
+            if (dx * dx + dy * dy <= rSq) {
+                destroyShield(i)
+            }
         }
     }
 

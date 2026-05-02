@@ -25,9 +25,9 @@ class Turret(
 
         shootCooldown -= deltaTime
         if (shootCooldown <= 0f) {
-            val target = enemyManager.findNearestAliveEnemy(position, RANGE)
-            if (target != null) {
-                val direction = (target.center - position).normalized()
+            val targetCenter = enemyManager.findNearestTargetCenter(position, RANGE)
+            if (targetCenter != null) {
+                val direction = (targetCenter - position).normalized()
                 missiles.add(
                     TurretMissile(
                         position = position.copy(),

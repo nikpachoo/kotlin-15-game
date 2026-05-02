@@ -84,15 +84,15 @@ class SwarmBarrage(
             val px = missilePositions[i2]
             val py = missilePositions[i2 + 1]
 
-            val nearest = enemyManager.findNearestAliveEnemy(px, py, HOMING_RANGE)
-            if (nearest != null) {
+            val targetCenter = enemyManager.findNearestTargetCenter(px, py, HOMING_RANGE)
+            if (targetCenter != null) {
                 steerToward(
                     directions = missileDirections,
                     i2 = i2,
                     originX = px,
                     originY = py,
-                    targetX = nearest.center.x,
-                    targetY = nearest.center.y,
+                    targetX = targetCenter.x,
+                    targetY = targetCenter.y,
                     strength = HOMING_STRENGTH,
                     deltaTime = deltaTime,
                 )
@@ -106,9 +106,7 @@ class SwarmBarrage(
                 continue
             }
 
-            val hitEnemy = enemyManager.findFirstEnemyCollidingWith(newX - MISSILE_SIZE / 2, newY - MISSILE_SIZE / 2, MISSILE_SIZE, MISSILE_SIZE)
-            if (hitEnemy != null) {
-                hitEnemy.takeDamage(DAMAGE_PER_MISSILE)
+            if (enemyManager.damageFirstColliding(newX - MISSILE_SIZE / 2, newY - MISSILE_SIZE / 2, MISSILE_SIZE, MISSILE_SIZE, DAMAGE_PER_MISSILE)) {
                 explodeMissile(newX, newY)
                 missileActive[i] = false
                 continue

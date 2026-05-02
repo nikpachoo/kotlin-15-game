@@ -16,7 +16,6 @@ import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
-import kotlin.math.abs
 import com.glycin.koita.util.pulse
 
 private val CHARGE_AURA_COLOR = Color(0x4400AAFF)
@@ -72,9 +71,7 @@ class Kamehameha(
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, impactPoint, GROUND_POUND_RADIUS, world, particleSystem)
 
-        enemyManager.getEnemiesInRange(impactPoint, GROUND_POUND_RADIUS).forEach { enemy ->
-            enemy.takeDamage(GROUND_POUND_DAMAGE)
-        }
+        enemyManager.damageInRange(impactPoint, GROUND_POUND_RADIUS, GROUND_POUND_DAMAGE)
 
         phase = Phase.BEAM
         beamTimer = BEAM_DURATION
@@ -126,19 +123,13 @@ class Kamehameha(
             dist += EXPLOSION_SPACING
         }
 
-        val enemies = enemyManager.getEnemiesInRange(origin, beamEndDistance)
-        for (i in enemies.indices) {
-            val enemy = enemies[i]
-            val toEnemyX = enemy.center.x - originX
-            val toEnemyY = enemy.center.y - originY
-            val proj = toEnemyX * dirX + toEnemyY * dirY
-            if (proj > 0f && proj < beamEndDistance) {
-                val perpDist = abs(toEnemyX * dirY - toEnemyY * dirX)
-                if (perpDist < BEAM_WIDTH) {
-                    enemy.takeDamage(BEAM_DAMAGE_PER_SECOND * deltaTime)
-                }
-            }
-        }
+        enemyManager.damageInBeam(
+            origin = origin,
+            direction = beamDirection,
+            length = beamEndDistance,
+            width = BEAM_WIDTH,
+            damage = BEAM_DAMAGE_PER_SECOND * deltaTime,
+        )
     }
 
     override fun deactivate(player: Player) {

@@ -81,6 +81,10 @@ class Rocket(
         position = newPos
     }
 
+    fun detonate() {
+        deactivate(explode = true)
+    }
+
     private fun deactivate(explode: Boolean) {
         if (explode) explode()
         isAlive = false
@@ -102,5 +106,6 @@ class Rocket(
         val affectedTiles = collisionDetector.getTilesInRadius(position, impactRadius)
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
+        enemyManager.destroyShieldsInRadius(position, impactRadius)
     }
 }

@@ -59,10 +59,7 @@ class GiantForm(
         val center = player.center
         val auraRadius = AURA_RADIUS * currentScale
 
-        val enemies = enemyManager.getEnemiesInRange(center, auraRadius)
-        for (i in enemies.indices) {
-            enemies[i].takeDamage(DAMAGE_PER_SECOND * deltaTime)
-        }
+        enemyManager.damageInRange(center, auraRadius, DAMAGE_PER_SECOND * deltaTime)
     }
 
     override fun deactivate(player: Player) {

@@ -3,6 +3,7 @@ package com.glycin.koita.gameplay.enemies
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameSettings
+import com.glycin.koita.gameplay.enemies.boss.Boss
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
@@ -16,10 +17,15 @@ class EnemyManager(
     private val pickupManager: PickupManager,
 ) {
     private val enemies = mutableListOf<Enemy>()
+    private var boss: Boss? = null
     private val activationRange = (GameSettings.BASE_LIGHT_RADIUS + GameSettings.FALL_OFF_DISTANCE) * 2
 
     fun add(enemy: Enemy) {
         enemies.add(enemy)
+    }
+
+    fun setBoss(boss: Boss?) {
+        this.boss = boss
     }
 
     private fun isInRange(enemy: Enemy, playerY: Float): Boolean =
@@ -86,6 +92,7 @@ class EnemyManager(
 
     fun clearAll() {
         enemies.clear()
+        boss = null
     }
 
     //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
@@ -140,5 +147,142 @@ class EnemyManager(
             }
         }
         return nearest
+    }
+
+    fun damageInRange(pos: Vec2, range: Float, damage: Float) {
+        val rangeSq = range * range
+        val px = pos.x
+        val py = pos.y
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (!e.isAlive) continue
+            val ec = e.center
+            val dx = ec.x - px
+            val dy = ec.y - py
+            if (dx * dx + dy * dy <= rangeSq) {
+                e.takeDamage(damage)
+            }
+        }
+        val b = boss
+        if (b != null && b.isAlive) {
+            val bc = b.center
+            val dx = bc.x - px
+            val dy = bc.y - py
+            if (dx * dx + dy * dy <= rangeSq) {
+                b.takeDamage(damage)
+            }
+        }
+    }
+
+    fun damageFirstColliding(px: Float, py: Float, w: Float, h: Float, damage: Float): Boolean {
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (e.isAlive &&
+                px < e.position.x + e.width &&
+                px + w > e.position.x &&
+                py < e.position.y + e.height &&
+                py + h > e.position.y
+            ) {
+                e.takeDamage(damage)
+                return true
+            }
+        }
+        val b = boss
+        if (b != null && b.isAlive &&
+            px < b.position.x + b.width &&
+            px + w > b.position.x &&
+            py < b.position.y + b.height &&
+            py + h > b.position.y
+        ) {
+            b.takeDamage(damage)
+            return true
+        }
+        return false
+    }
+
+    fun anyHostileColliding(px: Float, py: Float, w: Float, h: Float): Boolean {
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (e.isAlive &&
+                px < e.position.x + e.width &&
+                px + w > e.position.x &&
+                py < e.position.y + e.height &&
+                py + h > e.position.y
+            ) return true
+        }
+        val b = boss
+        return b != null && b.isAlive &&
+                px < b.position.x + b.width &&
+                px + w > b.position.x &&
+                py < b.position.y + b.height &&
+                py + h > b.position.y
+    }
+
+    fun findNearestTargetCenter(pos: Vec2, range: Float): Vec2? =
+        findNearestTargetCenter(pos.x, pos.y, range)
+
+    fun findNearestTargetCenter(x: Float, y: Float, range: Float): Vec2? {
+        var nearestCenter: Vec2? = null
+        var nearestDistSq = range * range
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (!e.isAlive) continue
+            val ec = e.center
+            val dx = ec.x - x
+            val dy = ec.y - y
+            val distSq = dx * dx + dy * dy
+            if (distSq <= nearestDistSq) {
+                nearestDistSq = distSq
+                nearestCenter = ec
+            }
+        }
+        val b = boss
+        if (b != null && b.isAlive) {
+            val bc = b.center
+            val dx = bc.x - x
+            val dy = bc.y - y
+            val distSq = dx * dx + dy * dy
+            if (distSq <= nearestDistSq) {
+                nearestCenter = bc
+            }
+        }
+        return nearestCenter
+    }
+
+    fun destroyShieldsInRadius(pos: Vec2, radius: Float) {
+        boss?.destroyShieldsInRadius(pos, radius)
+    }
+
+    fun damageInBeam(origin: Vec2, direction: Vec2, length: Float, width: Float, damage: Float) {
+        val ox = origin.x
+        val oy = origin.y
+        val dirX = direction.x
+        val dirY = direction.y
+        for (i in 0..<enemies.size) {
+            val e = enemies[i]
+            if (!e.isAlive) continue
+            val ec = e.center
+            val toX = ec.x - ox
+            val toY = ec.y - oy
+            val proj = toX * dirX + toY * dirY
+            if (proj <= 0f || proj >= length) continue
+            val perpDist = abs(toX * dirY - toY * dirX)
+            if (perpDist < width) {
+                e.takeDamage(damage)
+            }
+        }
+        val b = boss
+        if (b != null && b.isAlive) {
+            val bc = b.center
+            val toX = bc.x - ox
+            val toY = bc.y - oy
+            val proj = toX * dirX + toY * dirY
+            if (proj > 0f && proj < length) {
+                val perpDist = abs(toX * dirY - toY * dirX)
+                if (perpDist < width) {
+                    b.takeDamage(damage)
+                }
+            }
+        }
     }
 }

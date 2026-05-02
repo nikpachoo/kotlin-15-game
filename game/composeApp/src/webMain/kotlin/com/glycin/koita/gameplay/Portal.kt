@@ -51,7 +51,7 @@ class Portal(
                     collisionDetector = collisionDetector,
                     particleSystem = particleSystem,
                     gameState = gameState,
-                )
+                ).also { enemyManager.setBoss(it) }
                 gameState.bossSpawned = true
             }
         }

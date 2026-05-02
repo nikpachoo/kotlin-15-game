@@ -59,9 +59,7 @@ class SuperSaiyanDash(
             return
         }
 
-        enemyManager.getEnemiesInRange(center, DESTRUCTION_RADIUS).forEach { enemy ->
-            enemy.takeDamage(DAMAGE_PER_TICK * deltaTime)
-        }
+        enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime)
     }
 
     override fun deactivate(player: Player) {

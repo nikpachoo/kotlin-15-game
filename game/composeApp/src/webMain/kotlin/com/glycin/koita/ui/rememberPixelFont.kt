@@ -10,12 +10,11 @@ import koita.composeapp.generated.resources.pixeloid_mono
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun pixelFont(): FontFamily = remember {
-    FontFamily(
-        Font(
-            resource = Res.font.pixeloid_mono,
-            weight = FontWeight.Normal,
-            style = FontStyle.Normal,
-        )
+fun pixelFont(): FontFamily {
+    val font = Font(
+        resource = Res.font.pixeloid_mono,
+        weight = FontWeight.Normal,
+        style = FontStyle.Normal,
     )
+    return remember(font) { FontFamily(font) }
 }

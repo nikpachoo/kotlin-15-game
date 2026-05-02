@@ -320,7 +320,7 @@ class Player(
                 position = newPosY
                 isGrounded = false
 
-                if (isGroundPounding && enemyManager.findFirstEnemyCollidingWith(position.x, position.y, width, height) != null) {
+                if (isGroundPounding && enemyManager.anyHostileColliding(position.x, position.y, width, height)) {
                     groundPoundImpact()
                     velocity = Vec2(0f, -PlayerSettings.GROUND_POUND_BOUNCE_FORCE)
                     hasDoubleJumped = false
@@ -584,9 +584,11 @@ class Player(
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, impactPoint, PlayerSettings.GROUND_POUND_RADIUS, world, particleSystem)
 
-        enemyManager.getEnemiesInRange(impactPoint, PlayerSettings.GROUND_POUND_RADIUS).forEach { enemy ->
-            enemy.takeDamage(PlayerSettings.GROUND_POUND_DAMAGE * gameState.damageMultiplier)
-        }
+        enemyManager.damageInRange(
+            impactPoint,
+            PlayerSettings.GROUND_POUND_RADIUS,
+            PlayerSettings.GROUND_POUND_DAMAGE * gameState.damageMultiplier,
+        )
     }
 
     private fun tilesAboveGround(): Int {
