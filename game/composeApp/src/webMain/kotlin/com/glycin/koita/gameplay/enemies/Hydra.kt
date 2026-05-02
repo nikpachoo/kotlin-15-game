@@ -75,15 +75,11 @@ class Hydra( //TODO: Find some different behaviour for the hydra
 
         if (collisionDetector.checkAABB(newPos, width, height)) {
             movingToTarget = !movingToTarget
-            stuckCooldown = STUCK_COOLDOWN
+            stuckCooldown = 0.3f
             return
         }
 
         position = newPos
-    }
-
-    companion object {
-        private const val STUCK_COOLDOWN = 0.3f
     }
 
     override fun updateAnimation(deltaTime: Float) {
