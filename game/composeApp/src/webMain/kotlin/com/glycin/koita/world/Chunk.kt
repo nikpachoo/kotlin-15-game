@@ -5,6 +5,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 
+private val tilePaints: Array<Paint> = Array(Tile.entries.size) { i ->
+    Paint().apply { color = Tile.entries[i].color }
+}
+
+private val transparentPaint: Paint = Paint().apply { color = Color.Transparent }
+
 class Chunk(
     val xGridPos: Int,
     val yGridPos: Int,
@@ -70,7 +76,7 @@ class Chunk(
             top = 0f,
             right = WorldConstants.CHUNK_PIXEL_WIDTH.toFloat(),
             bottom = WorldConstants.CHUNK_PIXEL_HEIGHT.toFloat(),
-            paint = Paint().apply { color = Color.Transparent }
+            paint = transparentPaint,
         )
 
         forEach { localX, localY, tile ->
@@ -81,7 +87,7 @@ class Chunk(
                 top = (localY * WorldConstants.TILE_SIZE).toFloat(),
                 right = ((localX + 1) * WorldConstants.TILE_SIZE).toFloat(),
                 bottom = ((localY + 1) * WorldConstants.TILE_SIZE).toFloat(),
-                paint = Paint().apply { color = tile.color }
+                paint = tilePaints[tile.ordinal],
             )
         }
 

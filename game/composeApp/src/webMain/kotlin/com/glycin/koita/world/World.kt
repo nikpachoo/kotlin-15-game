@@ -43,14 +43,18 @@ class World(
     }
 
     operator fun get(worldX: Int, worldY: Int): Tile {
-        val (chunkX, chunkY) = worldToChunkCoords(worldX, worldY)
-        val (localX, localY) = worldToLocalCoords(worldX, worldY)
+        val chunkX = worldX / WorldConstants.CHUNK_SIZE
+        val chunkY = worldY / WorldConstants.CHUNK_SIZE
+        val localX = worldX % WorldConstants.CHUNK_SIZE
+        val localY = worldY % WorldConstants.CHUNK_SIZE
         return getChunk(chunkX, chunkY)?.getTileAt(localX, localY) ?: Tile.AIR
     }
 
     operator fun set(worldX: Int, worldY: Int, tile: Tile) {
-        val (chunkX, chunkY) = worldToChunkCoords(worldX, worldY)
-        val (localX, localY) = worldToLocalCoords(worldX, worldY)
+        val chunkX = worldX / WorldConstants.CHUNK_SIZE
+        val chunkY = worldY / WorldConstants.CHUNK_SIZE
+        val localX = worldX % WorldConstants.CHUNK_SIZE
+        val localY = worldY % WorldConstants.CHUNK_SIZE
         getChunk(chunkX, chunkY)?.setTileAt(localX, localY, tile)
     }
 
@@ -59,11 +63,4 @@ class World(
     // Pack chunk coordinates into a single Long for the HashMap key
     private fun packChunkCoords(chunkX: Int, chunkY: Int): Long =
         (chunkX.toLong() shl 32) or (chunkY.toLong() and 0xFFFFFFFF)
-
-    private fun worldToChunkCoords(worldX: Int, worldY: Int): Pair<Int, Int> =
-        Pair(worldX / WorldConstants.CHUNK_SIZE, worldY / WorldConstants.CHUNK_SIZE)
-
-    private fun worldToLocalCoords(worldX: Int, worldY: Int): Pair<Int, Int> =
-        Pair(worldX % WorldConstants.CHUNK_SIZE, worldY % WorldConstants.CHUNK_SIZE)
-
 }
