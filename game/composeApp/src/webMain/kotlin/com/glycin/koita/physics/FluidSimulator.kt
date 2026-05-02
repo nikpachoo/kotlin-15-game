@@ -10,28 +10,32 @@ class FluidSimulator(
     private val world: World,
     private val camera: Camera,
 ) {
-    private val allFluids = mutableSetOf<Pair<Int, Int>>()
-    private var updateCount = 0L // Used to update at half the framerate
+    private val initialFluidCapacity = 1024
+
+    private val allFluids = mutableSetOf<Long>()
+    private var updateCount = 0L
+
+    private var fluidsToUpdate = LongArray(initialFluidCapacity)
+    private var fluidsToUpdateCount = 0
 
     init {
-        allFluids.clear()
         for (y in 0 until WorldConstants.WORLD_HEIGHT_TILES) {
             for (x in 0 until WorldConstants.WORLD_WIDTH_TILES) {
                 val tile = world[x, y]
                 if (tile == Tile.WATER || tile == Tile.LAVA) {
-                    allFluids.add(Pair(x, y))
+                    allFluids.add(pack(x, y))
                 }
             }
         }
     }
 
     fun registerFluid(x: Int, y: Int) {
-        allFluids.add(Pair(x, y))
+        allFluids.add(pack(x, y))
     }
 
     fun update() {
         updateCount++
-        if(updateCount % 2 == 0L) return
+        if (updateCount % 2 == 0L) return
 
         val bufferChunks = 10
 
@@ -46,26 +50,44 @@ class FluidSimulator(
         val startY = minTileY.coerceIn(0, WorldConstants.WORLD_HEIGHT_TILES - 1)
         val endY = maxTileY.coerceIn(0, WorldConstants.WORLD_HEIGHT_TILES - 1)
 
-        val fluidsToUpdate = mutableListOf<Pair<Int, Int>>()
-
-        for ((x, y) in allFluids) {
+        fluidsToUpdateCount = 0
+        for (key in allFluids) {
+            val x = unpackX(key)
+            val y = unpackY(key)
             if (x in startX..endX && y in startY..endY) {
-                fluidsToUpdate.add(Pair(x, y))
+                ensureCapacity()
+                fluidsToUpdate[fluidsToUpdateCount++] = key
             }
         }
 
-        fluidsToUpdate.sortByDescending { it.second }
+        // Y is in the high bits, so sorting Longs ascending == sorting by Y ascending.
+        // Iterating backward gives Y-descending traversal (process bottom rows first).
+        fluidsToUpdate.sort(0, fluidsToUpdateCount)
 
-        for ((x, y) in fluidsToUpdate) {
+        for (i in fluidsToUpdateCount - 1 downTo 0) {
+            val key = fluidsToUpdate[i]
+            val x = unpackX(key)
+            val y = unpackY(key)
             val tile = world[x, y]
             if (tile != Tile.WATER && tile != Tile.LAVA) {
-                allFluids.remove(Pair(x, y))
+                allFluids.remove(key)
                 continue
             }
-
             updateFluid(x, y, tile)
         }
     }
+
+    private fun ensureCapacity() {
+        if (fluidsToUpdateCount >= fluidsToUpdate.size) {
+            fluidsToUpdate = fluidsToUpdate.copyOf(fluidsToUpdate.size * 2)
+        }
+    }
+
+    private fun pack(x: Int, y: Int): Long =
+        (y.toLong() shl 32) or (x.toLong() and 0xFFFFFFFFL)
+
+    private fun unpackX(key: Long): Int = key.toInt()
+    private fun unpackY(key: Long): Int = (key shr 32).toInt()
 
     private fun oppositeFluid(fluid: Tile): Tile = if (fluid == Tile.WATER) Tile.LAVA else Tile.WATER
 
@@ -77,18 +99,24 @@ class FluidSimulator(
     private fun solidify(x: Int, y: Int, targetX: Int, targetY: Int) {
         world[x, y] = Tile.STONE
         world[targetX, targetY] = Tile.STONE
-        allFluids.remove(Pair(x, y))
-        allFluids.remove(Pair(targetX, targetY))
+        allFluids.remove(pack(x, y))
+        allFluids.remove(pack(targetX, targetY))
+    }
+
+    private fun moveFluid(fromKey: Long, fromX: Int, fromY: Int, toX: Int, toY: Int, fluid: Tile) {
+        world[toX, toY] = fluid
+        world[fromX, fromY] = Tile.AIR
+        allFluids.remove(fromKey)
+        allFluids.add(pack(toX, toY))
     }
 
     private fun updateFluid(x: Int, y: Int, fluid: Tile) {
+        val sourceKey = pack(x, y)
+
         if (y < WorldConstants.WORLD_HEIGHT_TILES - 1) {
             val below = world[x, y + 1]
             if (below == Tile.AIR) {
-                world[x, y + 1] = fluid
-                world[x, y] = Tile.AIR
-                allFluids.remove(Pair(x, y))
-                allFluids.add(Pair(x, y + 1))
+                moveFluid(sourceKey, x, y, x, y + 1, fluid)
                 return
             }
             if (isOppositeFluid(fluid, x, y + 1)) {
@@ -110,30 +138,21 @@ class FluidSimulator(
 
         if (lavaContactDiagLeft || lavaContactDiagRight) {
             val targetX = if (lavaContactDiagLeft && lavaContactDiagRight) {
-                if (Random.nextDouble(1.0) < 0.5) x - 1 else x + 1
+                if (Random.nextBoolean()) x - 1 else x + 1
             } else if (lavaContactDiagLeft) x - 1 else x + 1
             solidify(x, y, targetX, y + 1)
             return
         }
 
         if (canGoDiagLeft && canGoDiagRight) {
-            val newX = if (Random.nextDouble(1.0) < 0.5) x - 1 else x + 1
-            world[newX, y + 1] = fluid
-            world[x, y] = Tile.AIR
-            allFluids.remove(Pair(x, y))
-            allFluids.add(Pair(newX, y + 1))
+            val newX = if (Random.nextBoolean()) x - 1 else x + 1
+            moveFluid(sourceKey, x, y, newX, y + 1, fluid)
             return
         } else if (canGoDiagLeft) {
-            world[x - 1, y + 1] = fluid
-            world[x, y] = Tile.AIR
-            allFluids.remove(Pair(x, y))
-            allFluids.add(Pair(x - 1, y + 1))
+            moveFluid(sourceKey, x, y, x - 1, y + 1, fluid)
             return
         } else if (canGoDiagRight) {
-            world[x + 1, y + 1] = fluid
-            world[x, y] = Tile.AIR
-            allFluids.remove(Pair(x, y))
-            allFluids.add(Pair(x + 1, y + 1))
+            moveFluid(sourceKey, x, y, x + 1, y + 1, fluid)
             return
         }
 
@@ -144,7 +163,7 @@ class FluidSimulator(
 
         if (lavaContactLeft || lavaContactRight) {
             val targetX = if (lavaContactLeft && lavaContactRight) {
-                if (Random.nextDouble(1.0) < 0.5) x - 1 else x + 1
+                if (Random.nextBoolean()) x - 1 else x + 1
             } else if (lavaContactLeft) x - 1 else x + 1
             solidify(x, y, targetX, y)
             return
@@ -152,24 +171,11 @@ class FluidSimulator(
 
         when {
             canGoLeft && canGoRight -> {
-                val newX = if (Random.nextDouble(1.0) < 0.5) x - 1 else x + 1
-                world[newX, y] = fluid
-                world[x, y] = Tile.AIR
-                allFluids.remove(Pair(x, y))
-                allFluids.add(Pair(newX, y))
+                val newX = if (Random.nextBoolean()) x - 1 else x + 1
+                moveFluid(sourceKey, x, y, newX, y, fluid)
             }
-            canGoLeft -> {
-                world[x - 1, y] = fluid
-                world[x, y] = Tile.AIR
-                allFluids.remove(Pair(x, y))
-                allFluids.add(Pair(x - 1, y))
-            }
-            canGoRight -> {
-                world[x + 1, y] = fluid
-                world[x, y] = Tile.AIR
-                allFluids.remove(Pair(x, y))
-                allFluids.add(Pair(x + 1, y))
-            }
+            canGoLeft -> moveFluid(sourceKey, x, y, x - 1, y, fluid)
+            canGoRight -> moveFluid(sourceKey, x, y, x + 1, y, fluid)
         }
     }
 }
