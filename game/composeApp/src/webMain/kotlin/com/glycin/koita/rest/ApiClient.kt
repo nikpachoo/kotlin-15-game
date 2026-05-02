@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 data class CreateUserRequest(
     val name: String,
     val score: Int,
-    val email: String,
+    val email: String? = null,
 )
 
 @Serializable
@@ -26,10 +26,11 @@ data class HighscoreEntry(
 
 object ApiClient {
 
-    private const val BASE_URL = "http://localhost:9001"
+    private const val BASE_URL = "https://highscore-server-e4szw66yha-ew.a.run.app"
     private const val AUTH_HEADER = "Basic YWRtaW46YWRtaW4=" //TODO: Hide this
 
     private val client = HttpClient(Js) {
+        expectSuccess = true
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -42,7 +43,7 @@ object ApiClient {
         }
     }
 
-    suspend fun createUser(name: String, score: Int, email: String) {
+    suspend fun createUser(name: String, score: Int, email: String? = null) {
         client.post("$BASE_URL/users") {
             setBody(CreateUserRequest(name, score, email))
         }

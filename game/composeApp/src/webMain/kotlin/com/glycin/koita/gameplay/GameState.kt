@@ -15,6 +15,8 @@ enum class Screen {
     HOW_TO_PLAY,
     OPTIONS,
     HIGHSCORES,
+    GAME_OVER,
+    GAME_WON,
 }
 
 @Stable
@@ -69,5 +71,58 @@ class GameState {
     // Void
     var passedPortal by mutableStateOf(false)
     var bossSpawned = false
+    var bossDefeated = false
     var bossHealthPercent by mutableStateOf(0f)
+
+    fun endRunAndGoTo(screen: Screen) {
+        resetForNewGame()
+        currentScreen = screen
+    }
+
+    fun resetForNewGame() {
+        score = 0
+        collectedMinerals = 0
+        collectedSimple = 0
+        collectedRich = 0
+        elapsedTimeSeconds = 0
+        selectedHotkeyIndex = 0
+        selectedBlock = BuildBlock.STONE
+        selectedWeapon = AttackWeapon.MISSILE
+        isPaused = false
+
+        canDoubleJump = false
+        canJetpack = false
+        canDash = false
+        canGroundPound = false
+        canHover = false
+        explosiveBlocks = false
+        bouncyBlocks = false
+        resourceShield = false
+        canAnchor = false
+        homingMissilesUnlocked = false
+        turretUnlocked = false
+
+        damageMultiplier = 1.0f
+        miningRadiusMultiplier = 1.0f
+        visionMultiplier = 1.0f
+        visionFallOfMultiplier = 1.0f
+
+        pickupNotification = null
+        pickupCounts.clear()
+        nextHealCost = PlayerSettings.HEAL_COST
+
+        laserWeapon = false
+        superSoaker = false
+        sniperWeapon = false
+        rocketLauncher = false
+
+        ultimateAvailable = null
+        ultimateActive = false
+        ultimateTriggered = false
+
+        passedPortal = false
+        bossSpawned = false
+        bossDefeated = false
+        bossHealthPercent = 0f
+    }
 }

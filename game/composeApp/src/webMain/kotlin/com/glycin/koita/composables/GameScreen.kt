@@ -22,6 +22,7 @@ import com.glycin.koita.gameplay.FogOfWar
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Drone
 import com.glycin.koita.gameplay.Portal
+import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.gameplay.turrets.TurretManager
@@ -247,6 +248,15 @@ fun GameScreen(gameState: GameState) {
                 mouse.reset()
 
                 frameCount++
+
+                val boss = portal.boss
+                if (boss != null && !boss.isAlive && !gameState.bossDefeated) {
+                    gameState.bossDefeated = true
+                    gameState.score *= 2
+                    gameState.currentScreen = Screen.GAME_WON
+                } else if (player.health == 0) {
+                    gameState.currentScreen = Screen.GAME_OVER
+                }
             }
         }
 
