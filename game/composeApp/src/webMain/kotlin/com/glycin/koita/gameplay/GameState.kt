@@ -67,12 +67,15 @@ class GameState {
     var ultimateAvailable by mutableStateOf<String?>(null)
     var ultimateActive by mutableStateOf(false)
     var ultimateTriggered = false
+    var ultimateCooldownRemaining by mutableStateOf(0f)
+    var ultimateBannerName by mutableStateOf<String?>(null)
 
     // Void
     var passedPortal by mutableStateOf(false)
     var bossSpawned = false
     var bossDefeated = false
     var bossHealthPercent by mutableStateOf(0f)
+    var reachedSurfaceMusic = false
 
     fun endRunAndGoTo(screen: Screen) {
         resetForNewGame()
@@ -119,10 +122,13 @@ class GameState {
         ultimateAvailable = null
         ultimateActive = false
         ultimateTriggered = false
+        ultimateCooldownRemaining = 0f
+        ultimateBannerName = null
 
         passedPortal = false
         bossSpawned = false
         bossDefeated = false
         bossHealthPercent = 0f
+        reachedSurfaceMusic = false
     }
 }

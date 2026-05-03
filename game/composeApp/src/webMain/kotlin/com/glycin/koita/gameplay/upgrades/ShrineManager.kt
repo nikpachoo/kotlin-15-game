@@ -71,6 +71,7 @@ class ShrineManager(
             upgradeRepository.upgrade(pickedOrb.unlock.id)
             gameState.pickupNotification = "Unlocked ${pickedOrb.unlock.name}!"
             orbs.removeAll { it.groupId == pickedOrb.groupId }
+            SoundManager.playOneShot(Sounds.UPGRADE_UNLOCK)
         }
     }
 

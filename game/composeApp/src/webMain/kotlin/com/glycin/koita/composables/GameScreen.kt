@@ -14,6 +14,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import com.glycin.koita.audio.Music
 import com.glycin.koita.audio.SoundManager
+import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
@@ -132,6 +133,10 @@ fun GameScreen(gameState: GameState) {
 
     remember(upgradeRepository, ultimateManager) {
         upgradeRepository.onUpgradeCallback = { ultimateManager.checkCombinations() }
+    }
+
+    remember(enemyManager, ultimateManager) {
+        enemyManager.onEnemyKilled = { ultimateManager.notifyEnemyKilled() }
     }
 
     val spawnPosition = Vec2(startWorldPosX, startWorldPosY)
@@ -254,8 +259,12 @@ fun GameScreen(gameState: GameState) {
                     gameState.bossDefeated = true
                     gameState.score *= 2
                     gameState.currentScreen = Screen.GAME_WON
-                } else if (player.health == 0) {
+                    SoundManager.stopCurrentLoop()
+                    SoundManager.playOneShot(Sounds.GAME_WIN)
+                } else if (player.health == 0 && gameState.currentScreen != Screen.GAME_OVER) {
                     gameState.currentScreen = Screen.GAME_OVER
+                    SoundManager.stopCurrentLoop()
+                    SoundManager.playOneShot(Sounds.GAME_OVER)
                 }
             }
         }

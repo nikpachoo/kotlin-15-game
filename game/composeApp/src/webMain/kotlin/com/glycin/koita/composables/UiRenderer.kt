@@ -23,6 +23,7 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
+import com.glycin.koita.gameplay.ultimates.UltimateManager
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.BossHealthBar
@@ -36,6 +37,7 @@ import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
 import com.glycin.koita.ui.StatsPanel
+import com.glycin.koita.ui.UltimateBar
 import com.glycin.koita.ui.UltimateUnlockedBanner
 import com.glycin.koita.ui.VirtualDpad
 
@@ -184,7 +186,7 @@ fun UiRenderer(
         )
 
         UltimateUnlockedBanner(
-            text = gameState.ultimateAvailable,
+            text = gameState.ultimateBannerName,
         )
 
         Notification(
@@ -212,6 +214,15 @@ fun UiRenderer(
             BossHealthBar(
                 healthPercent = gameState.bossHealthPercent,
                 modifier = Modifier.align(Alignment.TopCenter),
+            )
+        }
+
+        if (gameState.ultimateAvailable != null || gameState.ultimateCooldownRemaining > 0f) {
+            UltimateBar(
+                cooldownRemaining = gameState.ultimateCooldownRemaining,
+                rechargeDuration = UltimateManager.ULTIMATE_RECHARGE_DURATION,
+                ultimateName = gameState.ultimateAvailable,
+                modifier = Modifier.align(Alignment.BottomCenter),
             )
         }
 

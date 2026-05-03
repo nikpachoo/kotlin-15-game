@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -43,10 +44,10 @@ import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.gameplay.turrets.Turret
 import com.glycin.koita.gameplay.turrets.TurretManager
-import com.glycin.koita.gameplay.turrets.TurretMissile
 import com.glycin.koita.gameplay.upgrades.ShrineManager
 import com.glycin.koita.physics.CollectibleSystem
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.util.angleTo
 import com.glycin.koita.world.ParallaxBackground
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
@@ -80,6 +81,7 @@ fun WorldRenderer(
     val shrineSheets = shrineManager.getDistinctSprites().associateWith { imageResource(it) }
     val orbIconSheets = shrineManager.getDistinctOrbIconSprites().associateWith { imageResource(it) }
     val pickupSheets = pickupManager.getDistinctSprites().associateWith { imageResource(it) }
+    val turretSheet = imageResource(Turret.SPRITE.sheet.sprite)
     val bossSheet = boss?.let { imageResource(it.spriteAnimator.sprite) }
 
     val textMeasurer = rememberTextMeasurer()
@@ -378,20 +380,27 @@ fun WorldRenderer(
 
         turretManager.forEachTurret { turret ->
             val screenPos = camera.worldToScreen(turret.position.x, turret.position.y)
-            drawOval(
-                color = WorldRendererColors.TURRET,
-                topLeft = screenPos,
-                size = Size(Turret.SPHERE_SIZE, Turret.SPHERE_SIZE),
+            val pivot = Offset(
+                screenPos.x + Turret.SPHERE_SIZE / 2f,
+                screenPos.y + Turret.SPHERE_SIZE / 2f,
             )
+            val angle = angleTo(0f, 0f, turret.aimDirection.x, turret.aimDirection.y)
+            rotate(degrees = angle, pivot = pivot) {
+                drawSpriteFrame(
+                    image = turretSheet,
+                    frame = Turret.SPRITE,
+                    dstOffset = IntOffset(
+                        (screenPos.x + Turret.SPRITE_OFFSET_X).toInt(),
+                        (screenPos.y + Turret.SPRITE_OFFSET_Y).toInt(),
+                    ),
+                    dstSize = IntSize(Turret.SPRITE_SIZE.toInt(), Turret.SPRITE_SIZE.toInt()),
+                )
+            }
         }
 
         turretManager.forEachMissile { missile ->
             val screenPos = camera.worldToScreen(missile.position.x, missile.position.y)
-            drawRect(
-                color = WorldRendererColors.TURRET_MISSILE,
-                topLeft = screenPos,
-                size = Size(TurretMissile.SIZE, TurretMissile.SIZE),
-            )
+            drawMissileVisual(screenPos, missile.direction.x, missile.direction.y)
         }
 
         fogOfWar.render(this)
@@ -405,31 +414,44 @@ fun WorldRenderer(
             when (attack) {
                 is MagicMissile -> {
                     val aScreenPos = camera.worldToScreen(attack.position.x, attack.position.y)
-                    drawCircle(
-                        color = WorldRendererColors.MISSILE,
-                        radius = 5f,
-                        center = aScreenPos,
-                    )
-                    drawCircle(
-                        color = WorldRendererColors.MISSILE_CORE,
-                        radius = 2.5f,
-                        center = aScreenPos,
-                    )
-                    drawRect(
-                        color = WorldRendererColors.MISSILE_TAIL,
-                        topLeft = Offset(
-                            aScreenPos.x - attack.direction.x * 12f - 2f,
-                            aScreenPos.y - attack.direction.y * 12f - 2f,
-                        ),
-                        size = Size(4f, 4f),
-                    )
+                    drawMissileVisual(aScreenPos, attack.direction.x, attack.direction.y)
                 }
                 is Rocket -> {
                     val rScreenPos = camera.worldToScreen(attack.position.x, attack.position.y)
-                    drawRect(
-                        color = WorldRendererColors.ROCKET,
-                        topLeft = rScreenPos,
-                        size = Size(Rocket.BASE_SIZE, Rocket.BASE_SIZE),
+                    val dirX = attack.direction.x
+                    val dirY = attack.direction.y
+                    val angle = angleTo(0f, 0f, dirX, dirY)
+
+                    val flameCenter = Offset(rScreenPos.x - dirX * 9f, rScreenPos.y - dirY * 9f)
+                    drawCircle(
+                        color = WorldRendererColors.ROCKET_FLAME_OUTER,
+                        radius = 4f,
+                        center = flameCenter,
+                    )
+                    drawCircle(
+                        color = WorldRendererColors.ROCKET_FLAME_INNER,
+                        radius = 2f,
+                        center = flameCenter,
+                    )
+
+                    rotate(degrees = angle, pivot = rScreenPos) {
+                        drawRect(
+                            color = WorldRendererColors.ROCKET_FIN,
+                            topLeft = Offset(rScreenPos.x - 7f, rScreenPos.y - 5f),
+                            size = Size(4f, 10f),
+                        )
+                        drawOval(
+                            color = WorldRendererColors.ROCKET,
+                            topLeft = Offset(rScreenPos.x - 7f, rScreenPos.y - 3f),
+                            size = Size(14f, 6f),
+                        )
+                    }
+
+                    val noseCenter = Offset(rScreenPos.x + dirX * 7f, rScreenPos.y + dirY * 7f)
+                    drawCircle(
+                        color = WorldRendererColors.ROCKET_CORE,
+                        radius = 2f,
+                        center = noseCenter,
                     )
                 }
                 is Laser -> if (attack.isActive) {

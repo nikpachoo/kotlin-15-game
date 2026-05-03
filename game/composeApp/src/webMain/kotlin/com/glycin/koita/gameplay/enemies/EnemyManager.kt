@@ -20,7 +20,11 @@ class EnemyManager(
     private var boss: Boss? = null
     private val activationRange = (GameSettings.BASE_LIGHT_RADIUS + GameSettings.FALL_OFF_DISTANCE) * 2
 
+    var onEnemyKilled: () -> Unit = {}
+    private val killHandler: () -> Unit = { onEnemyKilled() }
+
     fun add(enemy: Enemy) {
+        enemy.onKill = killHandler
         enemies.add(enemy)
     }
 

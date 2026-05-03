@@ -1,5 +1,7 @@
 package com.glycin.koita.gameplay.enemies
 
+import com.glycin.koita.audio.SoundManager
+import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.SpriteAnimator
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.physics.CollisionDetector
@@ -21,6 +23,7 @@ abstract class Enemy(
 
     var isAlive = true
         protected set
+    var onKill: () -> Unit = {}
 
     abstract val spriteAnimator: SpriteAnimator
     open val canAttack: Boolean = true
@@ -86,6 +89,8 @@ abstract class Enemy(
         if (health <= 0f) {
             health = 0f
             enemyState = EnemyState.DEATH
+            SoundManager.playOneShot(Sounds.ENEMY_DEATH)
+            onKill()
         } else {
             enemyState = EnemyState.HURT
             hurtTimer = hurtDuration

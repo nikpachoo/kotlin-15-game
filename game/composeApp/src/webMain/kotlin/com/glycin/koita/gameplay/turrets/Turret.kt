@@ -1,9 +1,13 @@
 package com.glycin.koita.gameplay.turrets
 
+import com.glycin.koita.core.SpriteSheet
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.physics.CollisionDetector
+import koita.composeapp.generated.resources.Res
+import koita.composeapp.generated.resources.weapons_sprite_sheet
+import kotlin.math.sqrt
 
 class Turret(
     val tileX: Int,
@@ -16,6 +20,7 @@ class Turret(
 
     private val missiles = mutableListOf<TurretMissile>()
     private var shootCooldown = SHOOT_INTERVAL
+    val aimDirection: Vec2 = Vec2(1f, 0f)
 
     fun update(deltaTime: Float) {
         for (i in 0..<missiles.size) {
@@ -23,21 +28,28 @@ class Turret(
         }
         missiles.removeAll { !it.isAlive }
 
-        shootCooldown -= deltaTime
-        if (shootCooldown <= 0f) {
-            val targetCenter = enemyManager.findNearestTargetCenter(position, RANGE)
-            if (targetCenter != null) {
-                val direction = (targetCenter - position).normalized()
-                missiles.add(
-                    TurretMissile(
-                        position = position.copy(),
-                        direction = direction,
-                        collisionDetector = collisionDetector,
-                        enemyManager = enemyManager,
-                        gameState = gameState,
-                    )
-                )
+        val targetCenter = enemyManager.findNearestTargetCenter(position, RANGE)
+        if (targetCenter != null) {
+            val dx = targetCenter.x - position.x
+            val dy = targetCenter.y - position.y
+            val mag = sqrt(dx * dx + dy * dy)
+            if (mag > 0f) {
+                aimDirection.x = dx / mag
+                aimDirection.y = dy / mag
             }
+        }
+
+        shootCooldown -= deltaTime
+        if (shootCooldown <= 0f && targetCenter != null) {
+            missiles.add(
+                TurretMissile(
+                    position = position.copy(),
+                    direction = aimDirection.copy(),
+                    collisionDetector = collisionDetector,
+                    enemyManager = enemyManager,
+                    gameState = gameState,
+                )
+            )
             shootCooldown = SHOOT_INTERVAL
         }
     }
@@ -53,5 +65,15 @@ class Turret(
         const val SHOOT_INTERVAL = 1.5f
         const val RANGE = 400f
         const val SPHERE_SIZE = 20f
+        const val SPRITE_SIZE = 24f
+        const val SPRITE_OFFSET_X = (SPHERE_SIZE - SPRITE_SIZE) / 2f
+        const val SPRITE_OFFSET_Y = (SPHERE_SIZE - SPRITE_SIZE) / 2f
+
+        val SPRITE = SpriteSheet(
+            sprite = Res.drawable.weapons_sprite_sheet,
+            frameWidth = 32,
+            frameHeight = 32,
+            columns = 4,
+        ).frame(0)
     }
 }

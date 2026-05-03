@@ -1,5 +1,7 @@
 package com.glycin.koita.gameplay.pickups
 
+import com.glycin.koita.audio.SoundManager
+import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
@@ -59,6 +61,7 @@ class PickupManager(
                 pickup.onPickup()
                 gameState.pickupNotification = pickup.name
                 gameState.pickupCounts[pickup.name] = (gameState.pickupCounts[pickup.name] ?: 0) + 1
+                SoundManager.playOneShot(Sounds.POWERUP_PICKUP)
                 true
             } else {
                 false

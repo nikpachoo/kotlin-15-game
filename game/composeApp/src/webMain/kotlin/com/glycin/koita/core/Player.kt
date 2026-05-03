@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
+import com.glycin.koita.audio.Music
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.gameplay.weapon.Weapon
@@ -24,6 +25,8 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import koita.composeapp.generated.resources.Res
+
+private const val SURFACE_MUSIC_TRIGGER_Y = WorldConstants.WORLD_HEIGHT_PIXELS * 0.35f
 
 class Player(
     var position: Vec2,
@@ -197,6 +200,7 @@ class Player(
         health = (health - amount).coerceAtLeast(0)
         state = PlayerState.HURT
         droneState = getDroneIdleState()
+        SoundManager.playOneShot(Sounds.HIT)
     }
 
     val canHeal: Boolean by derivedStateOf {
@@ -367,6 +371,11 @@ class Player(
                     gameState.passedPortal = true
                 }
             }
+        }
+
+        if (!gameState.reachedSurfaceMusic && position.y <= SURFACE_MUSIC_TRIGGER_Y) {
+            gameState.reachedSurfaceMusic = true
+            SoundManager.switchLoop(Music.BACKGROUND_TOP)
         }
 
         position = Vec2(

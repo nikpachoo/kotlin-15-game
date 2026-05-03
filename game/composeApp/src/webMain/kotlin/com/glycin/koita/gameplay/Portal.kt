@@ -1,5 +1,7 @@
 package com.glycin.koita.gameplay
 
+import com.glycin.koita.audio.Music
+import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
@@ -53,6 +55,7 @@ class Portal(
                     gameState = gameState,
                 ).also { enemyManager.setBoss(it) }
                 gameState.bossSpawned = true
+                SoundManager.switchLoop(Music.BACKGROUND_BOSS)
             }
         }
 

@@ -26,10 +26,11 @@ internal object WorldRendererColors {
         UnlockGroup.WEAPON -> ORB_WEAPON_INNER
     }
 
-    val TURRET = Color(0xFF00CED1)
-    val TURRET_MISSILE = Color(0xFF00E5FF)
-
     val ROCKET = Color(0xFFFF6600)
+    val ROCKET_CORE = Color(0xFFFFE066)
+    val ROCKET_FIN = Color(0xFFCC3300)
+    val ROCKET_FLAME_OUTER = Color(0x88FFAA22)
+    val ROCKET_FLAME_INNER = Color(0xCCFFEE88)
 
     val MISSILE = Color(0xFFFF4400)
     val MISSILE_CORE = Color(0xFFFFCC00)

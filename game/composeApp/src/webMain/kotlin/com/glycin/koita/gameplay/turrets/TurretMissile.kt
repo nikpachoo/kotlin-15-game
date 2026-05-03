@@ -9,7 +9,7 @@ import com.glycin.koita.world.isOutOfWorldBounds
 
 class TurretMissile(
     position: Vec2,
-    private val direction: Vec2,
+    val direction: Vec2,
     private val collisionDetector: CollisionDetector,
     private val enemyManager: EnemyManager,
     private val gameState: GameState,

@@ -19,4 +19,6 @@ internal object HudColors {
     val BANNER_GLOW = Color(0x66FFE066)
     val BANNER_TEXT_SHADOW = Color(0xCC1A0A00)
     val BANNER_LABEL = Color(0xFFFFEE44)
+
+    val ULTIMATE_BAR_BACKGROUND = Color(0xFF1A0033)
 }

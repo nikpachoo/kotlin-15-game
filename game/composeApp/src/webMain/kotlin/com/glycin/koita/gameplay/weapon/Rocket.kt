@@ -27,7 +27,7 @@ class Rocket(
 ) : Weapon {
     override var isAlive = true
 
-    private var direction = direction.normalized()
+    val direction = direction.normalized()
     private var flightTime = 0f
 
     companion object {
@@ -35,6 +35,7 @@ class Rocket(
         private const val MAX_SPEED = 1200f
         private const val ACCELERATION_TIME = 1f
         private const val BASE_DAMAGE = 4
+        private const val EXPLOSION_DAMAGE = 8f
         private const val BASE_IMPACT_RADIUS = 140f
         const val BASE_SIZE = 12f
         private const val HOMING_RANGE = 400f
@@ -107,5 +108,6 @@ class Rocket(
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
         enemyManager.destroyShieldsInRadius(position, impactRadius)
+        enemyManager.damageInRange(position, impactRadius, EXPLOSION_DAMAGE * gameState.damageMultiplier)
     }
 }

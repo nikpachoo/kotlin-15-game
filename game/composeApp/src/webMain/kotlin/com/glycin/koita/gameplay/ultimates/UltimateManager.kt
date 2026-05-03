@@ -1,5 +1,7 @@
 package com.glycin.koita.gameplay.ultimates
 
+import com.glycin.koita.audio.SoundManager
+import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
@@ -19,18 +21,31 @@ class UltimateManager(
         private set
     var availableUltimate: UltimateAttack? = null
         private set
-    private val usedUltimateIds = mutableSetOf<UltimateId>()
+    private val announcedUltimateIds = mutableSetOf<UltimateId>()
+    private var lastActivated: UltimateAttack? = null
 
     fun checkCombinations() {
         if (availableUltimate != null || activeUltimate != null) return
+        if (gameState.ultimateCooldownRemaining > 0f) return
 
-        val ready = ultimates.firstOrNull { ultimate ->
-            ultimate.id !in usedUltimateIds &&
+        val newCombo = ultimates.firstOrNull { ultimate ->
+            ultimate.id !in announcedUltimateIds &&
                 ultimate.requiredUnlockIds.all(upgradeRepository::isUnlocked)
-        } ?: return
+        }
+        val ready = newCombo ?: lastActivated ?: return
 
-        availableUltimate = ready
-        gameState.ultimateAvailable = ready.name
+        markAvailable(ready)
+
+        if (newCombo != null) {
+            announcedUltimateIds.add(newCombo.id)
+            gameState.ultimateBannerName = newCombo.name
+            SoundManager.playOneShot(Sounds.ULTIMATE_UNLOCK)
+        }
+    }
+
+    fun notifyEnemyKilled() {
+        if (announcedUltimateIds.isEmpty()) return
+        reduceCooldown(KILL_COOLDOWN_REDUCTION)
     }
 
     fun activateOrReactivate(player: Player) {
@@ -42,31 +57,52 @@ class UltimateManager(
 
         val ultimate = availableUltimate ?: return
         activeUltimate = ultimate
+        lastActivated = ultimate
         ultimate.activate(player)
         gameState.ultimateActive = true
+        SoundManager.playOneShot(Sounds.ULTIMATE_USE)
     }
 
     fun update(deltaTime: Float, player: Player) {
+        reduceCooldown(deltaTime)
+
         val active = activeUltimate ?: return
         active.update(deltaTime, player)
 
         if (active.isFinished()) {
-            usedUltimateIds.add(active.id)
             activeUltimate = null
             availableUltimate = null
             gameState.ultimateActive = false
             gameState.ultimateAvailable = null
-            checkCombinations()
+            gameState.ultimateCooldownRemaining = ULTIMATE_RECHARGE_DURATION
         }
     }
 
     fun devUnlock(id: UltimateId) {
         val ultimate = ultimates.firstOrNull { it.id == id } ?: return
+        announcedUltimateIds.add(ultimate.id)
+        gameState.ultimateCooldownRemaining = 0f
+        markAvailable(ultimate)
+    }
+
+    private fun markAvailable(ultimate: UltimateAttack) {
         availableUltimate = ultimate
         gameState.ultimateAvailable = ultimate.name
     }
 
+    private fun reduceCooldown(amount: Float) {
+        if (gameState.ultimateCooldownRemaining <= 0f) return
+        val next = (gameState.ultimateCooldownRemaining - amount).coerceAtLeast(0f)
+        gameState.ultimateCooldownRemaining = next
+        if (next <= 0f) {
+            checkCombinations()
+        }
+    }
+
     companion object {
+        const val ULTIMATE_RECHARGE_DURATION = 60f
+        private const val KILL_COOLDOWN_REDUCTION = 1f
+
         fun createStandard(
             gameState: GameState,
             upgradeRepository: UpgradeRepository,
