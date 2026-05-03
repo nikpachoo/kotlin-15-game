@@ -111,7 +111,7 @@ class ShrineManager(
     }
 
     private fun spawnOrbs(shrine: Shrine) {
-        val choices = upgradeRepository.getRandomAvailable(3)
+        val choices = shrine.choices ?: upgradeRepository.getRandomAvailable(3)
         if (choices.isEmpty()) return
 
         val groupId = nextGroupId++

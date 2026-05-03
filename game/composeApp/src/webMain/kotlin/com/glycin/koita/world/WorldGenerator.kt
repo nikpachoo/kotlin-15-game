@@ -161,10 +161,10 @@ class WorldGenerator(
         val minDistanceBetweenShrinesSq = minDistanceBetweenShrines * minDistanceBetweenShrines
 
         val placedPositions = mutableListOf<Vec2>()
-        val upgrades = upgradeRepository.getAll().shuffled().toMutableList()
+        var shrineBudget = upgradeRepository.getAll().size
 
         for (zone in SpawnSettings.ALL_ZONES) {
-            if (upgrades.isEmpty()) break
+            if (shrineBudget <= 0) break
 
             val count = zone.shrines.random()
             if (count <= 0) continue
@@ -183,7 +183,7 @@ class WorldGenerator(
             var placed = 0
 
             for ((x, y) in shuffledPositions) {
-                if (placed >= count || upgrades.isEmpty()) break
+                if (placed >= count || shrineBudget <= 0) break
 
                 if (x + shrineWidthTiles + carvePadding >= WorldConstants.WORLD_WIDTH_TILES) continue
                 if (y + shrineHeightTiles + carvePadding >= WorldConstants.WORLD_HEIGHT_TILES) continue
@@ -212,17 +212,16 @@ class WorldGenerator(
                     }
                 }
 
-                val upgrade = upgrades.removeFirst()
                 shrineManager.add(
                     Shrine(
                         position = worldPos,
                         width = shrineWidth,
                         height = shrineHeight,
-                        unlock = upgrade,
                     )
                 )
                 placedPositions.add(worldPos)
                 placed++
+                shrineBudget--
             }
         }
     }

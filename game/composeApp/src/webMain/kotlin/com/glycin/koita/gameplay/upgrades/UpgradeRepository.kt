@@ -16,10 +16,14 @@ class UpgradeRepository(
 
     fun getUnlocked(): List<Unlock> = unlocks.filter { it.id in unlocked }
 
+    fun unlockedCount(): Int = unlocked.size
+
     fun isUnlocked(id: UnlockId): Boolean = id in unlocked
 
+    fun getById(id: UnlockId): Unlock? = unlocks.firstOrNull { it.id == id }
+
     fun upgrade(upgradeId: UnlockId) {
-        val upgrade = unlocks.firstOrNull { it.id == upgradeId } ?: return
+        val upgrade = getById(upgradeId) ?: return
         unlocked.add(upgrade.id)
         upgrade.onUnlock()
         onUpgradeCallback?.invoke()

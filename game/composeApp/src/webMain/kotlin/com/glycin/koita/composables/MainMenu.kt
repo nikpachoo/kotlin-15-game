@@ -1,6 +1,7 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,20 +49,45 @@ fun MainMenu(gameState: GameState) {
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier
-                .width(480.dp)
-                .background(MenuColors.SIDEBAR)
-                .padding(horizontal = 48.dp, vertical = 42.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
+            GameBanner()
 
-            Spacer(modifier = Modifier.size(36.dp))
+            Spacer(modifier = Modifier.size(28.dp))
 
-            MenuItem("Start") { gameState.currentScreen = Screen.GAME }
-            MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
-            MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
-            MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
+            Column(
+                modifier = Modifier
+                    .width(480.dp)
+                    .background(MenuColors.SIDEBAR)
+                    .padding(horizontal = 48.dp, vertical = 42.dp),
+            ) {
+                KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+                Spacer(modifier = Modifier.size(36.dp))
+
+                MenuItem("Start") { gameState.currentScreen = Screen.GAME }
+                MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
+                MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
+                MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
+            }
         }
+    }
+}
+
+@Composable
+private fun GameBanner() {
+    Box(
+        modifier = Modifier
+            .background(MenuColors.MAIN_BACKGROUND_DARK)
+            .border(width = 4.dp, color = MenuColors.SIDEBAR)
+            .padding(horizontal = 56.dp, vertical = 20.dp),
+    ) {
+        Text(
+            text = "KGame",
+            fontFamily = pixelFont(),
+            fontSize = 80.sp,
+            color = Color.White,
+        )
     }
 }
 

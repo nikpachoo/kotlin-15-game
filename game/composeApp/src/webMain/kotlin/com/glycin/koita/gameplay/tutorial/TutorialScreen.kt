@@ -157,6 +157,9 @@ fun TutorialScreen(appState: GameState) {
                 collisionDetector = collisionDetector,
                 particleSystem = particleSystem,
                 enemyManager = enemyManager,
+                pickupManager = pickupManager,
+                shrineManager = shrineManager,
+                upgradeRepository = upgradeRepository,
             ),
             state = tutorialState,
         )
@@ -260,7 +263,7 @@ fun TutorialScreen(appState: GameState) {
 
         UiRenderer(gameState, player, camera, enemyManager, input, upgradeRepository)
 
-        TutorialPrompt(tutorialState)
+        TutorialPrompt(tutorialState, input)
 
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()

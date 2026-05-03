@@ -7,6 +7,7 @@ class TutorialDirector(
     private val steps: List<TutorialStep> = listOf(
         MoveStep(),
         JumpStep(),
+        DroneIntroStep(),
         EquipPickaxeStep(),
         MineBlockStep(),
         ShowResourcesStep(),
@@ -19,6 +20,14 @@ class TutorialDirector(
         KillSlimeStep(),
         MineGoldStep(),
         HealStep(),
+        PickupHeartStep(),
+        PickupInfoStep(),
+        ChargeShrineStep(),
+        PickUpgradeStep(),
+        UpgradeInfoStep(),
+        WeaponSwitchInfoStep(),
+        UpgradeCombinationInfoStep(),
+        PortalGoalStep(),
         PlaceholderStep(),
     )
 
@@ -34,7 +43,9 @@ class TutorialDirector(
     fun update() {
         if (state.isCompleted) return
         val step = activeStep ?: return
-        if (step.isComplete(context)) {
+        val clicked = step.awaitsContinue && state.continueRequested
+        if (step.isComplete(context) || clicked) {
+            state.continueRequested = false
             step.cleanup(context)
             advance()
         }
@@ -45,6 +56,7 @@ class TutorialDirector(
         if (state.currentStepIndex >= steps.size) {
             activeStep = null
             state.isCompleted = true
+            state.awaitingContinue = false
             state.promptText = "Tutorial complete! Press ESC to return to the menu"
         } else {
             loadCurrentStep()
@@ -55,10 +67,12 @@ class TutorialDirector(
         val step = steps[state.currentStepIndex]
         activeStep = step
         state.promptText = step.prompt
+        state.awaitingContinue = step.awaitsContinue
+        state.continueRequested = false
         step.setup(context)
     }
 
     companion object {
-        const val STEP_COUNT = 15
+        const val STEP_COUNT = 24
     }
 }

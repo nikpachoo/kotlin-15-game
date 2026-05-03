@@ -27,6 +27,15 @@ class PickupManager(
         spawn(position)
     }
 
+    fun spawnHealth(position: Vec2) {
+        activePickups.add(
+            HealthPickup(
+                onPickup = { onPlayerMaxHealthIncrease?.invoke() },
+                position = position.copy(),
+            )
+        )
+    }
+
     fun spawn(position: Vec2) {
         val pos = position.copy()
         val totalWeight = GameSettings.PICKUP_WEIGHT_DAMAGE + GameSettings.PICKUP_WEIGHT_VISION + GameSettings.PICKUP_WEIGHT_HEALTH

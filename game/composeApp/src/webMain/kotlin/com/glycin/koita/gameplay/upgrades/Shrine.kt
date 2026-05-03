@@ -13,7 +13,7 @@ class Shrine(
     val height: Float = 128f,
     val drawWidth: Float = 128f,
     val drawHeight: Float = 128f,
-    val unlock: Unlock,
+    val choices: List<Unlock>? = null,
 ) {
     private val idleFrame = 0
     private val chargingFrames = 1..8

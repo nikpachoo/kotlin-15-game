@@ -11,4 +11,6 @@ class TutorialState(val totalSteps: Int) {
     var currentStepIndex by mutableIntStateOf(0)
     var promptText by mutableStateOf("")
     var isCompleted by mutableStateOf(false)
+    var awaitingContinue by mutableStateOf(false)
+    var continueRequested by mutableStateOf(false)
 }

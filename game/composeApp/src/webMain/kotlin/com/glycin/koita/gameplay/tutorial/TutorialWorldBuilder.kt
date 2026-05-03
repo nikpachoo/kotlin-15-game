@@ -5,6 +5,11 @@ import com.glycin.koita.core.PlayerFacing
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.enemies.Slime
+import com.glycin.koita.gameplay.pickups.PickupManager
+import com.glycin.koita.gameplay.upgrades.Shrine
+import com.glycin.koita.gameplay.upgrades.ShrineManager
+import com.glycin.koita.gameplay.upgrades.UnlockId
+import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.world.Tile
@@ -31,6 +36,14 @@ private const val SLIME_HITBOX_HEIGHT_TILES = 8
 private const val GOLD_CLUSTER_GAP_TILES = 3
 private const val GOLD_CLUSTER_WIDTH_TILES = 4
 private const val GOLD_CLUSTER_HEIGHT_TILES = 4
+
+private const val HEART_CHAMBER_GAP_TILES = 3
+private const val HEART_CHAMBER_SIZE_TILES = 12
+private const val HEART_CHAMBER_CAVITY_RADIUS_TILES = 4
+
+private const val SHRINE_GAP_TILES = 4
+private const val SHRINE_WIDTH_TILES = 16
+private const val SHRINE_HEIGHT_TILES = 32
 
 data class TileRect(val left: Int, val right: Int, val top: Int, val bottom: Int)
 
@@ -147,6 +160,50 @@ object TutorialWorldBuilder {
         }
 
         return TileRect(left, right, top, bottom)
+    }
+
+    fun placeHeartChamber(world: World, pickupManager: PickupManager, player: Player) {
+        val tileSize = WorldConstants.TILE_SIZE
+        val left = structureLeftTile(player, HEART_CHAMBER_GAP_TILES, HEART_CHAMBER_SIZE_TILES)
+        val right = left + HEART_CHAMBER_SIZE_TILES - 1
+        val bottom = WorldConstants.WORLD_HEIGHT_TILES - 2
+        val top = bottom - HEART_CHAMBER_SIZE_TILES + 1
+        val centerX = (left + right) / 2
+        val centerY = (top + bottom) / 2
+        val radiusSq = HEART_CHAMBER_CAVITY_RADIUS_TILES * HEART_CHAMBER_CAVITY_RADIUS_TILES
+
+        for (y in top..bottom) {
+            for (x in left..right) {
+                val dx = x - centerX
+                val dy = y - centerY
+                val tile = if (dx * dx + dy * dy <= radiusSq) Tile.AIR else Tile.STONE
+                setIfDestructible(world, x, y, tile)
+            }
+        }
+
+        val heartPosition = Vec2(
+            (centerX * tileSize).toFloat() - 16f,
+            (centerY * tileSize).toFloat() - 16f,
+        )
+        pickupManager.spawnHealth(heartPosition)
+    }
+
+    fun spawnTutorialShrine(
+        shrineManager: ShrineManager,
+        upgradeRepository: UpgradeRepository,
+        player: Player,
+    ): Shrine {
+        val tileSize = WorldConstants.TILE_SIZE
+        val left = structureLeftTile(player, SHRINE_GAP_TILES, SHRINE_WIDTH_TILES)
+        val bottom = WorldConstants.WORLD_HEIGHT_TILES - 1
+        val top = bottom - SHRINE_HEIGHT_TILES
+        val choices = listOfNotNull(upgradeRepository.getById(UnlockId.LASER))
+        val shrine = Shrine(
+            position = Vec2((left * tileSize).toFloat(), (top * tileSize).toFloat()),
+            choices = choices,
+        )
+        shrineManager.add(shrine)
+        return shrine
     }
 
     private fun structureLeftTile(player: Player, gapTiles: Int, structureWidthTiles: Int): Int {

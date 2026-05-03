@@ -7,6 +7,10 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.enemies.Slime
 import com.glycin.koita.gameplay.modes.AttackMode
+import com.glycin.koita.gameplay.pickups.PickupManager
+import com.glycin.koita.gameplay.upgrades.Shrine
+import com.glycin.koita.gameplay.upgrades.ShrineManager
+import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.world.World
@@ -27,15 +31,20 @@ data class StepContext(
     val collisionDetector: CollisionDetector,
     val particleSystem: ParticleSystem,
     val enemyManager: EnemyManager,
+    val pickupManager: PickupManager,
+    val shrineManager: ShrineManager,
+    val upgradeRepository: UpgradeRepository,
 )
 
 sealed class TutorialStep(val prompt: String) {
+    open val awaitsContinue: Boolean = false
     open fun setup(ctx: StepContext) {}
     abstract fun isComplete(ctx: StepContext): Boolean
     open fun cleanup(ctx: StepContext) {}
 }
 
 abstract class ContinueOnEnterStep(prompt: String) : TutorialStep(prompt) {
+    final override val awaitsContinue: Boolean = true
     private var enterWasDown = false
 
     override fun setup(ctx: StepContext) {
@@ -62,6 +71,40 @@ private fun World.countSolidIn(rect: TileRect): Int {
     return count
 }
 
+private fun World.hasMinedSince(rect: TileRect, initialNonSolid: Int): Boolean {
+    var nonSolid = 0
+    for (y in rect.top..rect.bottom) {
+        for (x in rect.left..rect.right) {
+            if (!this[x, y].isSolid) {
+                nonSolid++
+                if (nonSolid > initialNonSolid) return true
+            }
+        }
+    }
+    return false
+}
+
+private val TileRect.area: Int
+    get() = (bottom - top + 1) * (right - left + 1)
+
+abstract class MineRectStep(prompt: String) : TutorialStep(prompt) {
+    private var target: TileRect? = null
+    private var initialNonSolid = 0
+
+    protected abstract fun placeTarget(ctx: StepContext): TileRect
+
+    override fun setup(ctx: StepContext) {
+        val rect = placeTarget(ctx)
+        target = rect
+        initialNonSolid = rect.area - ctx.world.countSolidIn(rect)
+    }
+
+    override fun isComplete(ctx: StepContext): Boolean {
+        val rect = target ?: return false
+        return ctx.world.hasMinedSince(rect, initialNonSolid)
+    }
+}
+
 class MoveStep : TutorialStep("Use WASD or the arrow keys to move") {
     private var startX = 0f
 
@@ -84,7 +127,11 @@ class JumpStep : TutorialStep("Press SPACE to jump") {
         startY - ctx.player.position.y >= TutorialConstants.JUMP_THRESHOLD_PX
 }
 
-class EquipPickaxeStep : TutorialStep("Press 1 to equip the pickaxe") {
+class DroneIntroStep : ContinueOnEnterStep(
+    "The little drone floating beside you is your companion. It carries all of Kodee's tools and switches between them as you equip them.",
+)
+
+class EquipPickaxeStep : TutorialStep("Press 1 to switch your drone to mining mode") {
     override fun setup(ctx: StepContext) {
         ctx.player.equip(HOTKEY_HAMMER)
     }
@@ -93,50 +140,28 @@ class EquipPickaxeStep : TutorialStep("Press 1 to equip the pickaxe") {
         ctx.gameState.selectedHotkeyIndex == HOTKEY_PICKAXE
 }
 
-class MineBlockStep : TutorialStep("Hold left click on the block to mine it") {
-    private var target: TileRect? = null
-    private var snapshotSolidCount = 0
-
-    override fun setup(ctx: StepContext) {
-        val rect = TutorialWorldBuilder.placeMiningTarget(ctx.world, ctx.player)
-        target = rect
-        snapshotSolidCount = ctx.world.countSolidIn(rect)
-    }
-
-    override fun isComplete(ctx: StepContext): Boolean {
-        val rect = target ?: return false
-        return ctx.world.countSolidIn(rect) < snapshotSolidCount
-    }
+class MineBlockStep : MineRectStep("Hold left click on the block to mine it") {
+    override fun placeTarget(ctx: StepContext): TileRect =
+        TutorialWorldBuilder.placeMiningTarget(ctx.world, ctx.player)
 }
 
 class ShowResourcesStep : ContinueOnEnterStep(
-    "Look at the top-right. Your score and materials updated when you mined. \nPress ENTER to continue.",
+    "Look at the top-right. Your score and materials updated when you mined.",
 )
 
-class EquipWeaponStep : TutorialStep("Press 2 to equip your weapon") {
+class EquipWeaponStep : TutorialStep("Press 2 to switch your drone to attack mode") {
     override fun isComplete(ctx: StepContext): Boolean =
         ctx.gameState.selectedHotkeyIndex == HOTKEY_WEAPON
 }
 
 class ShootWeaponStep : TutorialStep("Left click to shoot your weapon") {
-    private var fired = false
-
-    override fun setup(ctx: StepContext) {
-        fired = false
-    }
-
     override fun isComplete(ctx: StepContext): Boolean {
-        if (fired) return true
         val attackMode = ctx.player.currentWeapon as? AttackMode ?: return false
-        if (attackMode.getActiveWeapon().isNotEmpty()) {
-            fired = true
-            return true
-        }
-        return false
+        return attackMode.getActiveWeapon().isNotEmpty()
     }
 }
 
-class EquipHammerStep : TutorialStep("Press 3 to equip the hammer") {
+class EquipHammerStep : TutorialStep("Press 3 to switch your drone to build mode") {
     override fun isComplete(ctx: StepContext): Boolean =
         ctx.gameState.selectedHotkeyIndex == HOTKEY_HAMMER
 }
@@ -173,7 +198,7 @@ class LavaJumpStep : TutorialStep("Jump in the lava until it damages you") {
 }
 
 class ShowHealthStep : ContinueOnEnterStep(
-    "You were hurt. On the top left you can see your health. Press ENTER to continue.",
+    "You were hurt. On the top-left you can see your health.",
 )
 
 class KillSlimeStep : TutorialStep("Defeat the slime") {
@@ -193,20 +218,10 @@ class KillSlimeStep : TutorialStep("Defeat the slime") {
     override fun isComplete(ctx: StepContext): Boolean = slime?.isAlive == false
 }
 
-class MineGoldStep : TutorialStep("Mine the gold ore") {
-    private var target: TileRect? = null
-    private var snapshotSolidCount = 0
-
-    override fun setup(ctx: StepContext) {
+class MineGoldStep : MineRectStep("Mine the gold ore") {
+    override fun placeTarget(ctx: StepContext): TileRect {
         ctx.player.equip(HOTKEY_PICKAXE)
-        val rect = TutorialWorldBuilder.placeGoldOreCluster(ctx.world, ctx.player)
-        target = rect
-        snapshotSolidCount = ctx.world.countSolidIn(rect)
-    }
-
-    override fun isComplete(ctx: StepContext): Boolean {
-        val rect = target ?: return false
-        return ctx.world.countSolidIn(rect) < snapshotSolidCount
+        return TutorialWorldBuilder.placeGoldOreCluster(ctx.world, ctx.player)
     }
 }
 
@@ -226,6 +241,62 @@ class HealStep : TutorialStep("Press E to heal. This costs 100 ore, and is doubl
     override fun isComplete(ctx: StepContext): Boolean =
         ctx.player.health > snapshotHealth
 }
+
+class PickupHeartStep : TutorialStep("Mine through the stone block to reach the heart pickup") {
+    private var snapshotMaxHealth = 0
+
+    override fun setup(ctx: StepContext) {
+        ctx.player.equip(HOTKEY_PICKAXE)
+        TutorialWorldBuilder.clearNonIndestructible(ctx.world)
+        TutorialWorldBuilder.placeHeartChamber(ctx.world, ctx.pickupManager, ctx.player)
+        snapshotMaxHealth = ctx.player.maxHealth
+    }
+
+    override fun isComplete(ctx: StepContext): Boolean =
+        ctx.player.maxHealth > snapshotMaxHealth
+}
+
+class PickupInfoStep : ContinueOnEnterStep(
+    "That pickup increased your max health! Different pickups have different effects.",
+)
+
+class ChargeShrineStep : TutorialStep("Stand on the shrine for 3 seconds to charge it") {
+    private var shrine: Shrine? = null
+
+    override fun setup(ctx: StepContext) {
+        TutorialWorldBuilder.clearNonIndestructible(ctx.world)
+        shrine = TutorialWorldBuilder.spawnTutorialShrine(ctx.shrineManager, ctx.upgradeRepository, ctx.player)
+    }
+
+    override fun isComplete(ctx: StepContext): Boolean = shrine?.isActivated == true
+}
+
+class PickUpgradeStep : TutorialStep("Now you see three upgrades. Walk into the orb to unlock it") {
+    private var snapshotUnlockedCount = 0
+
+    override fun setup(ctx: StepContext) {
+        snapshotUnlockedCount = ctx.upgradeRepository.unlockedCount()
+    }
+
+    override fun isComplete(ctx: StepContext): Boolean =
+        ctx.upgradeRepository.unlockedCount() > snapshotUnlockedCount
+}
+
+class UpgradeInfoStep : ContinueOnEnterStep(
+    "You unlocked your first upgrade! Red upgrades unlock new weapons, blue upgrades unlock movement options, and green upgrades unlock build options.",
+)
+
+class WeaponSwitchInfoStep : ContinueOnEnterStep(
+    "You can change your weapon by clicking the button on the right side of the screen under WEAPON. The same works for new BLOCKS once you unlock them.",
+)
+
+class UpgradeCombinationInfoStep : ContinueOnEnterStep(
+    "Combining different kinds of upgrades can have unexpected and fun results!",
+)
+
+class PortalGoalStep : ContinueOnEnterStep(
+    "Your goal is to help Kodee reach the top of the world and pass through the portal there.",
+)
 
 class PlaceholderStep : TutorialStep("") {
     override fun isComplete(ctx: StepContext): Boolean = true

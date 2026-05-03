@@ -3,6 +3,7 @@ package com.glycin.koita.gameplay.tutorial
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
@@ -17,10 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.composables.MenuColors
+import com.glycin.koita.core.Input
 import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.ui.uiPressable
 
 @Composable
-fun BoxScope.TutorialPrompt(state: TutorialState) {
+fun BoxScope.TutorialPrompt(state: TutorialState, input: Input) {
     if (state.promptText.isEmpty()) return
 
     Column(
@@ -50,5 +53,23 @@ fun BoxScope.TutorialPrompt(state: TutorialState) {
             color = Color.White,
             textAlign = TextAlign.Center,
         )
+    }
+
+    if (state.awaitingContinue) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .background(TutorialColors.PROMPT_BACKGROUND)
+                .border(2.dp, MenuColors.MAIN_BACKGROUND_LIGHT)
+                .uiPressable(input, onTap = { state.continueRequested = true })
+                .padding(horizontal = 32.dp, vertical = 16.dp),
+        ) {
+            Text(
+                text = "CONTINUE",
+                fontFamily = pixelFont(),
+                fontSize = 24.sp,
+                color = Color.White,
+            )
+        }
     }
 }
