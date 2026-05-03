@@ -32,12 +32,12 @@ enum class Tile(
     // Upper Underground (50-70%)
     STONE(Color(0xFF5D564E), TileCategory.SIMPLE),
     DIRT(Color(0xFF383830), TileCategory.SIMPLE),
-    CLAY(Color(0xFF735B42), TileCategory.RICH),
+    CLAY(Color(0xFFB8860B), TileCategory.RICH),
     GOLD_ORE(Color(0xFFEEBF2F), TileCategory.RICH),
 
     // Near Surface (70-90%)
-    RICH_DIRT(Color(0xFF362815), TileCategory.RICH),
-    ROOTS(Color(0xFF503B28), TileCategory.RICH),
+    RICH_DIRT(Color(0xFF4D3A05), TileCategory.RICH),
+    ROOTS(Color(0xFFEED870), TileCategory.RICH),
     SAND(Color(0xFFD3BE79), TileCategory.SIMPLE),
 
     // Surface (90-100%)

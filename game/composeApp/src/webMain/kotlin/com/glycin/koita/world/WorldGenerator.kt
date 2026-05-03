@@ -337,11 +337,18 @@ class WorldGenerator(
             depthPercent < 0.05f -> Tile.BEDROCK
             depthPercent < 0.20f -> {
                 val biome = biomeNoise.noise(worldX / 50f, worldY / 50f)
-                if (biome > 0.6f) Tile.OBSIDIAN else Tile.DEEP_STONE
+                when {
+                    biome > 0.6f -> Tile.OBSIDIAN
+                    biome < -0.6f -> Tile.CLAY
+                    else -> Tile.DEEP_STONE
+                }
             }
 
             // Mid Underground (20-50%) - Dark caves
-            depthPercent < 0.50f -> Tile.STONE
+            depthPercent < 0.50f -> {
+                val biome = biomeNoise.noise(worldX / 40f, worldY / 40f)
+                if (biome < -0.5f) Tile.CLAY else Tile.STONE
+            }
 
             // Upper Underground (50-70%) - Transition zone
             depthPercent < 0.70f -> {

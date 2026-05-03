@@ -99,7 +99,7 @@ class Boss(
     private val commandQueue = ArrayDeque<BossCommand>()
     private var currentCommand: BossCommand? = null
     private var idleTimer = 0f
-    private var nextIdleInterval = Random.nextFloat() * 3f + 3f
+    private var nextIdleInterval = rollIdleInterval()
     private var lastAttack = -1
 
     init {
@@ -139,7 +139,7 @@ class Boss(
             val done = cmd.update(deltaTime)
             if (done) {
                 currentCommand = null
-                nextIdleInterval = Random.nextFloat() * 3f + 3f
+                nextIdleInterval = rollIdleInterval()
             }
         }
 
@@ -199,6 +199,11 @@ class Boss(
             shieldPositions[i2] += (targetX - shieldPositions[i2]) * 8f * deltaTime
             shieldPositions[i2 + 1] += (targetY - shieldPositions[i2 + 1]) * 8f * deltaTime
         }
+    }
+
+    private fun rollIdleInterval(): Float {
+        val base = Random.nextFloat() * 3f + 3f
+        return if (health <= maxHealth * 0.5f) base * 0.5f else base
     }
 
     private fun pickRandomAttack(): BossCommand {
@@ -431,13 +436,14 @@ class Boss(
 
     private fun updateShieldRegen(deltaTime: Float) {
         if (regenPending == 0) return
+        val effectiveDelta = if (health <= maxHealth * 0.2f) deltaTime * 2f else deltaTime
         val cx = center.x
         val cy = center.y
         for (i in 0 until maxShieldTiles) {
             if (shieldActive[i]) continue
             val timer = shieldRegenQueue[i]
             if (timer <= 0f) continue
-            val next = timer - deltaTime
+            val next = timer - effectiveDelta
             if (next > 0f) {
                 shieldRegenQueue[i] = next
                 continue
