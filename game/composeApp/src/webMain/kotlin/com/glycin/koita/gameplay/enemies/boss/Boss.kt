@@ -86,6 +86,11 @@ class Boss(
     private val lavaSpawnInterval = 0.01f
     private val lavaStreamDuration = 3f
 
+    private val contactDamage = 3
+    private val contactDamageRadius = orbitRadius + 24f
+    private val contactDamageInterval = 0.5f
+    private var contactDamageCooldown = 0f
+
     private var activeLaser: BossLaser? = null
     private var activeEyeBeam: BossEyeBeam? = null
     private var activeBombField: BossBombField? = null
@@ -164,7 +169,21 @@ class Boss(
 
         eye.update(center, player.center)
         updateAnimation(deltaTime)
+        applyContactDamage(deltaTime)
         checkWeaponCollisions()
+    }
+
+    private fun applyContactDamage(deltaTime: Float) {
+        if (contactDamageCooldown > 0f) {
+            contactDamageCooldown -= deltaTime
+            return
+        }
+        val pc = player.center
+        val c = center
+        if (Vec2.fastDistance(pc.x, pc.y, c.x, c.y) <= contactDamageRadius * contactDamageRadius) {
+            player.takeDamage(contactDamage)
+            contactDamageCooldown = contactDamageInterval
+        }
     }
 
     private fun updateShieldOrbit(deltaTime: Float) {

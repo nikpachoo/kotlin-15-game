@@ -83,6 +83,10 @@ class Player(
     private var pullTimer = 0f
     private var pullVelocityY = 0f
 
+    private var slimedNotificationShown = false
+
+    private var invulnerabilityTimer = 0f
+
     fun applyUltimateVelocity(velocity: Vec2) {
         ultimateVelocityOverride = velocity
     }
@@ -165,6 +169,9 @@ class Player(
         if (healCooldownTimer > 0f) {
             healCooldownTimer = (healCooldownTimer - deltaTime).coerceAtLeast(0f)
         }
+        if (invulnerabilityTimer > 0f) {
+            invulnerabilityTimer = (invulnerabilityTimer - deltaTime).coerceAtLeast(0f)
+        }
     }
 
     fun useWeapon() {
@@ -197,7 +204,9 @@ class Player(
     fun takeDamage(amount: Int) {
         if (gameState.ultimateActive) return
         if (isAnchorLocked) return
+        if (invulnerabilityTimer > 0f) return
         health = (health - amount).coerceAtLeast(0)
+        invulnerabilityTimer = PlayerSettings.INVULNERABILITY_DURATION
         state = PlayerState.HURT
         droneState = getDroneIdleState()
         SoundManager.playOneShot(Sounds.HIT)
@@ -243,6 +252,16 @@ class Player(
         val slimed = isFeetOnTile(Tile.SLIME)
         if (slimed && isGroundPounding) {
             isGroundPounding = false
+        }
+
+        if (slimed) {
+            val tryingToMove = keyMap[Key.A] == true || keyMap[Key.D] == true
+            if (tryingToMove && !slimedNotificationShown) {
+                gameState.pickupNotification = "You are stuck on slime!"
+                slimedNotificationShown = true
+            }
+        } else {
+            slimedNotificationShown = false
         }
 
         val lavaRatio = tileOverlapRatio(Tile.LAVA)

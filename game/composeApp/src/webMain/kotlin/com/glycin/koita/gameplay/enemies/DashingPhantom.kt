@@ -34,7 +34,7 @@ class DashingPhantom(
     world = world,
 ) {
     override val canAttack = false
-    override val contactDamage = 2
+    override val contactDamage = 1
     override val dropChance = 0.07f
     override val spriteOffsetY = -24f
 
@@ -145,7 +145,7 @@ class DashingPhantom(
         position = newPos
 
         if (!hasHitPlayer && collisionDetector.checkAABBOverlap(position, width, height, player.position, player.width, player.height)) {
-            player.takeDamage(2)
+            player.takeDamage(1)
             hasHitPlayer = true
         }
 

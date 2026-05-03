@@ -113,7 +113,10 @@ fun GameScreen(gameState: GameState) {
     }
 
     remember(pickupManager, player) {
-        pickupManager.onPlayerMaxHealthIncrease = { player.maxHealth++ }
+        pickupManager.onPlayerMaxHealthIncrease = {
+            player.maxHealth++
+            player.health++
+        }
     }
 
     val upgradeRepository = remember { UpgradeRepository.getStandardRepository(gameState) }

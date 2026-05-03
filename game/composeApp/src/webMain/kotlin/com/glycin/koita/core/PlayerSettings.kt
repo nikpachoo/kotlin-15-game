@@ -49,4 +49,7 @@ object PlayerSettings {
     // Heal
     const val HEAL_COST = 100
     const val HEAL_COOLDOWN_SECONDS = 2f
+
+    // Invulnerability frames after taking damage
+    const val INVULNERABILITY_DURATION = 0.25f
 }

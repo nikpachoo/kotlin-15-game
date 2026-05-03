@@ -4,6 +4,7 @@ import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
+import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.PhysicsConstants
@@ -28,10 +29,15 @@ class PickupManager(
 
     fun spawn(position: Vec2) {
         val pos = position.copy()
-        val pickup = when (Random.nextInt(3)) {
-            0 -> DamagePickup(onPickup = { gameState.damageMultiplier += 0.5f }, position = pos)
-            1 -> HealthPickup(onPickup = { onPlayerMaxHealthIncrease?.invoke() }, position = pos)
-            else -> VisionPickup(onPickup = { gameState.visionMultiplier += 0.25f }, position = pos)
+        val totalWeight = GameSettings.PICKUP_WEIGHT_DAMAGE + GameSettings.PICKUP_WEIGHT_VISION + GameSettings.PICKUP_WEIGHT_HEALTH
+        val roll = Random.nextInt(totalWeight)
+        val pickup = when {
+            roll < GameSettings.PICKUP_WEIGHT_DAMAGE ->
+                DamagePickup(onPickup = { gameState.damageMultiplier += 0.5f }, position = pos)
+            roll < GameSettings.PICKUP_WEIGHT_DAMAGE + GameSettings.PICKUP_WEIGHT_VISION ->
+                VisionPickup(onPickup = { gameState.visionMultiplier += 0.25f }, position = pos)
+            else ->
+                HealthPickup(onPickup = { onPlayerMaxHealthIncrease?.invoke() }, position = pos)
         }
         activePickups.add(pickup)
     }
