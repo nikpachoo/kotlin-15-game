@@ -3,12 +3,9 @@ package com.glycin.koita.gameplay.ultimates
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import com.glycin.koita.audio.SoundManager
-import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
-import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.upgrades.UnlockId
@@ -39,44 +36,36 @@ class Kamehameha(
     requiredUnlockIds = setOf(UnlockId.GROUND_POUND, UnlockId.SNIPER, UnlockId.TURRET),
 ) {
     private var phase = Phase.INACTIVE
+    private var chargeTimer = 0f
     private var beamTimer = 0f
     private var beamDirection = Vec2.zero()
     private var beamEndDistance = 0f
 
-    private enum class Phase { INACTIVE, GROUND_POUND, BEAM }
+    private enum class Phase { INACTIVE, CHARGE, BEAM }
 
     override fun activate(player: Player) {
         isActive = true
-        phase = Phase.GROUND_POUND
-        player.applyUltimateVelocity(Vec2(0f, GROUND_POUND_SPEED))
+        phase = Phase.CHARGE
+        chargeTimer = CHARGE_DURATION
+        player.applyUltimateVelocity(Vec2.zero())
     }
 
     override fun update(deltaTime: Float, player: Player) {
         if (!isActive) return
 
         when (phase) {
-            Phase.GROUND_POUND -> updateGroundPound(player)
+            Phase.CHARGE -> updateCharge(deltaTime)
             Phase.BEAM -> updateBeam(deltaTime, player)
             Phase.INACTIVE -> {}
         }
     }
 
-    private fun updateGroundPound(player: Player) {
-        val feetX = player.position.x + player.width / 2f
-        val feetY = player.position.y + player.height + 2f
-
-        if (!collisionDetector.isSolidAtPosition(feetX, feetY)) return
-
-        val impactPoint = Vec2(feetX, player.position.y + player.height)
-        val affectedTiles = collisionDetector.getTilesInRadius(impactPoint, GROUND_POUND_RADIUS)
-        SoundManager.playOneShot(Sounds.EXPLODE)
-        explodeTerrain(affectedTiles, impactPoint, GROUND_POUND_RADIUS, world, particleSystem)
-
-        enemyManager.damageInRange(impactPoint, GROUND_POUND_RADIUS, GROUND_POUND_DAMAGE)
-
-        phase = Phase.BEAM
-        beamTimer = BEAM_DURATION
-        player.applyUltimateVelocity(Vec2.zero())
+    private fun updateCharge(deltaTime: Float) {
+        chargeTimer -= deltaTime
+        if (chargeTimer <= 0f) {
+            phase = Phase.BEAM
+            beamTimer = BEAM_DURATION
+        }
     }
 
     private fun updateBeam(deltaTime: Float, player: Player) {
@@ -136,6 +125,7 @@ class Kamehameha(
     override fun deactivate(player: Player) {
         isActive = false
         phase = Phase.INACTIVE
+        chargeTimer = 0f
         beamTimer = 0f
         player.clearUltimateVelocity()
     }
@@ -147,13 +137,13 @@ class Kamehameha(
         val t = frameCount.toFloat()
 
         when (phase) {
-            Phase.GROUND_POUND -> renderGroundPound(cx, t)
+            Phase.CHARGE -> renderCharge(cx, t)
             Phase.BEAM -> renderBeam(camera, player, cx, t)
             Phase.INACTIVE -> {}
         }
     }
 
-    private fun DrawScope.renderGroundPound(cx: Offset, t: Float) {
+    private fun DrawScope.renderCharge(cx: Offset, t: Float) {
         val pulse = t.pulse(0.3f, 0.2f)
         drawCircle(
             color = CHARGE_AURA_COLOR,
@@ -227,9 +217,7 @@ class Kamehameha(
     }
 
     companion object {
-        private const val GROUND_POUND_SPEED = PlayerSettings.GROUND_POUND_SPEED
-        private const val GROUND_POUND_RADIUS = PlayerSettings.GROUND_POUND_RADIUS * 2f
-        private const val GROUND_POUND_DAMAGE = PlayerSettings.GROUND_POUND_DAMAGE * 2f
+        private const val CHARGE_DURATION = 0.6f
         private const val BEAM_DURATION = 10f
         private const val BEAM_RANGE = 800f
         private const val BEAM_WIDTH = 48f

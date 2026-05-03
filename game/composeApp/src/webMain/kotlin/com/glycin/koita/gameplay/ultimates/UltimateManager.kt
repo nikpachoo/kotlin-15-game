@@ -82,6 +82,7 @@ class UltimateManager(
         val ultimate = ultimates.firstOrNull { it.id == id } ?: return
         announcedUltimateIds.add(ultimate.id)
         gameState.ultimateCooldownRemaining = 0f
+        gameState.ultimateBannerName = ultimate.name
         markAvailable(ultimate)
     }
 
