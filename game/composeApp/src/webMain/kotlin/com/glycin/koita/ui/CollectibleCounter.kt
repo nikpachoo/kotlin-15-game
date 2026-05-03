@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 private val COLLECTIBLES_CORNER_RADIUS = 6.dp
 private val MATERIALS_COLOR = Color(0xFF5D564E)
 private val MINERAL_COLOR = Color(0xFF7B4D41)
-private val ORE_COLOR = Color(0xFFFFD977)
 
 @Composable
 fun CollectiblesPanel(
@@ -38,7 +37,7 @@ fun CollectiblesPanel(
     ) {
         CollectibleCounter("MATERIALS", simple, MATERIALS_COLOR)
         CollectibleCounter("MINERAL", minerals, MINERAL_COLOR)
-        CollectibleCounter("ORE", rich, ORE_COLOR)
+        CollectibleCounter("ORE", rich, HudColors.ORE_COLOR)
     }
 }
 

@@ -32,6 +32,7 @@ import com.glycin.koita.ui.CollectiblesPanel
 import com.glycin.koita.ui.EnemyHealthBars
 import com.glycin.koita.ui.Health
 import com.glycin.koita.ui.HotkeyBar
+import com.glycin.koita.ui.HudColors
 import com.glycin.koita.ui.HotkeyEntry
 import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
@@ -158,12 +159,14 @@ fun UiRenderer(
                     enabled = gameState.canDash,
                 )
                 ActionButton(
-                    label = "Heal (${gameState.nextHealCost})",
+                    label = "Heal",
                     keyHint = "E",
                     key = Key.E,
                     input = input,
                     fillWidth = true,
                     enabled = player.canHeal,
+                    cost = gameState.nextHealCost,
+                    costDotColor = HudColors.ORE_COLOR,
                     onTap = { player.heal() },
                 )
                 ActionButton(

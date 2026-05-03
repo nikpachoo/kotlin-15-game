@@ -1,8 +1,13 @@
 package com.glycin.koita.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +31,8 @@ fun ActionButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     fillWidth: Boolean = false,
+    cost: Int? = null,
+    costDotColor: Color? = null,
     onTap: (() -> Unit)? = null,
 ) {
     val pressed = input.keyMap[key] == true
@@ -52,12 +59,35 @@ fun ActionButton(
             } else null,
             onTap = onTap?.takeIf { enabled },
         ) {
-            Text(
-                text = label,
-                fontFamily = pixelFont(),
-                fontSize = 14.sp,
-                color = Color.White,
-            )
+            if (cost != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = "$label (",
+                        fontFamily = pixelFont(),
+                        fontSize = 14.sp,
+                        color = Color.White,
+                    )
+                    if (costDotColor != null) {
+                        Box(Modifier.size(8.dp).background(costDotColor, CircleShape))
+                    }
+                    Text(
+                        text = "$cost)",
+                        fontFamily = pixelFont(),
+                        fontSize = 14.sp,
+                        color = Color.White,
+                    )
+                }
+            } else {
+                Text(
+                    text = label,
+                    fontFamily = pixelFont(),
+                    fontSize = 14.sp,
+                    color = Color.White,
+                )
+            }
         }
     }
 }

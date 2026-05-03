@@ -21,4 +21,6 @@ internal object HudColors {
     val BANNER_LABEL = Color(0xFFFFEE44)
 
     val ULTIMATE_BAR_BACKGROUND = Color(0xFF1A0033)
+
+    val ORE_COLOR = Color(0xFFFFD977)
 }
