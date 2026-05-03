@@ -58,7 +58,7 @@ fun MainMenu(gameState: GameState) {
             Spacer(modifier = Modifier.size(36.dp))
 
             MenuItem("Start") { gameState.currentScreen = Screen.GAME }
-            MenuItem("How to Play") { gameState.currentScreen = Screen.HOW_TO_PLAY }
+            MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
             MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
             MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
         }

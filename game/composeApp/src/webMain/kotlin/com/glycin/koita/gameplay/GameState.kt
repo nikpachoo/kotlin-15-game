@@ -13,6 +13,7 @@ enum class Screen {
     MAIN_MENU,
     GAME,
     HOW_TO_PLAY,
+    TUTORIAL,
     OPTIONS,
     HIGHSCORES,
     GAME_OVER,

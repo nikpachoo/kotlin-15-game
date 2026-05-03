@@ -22,7 +22,7 @@ fun Health(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val heartsPerRow = 10
+        val heartsPerRow = 9
         val numRows = (maxHp + heartsPerRow - 1) / heartsPerRow
 
         repeat(numRows) { rowIndex ->
