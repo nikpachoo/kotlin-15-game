@@ -532,6 +532,10 @@ class Boss(
         activeBombField?.forEachBomb(action)
     }
 
+    fun forEachPolarityTile(action: (x: Float, y: Float, tile: Tile) -> Unit) {
+        activePolarityFlip?.forEachPulledTile(action)
+    }
+
     fun forEachShieldTile(action: (x: Float, y: Float) -> Unit) {
         for (i in 0 until maxShieldTiles) {
             if (!shieldActive[i]) continue

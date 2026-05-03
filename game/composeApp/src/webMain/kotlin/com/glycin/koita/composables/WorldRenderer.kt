@@ -595,6 +595,15 @@ fun WorldRenderer(
                     size = Size(sizePx, sizePx),
                 )
             }
+
+            boss.forEachPolarityTile { x, y, tile ->
+                val pos = camera.worldToScreen(x, y)
+                drawRect(
+                    color = tile.color,
+                    topLeft = pos,
+                    size = WorldConstants.STANDARD_SIZE,
+                )
+            }
         }
 
         if (gameState.devMode) {
