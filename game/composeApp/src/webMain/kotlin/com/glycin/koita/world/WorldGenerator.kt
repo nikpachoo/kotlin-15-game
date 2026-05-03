@@ -339,7 +339,7 @@ class WorldGenerator(
                 val biome = biomeNoise.noise(worldX / 50f, worldY / 50f)
                 when {
                     biome > 0.6f -> Tile.OBSIDIAN
-                    biome < -0.6f -> Tile.CLAY
+                    biome < 0.3f -> Tile.CLAY
                     else -> Tile.DEEP_STONE
                 }
             }
@@ -347,15 +347,15 @@ class WorldGenerator(
             // Mid Underground (20-50%) - Dark caves
             depthPercent < 0.50f -> {
                 val biome = biomeNoise.noise(worldX / 40f, worldY / 40f)
-                if (biome < -0.5f) Tile.CLAY else Tile.STONE
+                if (biome < 0.3f) Tile.CLAY else Tile.STONE
             }
 
             // Upper Underground (50-70%) - Transition zone
             depthPercent < 0.70f -> {
                 val biome = biomeNoise.noise(worldX / 30f, worldY / 30f)
                 when {
-                    biome > 0.3f -> Tile.STONE
-                    biome > 0.0f -> Tile.DIRT
+                    biome > 0.6f -> Tile.STONE
+                    biome > 0.3f -> Tile.DIRT
                     else -> Tile.CLAY
                 }
             }
@@ -364,8 +364,8 @@ class WorldGenerator(
             depthPercent < 0.90f -> {
                 val biome = biomeNoise.noise(worldX / 25f, worldY / 25f)
                 when {
-                    biome > 0.4f -> Tile.DIRT
-                    biome > -0.2f -> Tile.RICH_DIRT
+                    biome > 0.6f -> Tile.DIRT
+                    biome > 0.3f -> Tile.RICH_DIRT
                     else -> Tile.SAND
                 }
             }
@@ -383,9 +383,9 @@ class WorldGenerator(
                     val oreValue = oreNoise.noise(x / 20f, y / 20f)
 
                     val ore = when {
-                        depthPercent > 0.70f && oreValue > 0.75f -> Tile.COAL_ORE  // Deep
-                        depthPercent > 0.50f && oreValue > 0.80f -> Tile.IRON_ORE  // Mid-deep
-                        depthPercent > 0.30f && oreValue > 0.85f -> Tile.GOLD_ORE  // Mid
+                        depthPercent < 0.30f && oreValue > 0.75f -> Tile.COAL_ORE  // Deep
+                        depthPercent < 0.50f && oreValue > 0.80f -> Tile.IRON_ORE  // Mid-deep
+                        depthPercent < 0.70f && oreValue > 0.85f -> Tile.GOLD_ORE  // Mid
                         else -> null
                     }
 
@@ -483,7 +483,7 @@ class WorldGenerator(
                     if (vegNoise > 0.7f) {
                         world[x, y + 1] = Tile.FLOWER
                     }
-                    else if (vegNoise < -0.8f && y <= WorldConstants.WORLD_HEIGHT_TILES - 4) {
+                    else if (vegNoise < 0.2f && y <= WorldConstants.WORLD_HEIGHT_TILES - 4) {
                         for (treeY in 1..3) {
                             if (world[x, y + treeY] == Tile.AIR) {
                                 world[x, y + treeY] = Tile.WOOD
