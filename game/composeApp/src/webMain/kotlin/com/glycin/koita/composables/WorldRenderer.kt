@@ -604,6 +604,26 @@ fun WorldRenderer(
                     size = WorldConstants.STANDARD_SIZE,
                 )
             }
+
+            val meteorRadius = boss.meteorRadius
+            boss.forEachMeteor { x, y ->
+                val pos = camera.worldToScreen(x, y)
+                drawCircle(
+                    color = WorldRendererColors.BOSS_METEOR_OUTER,
+                    radius = meteorRadius * 2.5f,
+                    center = pos,
+                )
+                drawCircle(
+                    color = WorldRendererColors.BOSS_METEOR_MIDDLE,
+                    radius = meteorRadius * 1.5f,
+                    center = pos,
+                )
+                drawCircle(
+                    color = WorldRendererColors.BOSS_METEOR_CORE,
+                    radius = meteorRadius,
+                    center = pos,
+                )
+            }
         }
 
         if (gameState.devMode) {

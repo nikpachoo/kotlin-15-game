@@ -95,6 +95,7 @@ class Boss(
     private var activeEyeBeam: BossEyeBeam? = null
     private var activeBombField: BossBombField? = null
     private var activePolarityFlip: BossPolarityFlip? = null
+    private var activeMeteorShower: BossMeteorShower? = null
 
     private val commandQueue = ArrayDeque<BossCommand>()
     private var currentCommand: BossCommand? = null
@@ -167,6 +168,12 @@ class Boss(
             if (!polarityFlip.alive) activePolarityFlip = null
         }
 
+        val meteorShower = activeMeteorShower
+        if (meteorShower != null) {
+            meteorShower.update(deltaTime)
+            if (!meteorShower.alive) activeMeteorShower = null
+        }
+
         eye.update(center, player.center)
         updateAnimation(deltaTime)
         applyContactDamage(deltaTime)
@@ -207,7 +214,7 @@ class Boss(
     }
 
     private fun pickRandomAttack(): BossCommand {
-        val options = (0 until 5).filter { it != lastAttack }
+        val options = (0 until 6).filter { it != lastAttack }
         val pick = options.random()
         lastAttack = pick
         return when (pick) {
@@ -215,7 +222,9 @@ class Boss(
             1 -> { animState = BossAnimState.ATTACK_2; eyeBeamCommand() }
             2 -> { animState = BossAnimState.ATTACK_1; lavaStreamCommand() }
             3 -> { animState = BossAnimState.ATTACK_1; bombFieldCommand() }
-            else -> { animState = BossAnimState.ATTACK_2; polarityFlipCommand() }
+            4 -> { animState = BossAnimState.ATTACK_2; polarityFlipCommand() }
+            5 -> { animState = BossAnimState.ATTACK_1; meteorShowerCommand() }
+            else -> { animState = BossAnimState.ATTACK_2; eyeBeamCommand() }
         }
     }
 
@@ -315,6 +324,23 @@ class Boss(
                 )
             }
             activePolarityFlip?.alive != true
+        }
+    }
+
+    private fun meteorShowerCommand(): BossCommand {
+        var started = false
+        return BossCommand { deltaTime ->
+            if (!started) {
+                started = true
+                activeMeteorShower = BossMeteorShower(
+                    origin = { center },
+                    world = world,
+                    player = player,
+                    collisionDetector = collisionDetector,
+                    particleSystem = particleSystem,
+                )
+            }
+            activeMeteorShower?.alive != true
         }
     }
 
@@ -540,6 +566,12 @@ class Boss(
 
     fun forEachPolarityTile(action: (x: Float, y: Float, tile: Tile) -> Unit) {
         activePolarityFlip?.forEachPulledTile(action)
+    }
+
+    val meteorRadius: Float get() = activeMeteorShower?.meteorRadius ?: 0f
+
+    fun forEachMeteor(action: (x: Float, y: Float) -> Unit) {
+        activeMeteorShower?.forEachMeteor(action)
     }
 
     fun forEachShieldTile(action: (x: Float, y: Float) -> Unit) {

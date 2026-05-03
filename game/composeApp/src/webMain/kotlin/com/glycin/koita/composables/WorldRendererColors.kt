@@ -60,4 +60,8 @@ internal object WorldRendererColors {
     val BOSS_EYE_BEAM_CHARGE = Color(0x88FF44FF)
 
     val BOSS_BOMB_FLASH = Color(0xFFFFEE66)
+
+    val BOSS_METEOR_OUTER = Color(0x66FF6600)
+    val BOSS_METEOR_MIDDLE = Color(0xCCFF8822)
+    val BOSS_METEOR_CORE = Color(0xFFFFEE99)
 }
