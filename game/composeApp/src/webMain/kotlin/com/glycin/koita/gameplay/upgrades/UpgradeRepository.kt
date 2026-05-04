@@ -2,6 +2,8 @@ package com.glycin.koita.gameplay.upgrades
 
 import com.glycin.koita.core.SpriteSheet
 import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.modes.AttackWeapon
+import com.glycin.koita.gameplay.modes.BuildBlock
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.upgrade_icons_sheet
 
@@ -74,7 +76,10 @@ class UpgradeRepository(
                         name = "Data Classes",
                         description = "The blocks you place now explode when you shoot them.",
                         icon = UPGRADE_ICONS.frame(1),
-                        onUnlock = { gameState.explosiveBlocks = true }
+                        onUnlock = {
+                            gameState.explosiveBlocks = true
+                            gameState.selectedBlock = BuildBlock.DYNAMITE
+                        }
                     ),
                     Unlock(
                         id = UnlockId.LASER,
@@ -82,7 +87,10 @@ class UpgradeRepository(
                         name = "Coroutines",
                         description = "Your weapon turns into a continuous laser instead.",
                         icon = UPGRADE_ICONS.frame(0),
-                        onUnlock = { gameState.laserWeapon = true }
+                        onUnlock = {
+                            gameState.laserWeapon = true
+                            gameState.selectedWeapon = AttackWeapon.LASER
+                        }
                     ),
                     Unlock(
                         id = UnlockId.SLOW_FALL,
@@ -106,7 +114,10 @@ class UpgradeRepository(
                         name = "Sealed Classes",
                         description = "The blocks you place become trampolines.",
                         icon = UPGRADE_ICONS.frame(11),
-                        onUnlock = { gameState.bouncyBlocks = true }
+                        onUnlock = {
+                            gameState.bouncyBlocks = true
+                            gameState.selectedBlock = BuildBlock.BOUNCY
+                        }
                     ),
                     Unlock(
                         id = UnlockId.TURRET,
@@ -114,7 +125,10 @@ class UpgradeRepository(
                         name = "Delegation",
                         description = "Unlocks a turret block that shoots enemies.",
                         icon = UPGRADE_ICONS.frame(2),
-                        onUnlock = { gameState.turretUnlocked = true }
+                        onUnlock = {
+                            gameState.turretUnlocked = true
+                            gameState.selectedBlock = BuildBlock.TURRET
+                        }
                     ),
                     Unlock(
                         id = UnlockId.DASH,
@@ -130,7 +144,10 @@ class UpgradeRepository(
                         name = "Higher-Order Functions",
                         description = "Your weapon fires slow rockets that accelerate into a massive explosion.",
                         icon = UPGRADE_ICONS.frame(5),
-                        onUnlock = { gameState.rocketLauncher = true }
+                        onUnlock = {
+                            gameState.rocketLauncher = true
+                            gameState.selectedWeapon = AttackWeapon.ROCKET
+                        }
                     ),
                     Unlock(
                         id = UnlockId.SUPER_SOAKER,
@@ -138,7 +155,10 @@ class UpgradeRepository(
                         name = "Kotlin Multiplatform",
                         description = "Your weapon shoots a stream of water.",
                         icon = UPGRADE_ICONS.frame(8),
-                        onUnlock = { gameState.superSoaker = true }
+                        onUnlock = {
+                            gameState.superSoaker = true
+                            gameState.selectedWeapon = AttackWeapon.SOAKER
+                        }
                     ),
                     Unlock(
                         id = UnlockId.INVULNERABLE,
@@ -154,7 +174,10 @@ class UpgradeRepository(
                         name = "Scope Functions",
                         description = "Hold to aim, release to fire a piercing shot.",
                         icon = UPGRADE_ICONS.frame(10),
-                        onUnlock = { gameState.sniperWeapon = true }
+                        onUnlock = {
+                            gameState.sniperWeapon = true
+                            gameState.selectedWeapon = AttackWeapon.SNIPER
+                        }
                     ),
                     Unlock(
                         id = UnlockId.RESOURCE_SHIELD,

@@ -1,7 +1,6 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -264,19 +262,17 @@ private fun PickupTile(pickupEntry: PickupCatalog.PickupEntry, count: Int) {
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         val image = imageResource(pickupEntry.sprite)
-        val painter = remember(image) {
-            BitmapPainter(
+        Canvas(modifier = Modifier.size(56.dp)) {
+            if (image.width <= 0 || image.height <= 0) return@Canvas
+            drawImage(
                 image = image,
                 srcOffset = IntOffset.Zero,
                 srcSize = IntSize(PickupCatalog.FRAME_SIZE, PickupCatalog.FRAME_SIZE),
+                dstOffset = IntOffset.Zero,
+                dstSize = IntSize(size.width.toInt(), size.height.toInt()),
                 filterQuality = FilterQuality.None,
             )
         }
-        Image(
-            painter = painter,
-            contentDescription = pickupEntry.name,
-            modifier = Modifier.size(56.dp),
-        )
         Text(
             text = "x$count",
             fontFamily = pixelFont(),
