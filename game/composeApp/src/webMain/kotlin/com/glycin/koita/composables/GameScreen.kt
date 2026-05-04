@@ -12,6 +12,8 @@ import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import com.glycin.koita.audio.Music
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
@@ -179,12 +181,22 @@ fun GameScreen(gameState: GameState) {
     }
     var musicStarted by remember { mutableStateOf(false) }
 
+    val compact = isCompact()
+    val density = LocalDensity.current
+    val pillarPx = remember(density) { with(density) { 140.dp.toPx() } }
+
+    LaunchedEffect(compact, pillarPx) {
+        if (camera.actualWidth > 0f && camera.actualHeight > 0f) {
+            camera.updateViewport(camera.actualWidth, camera.actualHeight, compact, pillarPx)
+        }
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .focusRequester(focusRequester)
         .focusable()
         .onSizeChanged { newSize ->
-            camera.updateViewport(newSize.width.toFloat(), newSize.height.toFloat())
+            camera.updateViewport(newSize.width.toFloat(), newSize.height.toFloat(), compact, pillarPx)
         }
         .pointerInput(Unit) {
             awaitPointerEventScope {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.glycin.koita.composables.isCompact
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.heart
 import org.jetbrains.compose.resources.painterResource
@@ -18,16 +19,20 @@ fun Health(
     maxHp: Int,
     modifier: Modifier = Modifier,
 ) {
+    val compact = isCompact()
+    val heartSize = if (compact) 22.dp else 32.dp
+    val gap = if (compact) 2.dp else 4.dp
+
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(gap)
     ) {
         val heartsPerRow = 9
         val numRows = (maxHp + heartsPerRow - 1) / heartsPerRow
 
         repeat(numRows) { rowIndex ->
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(gap)
             ) {
                 val startIndex = rowIndex * heartsPerRow
                 val endIndex = minOf(startIndex + heartsPerRow, maxHp)
@@ -37,7 +42,7 @@ fun Health(
                     Image(
                         painter = painterResource(Res.drawable.heart),
                         contentDescription = "Heart",
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(heartSize),
                         alpha = if (heartIndex < currentHp) 1f else 0.3f
                     )
                 }

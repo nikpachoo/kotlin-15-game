@@ -13,24 +13,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Input
-
-private val DPAD_BUTTON_SIZE = 60.dp
 
 @Composable
 fun VirtualDpad(
     input: Input,
     modifier: Modifier = Modifier,
 ) {
+    val compact = isCompact()
+    val buttonSize = if (compact) 44.dp else 60.dp
+    val gap = if (compact) 2.dp else 4.dp
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(gap),
     ) {
         DpadButton("W", Key.W, input)
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
             DpadButton("A", Key.A, input)
-            Spacer(modifier = Modifier.size(DPAD_BUTTON_SIZE))
+            Spacer(modifier = Modifier.size(buttonSize))
             DpadButton("D", Key.D, input)
         }
         DpadButton("S", Key.S, input)
@@ -43,8 +45,9 @@ private fun DpadButton(
     key: Key,
     input: Input,
 ) {
+    val compact = isCompact()
     HudButton(
-        size = DPAD_BUTTON_SIZE,
+        size = if (compact) 44.dp else 60.dp,
         active = input.keyMap[key] == true,
         input = input,
         key = key,
@@ -53,7 +56,7 @@ private fun DpadButton(
         Text(
             text = label,
             fontFamily = pixelFont(),
-            fontSize = 18.sp,
+            fontSize = if (compact) 14.sp else 18.sp,
             color = Color.White,
         )
     }

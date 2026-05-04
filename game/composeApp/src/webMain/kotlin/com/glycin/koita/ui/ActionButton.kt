@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Input
 
-private val ACTION_BUTTON_SIZE = 64.dp
 private const val DISABLED_ALPHA = 0.35f
 
 @Composable
@@ -35,21 +35,27 @@ fun ActionButton(
     costDotColor: Color? = null,
     onTap: (() -> Unit)? = null,
 ) {
+    val compact = isCompact()
+    val buttonSize = if (compact) 44.dp else 64.dp
+    val keyHintSize = if (compact) 13.sp else 18.sp
+    val labelSize = if (compact) 11.sp else 14.sp
     val pressed = input.keyMap[key] == true
     val columnModifier = if (fillWidth) modifier.fillMaxWidth() else modifier
     Column(
         modifier = columnModifier.alpha(if (enabled) 1f else DISABLED_ALPHA),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
     ) {
-        Text(
-            text = keyHint,
-            fontFamily = pixelFont(),
-            fontSize = 18.sp,
-            color = Color.White,
-        )
+        if (!compact) {
+            Text(
+                text = keyHint,
+                fontFamily = pixelFont(),
+                fontSize = keyHintSize,
+                color = Color.White,
+            )
+        }
         HudButton(
-            size = ACTION_BUTTON_SIZE,
+            size = buttonSize,
             active = enabled && pressed,
             input = input,
             key = key,
@@ -67,16 +73,16 @@ fun ActionButton(
                     Text(
                         text = "$label (",
                         fontFamily = pixelFont(),
-                        fontSize = 14.sp,
+                        fontSize = labelSize,
                         color = Color.White,
                     )
                     if (costDotColor != null) {
-                        Box(Modifier.size(8.dp).background(costDotColor, CircleShape))
+                        Box(Modifier.size(if (compact) 6.dp else 8.dp).background(costDotColor, CircleShape))
                     }
                     Text(
                         text = "$cost)",
                         fontFamily = pixelFont(),
-                        fontSize = 14.sp,
+                        fontSize = labelSize,
                         color = Color.White,
                     )
                 }
@@ -84,7 +90,7 @@ fun ActionButton(
                 Text(
                     text = label,
                     fontFamily = pixelFont(),
-                    fontSize = 14.sp,
+                    fontSize = labelSize,
                     color = Color.White,
                 )
             }

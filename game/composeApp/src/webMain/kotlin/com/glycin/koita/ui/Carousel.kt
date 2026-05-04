@@ -17,11 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Input
-
-private val ARROW_BUTTON_SIZE = 36.dp
-private val DISPLAY_WIDTH = 120.dp
-private val DISPLAY_HEIGHT = 36.dp
 
 @Composable
 fun <T> Carousel(
@@ -34,6 +31,7 @@ fun <T> Carousel(
     modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) return
+    val compact = isCompact()
     val size = items.size
     val current = items.indexOf(selected).takeIf { it >= 0 } ?: 0
     val currentItem = items[current]
@@ -45,11 +43,11 @@ fun <T> Carousel(
         Text(
             text = label,
             fontFamily = pixelFont(),
-            fontSize = 10.sp,
+            fontSize = if (compact) 8.sp else 10.sp,
             color = Color.LightGray,
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CarouselArrow(label, isPrev = true, input = input) {
@@ -57,15 +55,15 @@ fun <T> Carousel(
             }
             Box(
                 modifier = Modifier
-                    .width(DISPLAY_WIDTH)
-                    .height(DISPLAY_HEIGHT)
+                    .width(if (compact) 88.dp else 120.dp)
+                    .height(if (compact) 28.dp else 36.dp)
                     .hudPanel(),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = labelOf(currentItem),
                     fontFamily = pixelFont(),
-                    fontSize = 14.sp,
+                    fontSize = if (compact) 11.sp else 14.sp,
                     color = HudColors.PANEL_ACCENT,
                 )
             }
@@ -83,9 +81,10 @@ private fun CarouselArrow(
     input: Input,
     onTap: () -> Unit,
 ) {
+    val compact = isCompact()
     var pressed by remember { mutableStateOf(false) }
     HudButton(
-        size = ARROW_BUTTON_SIZE,
+        size = if (compact) 28.dp else 36.dp,
         active = pressed,
         input = input,
         key = label to isPrev,
@@ -95,7 +94,7 @@ private fun CarouselArrow(
         Text(
             text = if (isPrev) "<" else ">",
             fontFamily = pixelFont(),
-            fontSize = 20.sp,
+            fontSize = if (compact) 16.sp else 20.sp,
             color = Color.White,
         )
     }

@@ -3,6 +3,7 @@ package com.glycin.koita.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -57,7 +59,9 @@ fun UiRenderer(
     input: Input,
     upgradeRepository: UpgradeRepository,
 ) {
+    val compact = isCompact()
     val panelWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
+    val panelPadding = if (compact) 6.dp else 16.dp
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Left panel
@@ -65,7 +69,7 @@ fun UiRenderer(
             modifier = Modifier
                 .width(panelWidth)
                 .fillMaxHeight()
-                .padding(16.dp),
+                .padding(panelPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Health(
@@ -96,7 +100,7 @@ fun UiRenderer(
                 .width(panelWidth)
                 .fillMaxHeight()
                 .align(Alignment.TopEnd)
-                .padding(16.dp),
+                .padding(panelPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             StatsPanel(
@@ -136,47 +140,20 @@ fun UiRenderer(
 
             Spacer(modifier = Modifier.size(12.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                ActionButton(
-                    label = "Ult",
-                    keyHint = "R",
-                    key = Key.R,
-                    input = input,
-                    fillWidth = true,
-                    enabled = gameState.ultimateAvailable != null,
-                    onTap = { gameState.ultimateTriggered = true },
-                )
-                ActionButton(
-                    label = "Dash",
-                    keyHint = "Shift",
-                    key = Key.ShiftLeft,
-                    input = input,
-                    fillWidth = true,
-                    enabled = gameState.canDash,
-                )
-                ActionButton(
-                    label = "Heal",
-                    keyHint = "E",
-                    key = Key.E,
-                    input = input,
-                    fillWidth = true,
-                    enabled = player.canHeal,
-                    cost = gameState.nextHealCost,
-                    costDotColor = HudColors.ORE_COLOR,
-                    onTap = { player.heal() },
-                )
-                ActionButton(
-                    label = "Jump",
-                    keyHint = "Space",
-                    key = Key.Spacebar,
-                    input = input,
-                    fillWidth = true,
-                )
-            }
+            ActionButtonGrid(
+                actions = listOf(
+                    ActionSpec("Ult", "R", Key.R, gameState.ultimateAvailable != null,
+                        onTap = { gameState.ultimateTriggered = true }),
+                    ActionSpec("Dash", "Shift", Key.ShiftLeft, gameState.canDash),
+                    ActionSpec("Heal", "E", Key.E, player.canHeal,
+                        cost = gameState.nextHealCost,
+                        costDotColor = HudColors.ORE_COLOR,
+                        onTap = { player.heal() }),
+                    ActionSpec("Jump", "Space", Key.Spacebar),
+                ),
+                input = input,
+                compact = compact,
+            )
 
             Spacer(modifier = Modifier.weight(3f))
         }
@@ -233,4 +210,62 @@ fun UiRenderer(
             PauseMenu(gameState, upgradeRepository)
         }
     }
+}
+
+private data class ActionSpec(
+    val label: String,
+    val keyHint: String,
+    val key: Key,
+    val enabled: Boolean = true,
+    val cost: Int? = null,
+    val costDotColor: Color? = null,
+    val onTap: (() -> Unit)? = null,
+)
+
+@Composable
+private fun ActionButtonGrid(
+    actions: List<ActionSpec>,
+    input: Input,
+    compact: Boolean,
+) {
+    if (compact) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            actions.chunked(2).forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    row.forEach { it.Render(modifier = Modifier.weight(1f), input = input) }
+                }
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            actions.forEach { it.Render(modifier = Modifier, input = input) }
+        }
+    }
+}
+
+@Composable
+private fun ActionSpec.Render(modifier: Modifier, input: Input) {
+    ActionButton(
+        label = label,
+        keyHint = keyHint,
+        key = key,
+        input = input,
+        modifier = modifier,
+        fillWidth = true,
+        enabled = enabled,
+        cost = cost,
+        costDotColor = costDotColor,
+        onTap = onTap,
+    )
 }

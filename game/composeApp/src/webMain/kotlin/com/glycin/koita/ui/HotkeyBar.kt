@@ -14,9 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Input
-
-private val HOTKEY_BUTTON_SIZE = 64.dp
 
 data class HotkeyEntry(
     val keyHint: String,
@@ -32,23 +31,26 @@ fun HotkeyBar(
     modifier: Modifier = Modifier,
     onSelect: (Int) -> Unit = {},
 ) {
+    val compact = isCompact()
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         entries.forEach { entry ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
             ) {
-                Text(
-                    text = entry.keyHint,
-                    fontFamily = pixelFont(),
-                    fontSize = 18.sp,
-                    color = Color.White,
-                )
+                if (!compact) {
+                    Text(
+                        text = entry.keyHint,
+                        fontFamily = pixelFont(),
+                        fontSize = 18.sp,
+                        color = Color.White,
+                    )
+                }
                 HotkeyButton(
                     label = entry.label,
                     selected = selectedModeIndex == entry.modeIndex,
@@ -69,9 +71,10 @@ private fun HotkeyButton(
     key: Any,
     onTap: () -> Unit,
 ) {
+    val compact = isCompact()
     var pressed by remember { mutableStateOf(false) }
     HudButton(
-        size = HOTKEY_BUTTON_SIZE,
+        size = if (compact) 44.dp else 64.dp,
         active = selected || pressed,
         input = input,
         key = key,
@@ -82,7 +85,7 @@ private fun HotkeyButton(
         Text(
             text = label,
             fontFamily = pixelFont(),
-            fontSize = 14.sp,
+            fontSize = if (compact) 11.sp else 14.sp,
             color = Color.White,
         )
     }
