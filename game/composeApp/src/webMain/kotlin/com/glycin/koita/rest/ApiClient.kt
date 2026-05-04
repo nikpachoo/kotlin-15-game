@@ -27,7 +27,6 @@ data class HighscoreEntry(
 object ApiClient {
 
     private const val BASE_URL = "https://highscore-server-e4szw66yha-ew.a.run.app"
-    private const val AUTH_HEADER = "Basic YWRtaW46YWRtaW4=" //TODO: Hide this
 
     private val client = HttpClient(Js) {
         expectSuccess = true
@@ -39,7 +38,6 @@ object ApiClient {
         }
         defaultRequest {
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.Authorization, AUTH_HEADER)
         }
     }
 

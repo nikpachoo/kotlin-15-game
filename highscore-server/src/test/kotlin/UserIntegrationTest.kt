@@ -1,7 +1,10 @@
 package com.glycin
 
+import com.glycin.model.CreateUserRequest
+import com.glycin.model.HighscoreEntry
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -47,6 +50,9 @@ class UserIntegrationTest {
         install(ContentNegotiation) {
             json()
         }
+        defaultRequest {
+            header(HttpHeaders.Origin, "http://localhost:8080")
+        }
     }
 
     @Test
@@ -77,13 +83,12 @@ class UserIntegrationTest {
     }
 
     @Test
-    fun `POST users creates user and returns ID`() = testApplication {
+    fun `POST users is public and creates user and returns ID`() = testApplication {
         configureTestApp()
         val client = jsonClient()
         val response = client.post("/users") {
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.Authorization, basicAuthHeader)
-            setBody(ExposedUser("Alice", 100, "alice@test.com"))
+            setBody(CreateUserRequest("Alice", 100, "alice@test.com"))
         }
         assertEquals(HttpStatusCode.Created, response.status)
         val id = response.body<Int>()
@@ -97,8 +102,7 @@ class UserIntegrationTest {
 
         val createResponse = client.post("/users") {
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.Authorization, basicAuthHeader)
-            setBody(ExposedUser("Bob", 200, "bob@test.com"))
+            setBody(CreateUserRequest("Bob", 200, "bob@test.com"))
         }
         val id = createResponse.body<Int>()
 
@@ -110,6 +114,13 @@ class UserIntegrationTest {
         assertEquals("Bob", user.name)
         assertEquals(200, user.score)
         assertEquals("bob@test.com", user.email)
+    }
+
+    @Test
+    fun `GET users by id without auth returns 401`() = testApplication {
+        configureTestApp()
+        val response = client.get("/users/1")
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
 
     @Test
@@ -128,8 +139,7 @@ class UserIntegrationTest {
 
         val createResponse = client.post("/users") {
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.Authorization, basicAuthHeader)
-            setBody(ExposedUser("Charlie", 50))
+            setBody(CreateUserRequest("Charlie", 50))
         }
         val id = createResponse.body<Int>()
 
@@ -150,14 +160,24 @@ class UserIntegrationTest {
     }
 
     @Test
+    fun `PUT users without auth returns 401`() = testApplication {
+        configureTestApp()
+        val client = jsonClient()
+        val response = client.put("/users/1") {
+            contentType(ContentType.Application.Json)
+            setBody(ExposedUser("Nope", 1))
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @Test
     fun `DELETE users removes user`() = testApplication {
         configureTestApp()
         val client = jsonClient()
 
         val createResponse = client.post("/users") {
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.Authorization, basicAuthHeader)
-            setBody(ExposedUser("DeleteMe", 0))
+            setBody(CreateUserRequest("DeleteMe", 0))
         }
         val id = createResponse.body<Int>()
 
@@ -173,7 +193,61 @@ class UserIntegrationTest {
     }
 
     @Test
-    fun `GET highscores returns users sorted by score descending`() = testApplication {
+    fun `DELETE users without auth returns 401`() = testApplication {
+        configureTestApp()
+        val response = client.delete("/users/1")
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @Test
+    fun `POST users without allowed origin returns 403`() = testApplication {
+        configureTestApp()
+        val response = client.post("/users") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"name":"Eve","score":1}""")
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @Test
+    fun `POST users with disallowed origin returns 403`() = testApplication {
+        configureTestApp()
+        val response = client.post("/users") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Origin, "https://evil.example.com")
+            setBody("""{"name":"Eve","score":1}""")
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @Test
+    fun `POST users with invalid name returns 400`() = testApplication {
+        configureTestApp()
+        val client = jsonClient()
+        val response = client.post("/users") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateUserRequest("<script>", 1))
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `POST users with honeypot field silently succeeds without persisting`() = testApplication {
+        configureTestApp()
+        val client = jsonClient()
+        val postResponse = client.post("/users") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"name":"Bot","score":1,"website":"http://spam.example"}""")
+        }
+        assertEquals(HttpStatusCode.Created, postResponse.status)
+        assertEquals(0, postResponse.body<Int>())
+
+        val highscores = client.get("/highscores").body<List<HighscoreEntry>>()
+        assertEquals(emptyList(), highscores.filter { it.name == "Bot" })
+    }
+
+    @Test
+    fun `GET highscores is public and returns users sorted by score descending`() = testApplication {
         configureTestApp()
         val client = jsonClient()
 
@@ -181,16 +255,13 @@ class UserIntegrationTest {
         for ((name, score) in names) {
             client.post("/users") {
                 contentType(ContentType.Application.Json)
-                header(HttpHeaders.Authorization, basicAuthHeader)
-                setBody(ExposedUser(name, score))
+                setBody(CreateUserRequest(name, score))
             }
         }
 
-        val response = client.get("/highscores") {
-            header(HttpHeaders.Authorization, basicAuthHeader)
-        }
+        val response = client.get("/highscores")
         assertEquals(HttpStatusCode.OK, response.status)
-        val scores = response.body<List<ExposedUser>>()
+        val scores = response.body<List<HighscoreEntry>>()
         val scoreValues = scores.map { it.score }
         assertEquals(scoreValues, scoreValues.sortedDescending())
     }

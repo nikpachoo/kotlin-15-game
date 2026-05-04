@@ -24,8 +24,12 @@ import com.glycin.koita.rest.ApiClient
 import com.glycin.koita.ui.pixelFont
 import kotlinx.coroutines.launch
 
-private const val NAME_MAX_LENGTH = 50
+private const val NAME_MAX_LENGTH = 16
 private const val EMAIL_MAX_LENGTH = 255
+
+private fun sanitizeName(input: String): String =
+    input.filter { it in 'A'..'Z' || it in 'a'..'z' || it in '0'..'9' || it == ' ' || it == '_' }
+        .take(NAME_MAX_LENGTH)
 
 @Composable
 fun HighscoreSubmission(
@@ -66,9 +70,7 @@ fun HighscoreSubmission(
 
         SubmissionField(
             value = name,
-            onValueChange = {
-                if (it.length <= NAME_MAX_LENGTH) name = it
-            },
+            onValueChange = { name = sanitizeName(it) },
             placeholder = "Name",
             enabled = !submitting,
         )

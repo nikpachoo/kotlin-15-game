@@ -12,6 +12,7 @@ fun Application.configureCors() {
         allowMethod(HttpMethod.Delete)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
-        anyHost() //TODO: Fix CORS things
+        allowHost("pages.github.io", subDomains = listOf("improved-broccoli-v31e8gl"), schemes = listOf("https"))
+        allowHost("localhost:8080", schemes = listOf("http"))
     }
 }
