@@ -81,6 +81,7 @@ class ShrineManager(
         val affectedTiles = collisionDetector.getTilesInRadius(position, impactRadius)
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
+        player.applyShrineLift()
     }
 
     fun spawnFirstOrbs(origin: Vec2) {

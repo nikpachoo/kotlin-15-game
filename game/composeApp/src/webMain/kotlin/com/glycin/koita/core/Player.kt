@@ -95,6 +95,17 @@ class Player(
         ultimateVelocityOverride = null
     }
 
+    fun applyShrineLift() {
+        if (isAnchorLocked) return
+        velocity = Vec2(velocity.x, -PlayerSettings.SHRINE_LIFT_FORCE)
+        isGrounded = false
+        hasDoubleJumped = false
+        isGroundPounding = false
+        pullTimer = 0f
+        jetpackEngaged = false
+        hoverEngaged = false
+    }
+
     fun applyDigBoost(impactPoint: Vec2) {
         if (isAnchorLocked || isGrounded || isDashing || isGroundPounding) return
         if (impactPoint.y >= center.y) return
