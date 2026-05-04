@@ -1,6 +1,5 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,9 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,6 +47,9 @@ private fun EndScreen(
     subtitle: String,
     extraNote: String? = null,
 ) {
+    val compact = isCompact()
+    val subtitleSize = if (compact) 11.sp else 14.sp
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,16 +63,16 @@ private fun EndScreen(
             Text(
                 text = title,
                 fontFamily = pixelFont(),
-                fontSize = 48.sp,
+                fontSize = if (compact) 28.sp else 48.sp,
                 color = titleColor,
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(if (compact) 4.dp else 8.dp))
 
             Text(
                 text = subtitle,
                 fontFamily = pixelFont(),
-                fontSize = 14.sp,
+                fontSize = subtitleSize,
                 color = Color.LightGray,
             )
 
@@ -82,35 +81,24 @@ private fun EndScreen(
                 Text(
                     text = extraNote,
                     fontFamily = pixelFont(),
-                    fontSize = 14.sp,
+                    fontSize = subtitleSize,
                     color = MenuColors.SUCCESS_TEXT,
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 12.dp else 32.dp))
 
             HighscoreSubmission(
                 score = gameState.score,
                 onSubmitted = { gameState.endRunAndGoTo(Screen.HIGHSCORES) },
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(if (compact) 10.dp else 24.dp))
 
-            OutlinedButton(
+            MenuOutlinedButton(
+                text = "Main Menu",
                 onClick = { gameState.endRunAndGoTo(Screen.MAIN_MENU) },
-                modifier = Modifier.width(160.dp).height(44.dp),
-                border = BorderStroke(2.dp, Color.White),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = "Main Menu",
-                    fontFamily = pixelFont(),
-                    fontSize = 16.sp,
-                )
-            }
+            )
         }
     }
 }

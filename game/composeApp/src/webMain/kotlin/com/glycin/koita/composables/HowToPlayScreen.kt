@@ -1,16 +1,13 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +21,8 @@ import com.glycin.koita.ui.pixelFont
 
 @Composable
 fun HowToPlayScreen(gameState: GameState) {
+    val compact = isCompact()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,79 +36,90 @@ fun HowToPlayScreen(gameState: GameState) {
             Text(
                 text = "HOW TO PLAY",
                 fontFamily = pixelFont(),
-                fontSize = 36.sp,
+                fontSize = if (compact) 22.sp else 36.sp,
                 color = Color.White,
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 12.dp else 32.dp))
 
-            SectionTitle("Controls")
-            ControlLine("WASD / Arrows", "Move")
-            ControlLine("Space", "Jump")
-            ControlLine("Left Click", "Use weapon")
-            ControlLine("Right Click", "Build / Place")
-            ControlLine("1 - 3", "Select weapon")
-            ControlLine("ESC", "Pause")
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            SectionTitle("Tips")
-            TipLine("Mine blocks for resources")
-            TipLine("Stand on a shrine for 3s to activate it")
-            TipLine("Pick 1 of 3 upgrade orbs per shrine")
-            TipLine("Unlock double jump & jetpack for mobility")
-            TipLine("Watch out for golems, bats, and slimes!")
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedButton(
-                onClick = { gameState.currentScreen = Screen.MAIN_MENU },
-                modifier = Modifier.width(160.dp).height(44.dp),
-                border = BorderStroke(2.dp, Color.White),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = "Back",
-                    fontFamily = pixelFont(),
-                    fontSize = 16.sp,
-                )
+            if (compact) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Column(horizontalAlignment = Alignment.Start) {
+                        ControlsBlock(compact = true)
+                    }
+                    Column(horizontalAlignment = Alignment.Start) {
+                        TipsBlock(compact = true)
+                    }
+                }
+            } else {
+                ControlsBlock(compact = false)
+                Spacer(modifier = Modifier.height(24.dp))
+                TipsBlock(compact = false)
             }
+
+            Spacer(modifier = Modifier.height(if (compact) 16.dp else 32.dp))
+
+            MenuOutlinedButton(
+                text = "Back",
+                onClick = { gameState.currentScreen = Screen.MAIN_MENU },
+            )
         }
     }
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+private fun ControlsBlock(compact: Boolean) {
+    SectionTitle("Controls", compact)
+    ControlLine("WASD / Arrows", "Move", compact)
+    ControlLine("Space", "Jump", compact)
+    ControlLine("Left Click", "Use weapon", compact)
+    ControlLine("Right Click", "Build / Place", compact)
+    ControlLine("1 - 3", "Select weapon", compact)
+    ControlLine("ESC", "Pause", compact)
+}
+
+@Composable
+private fun TipsBlock(compact: Boolean) {
+    SectionTitle("Tips", compact)
+    TipLine("Mine blocks for resources", compact)
+    TipLine("Stand on a shrine for 3s to activate it", compact)
+    TipLine("Pick 1 of 3 upgrade orbs per shrine", compact)
+    TipLine("Unlock double jump & jetpack for mobility", compact)
+    TipLine("Watch out for golems, bats, and slimes!", compact)
+}
+
+@Composable
+private fun SectionTitle(text: String, compact: Boolean) {
     Text(
         text = text,
         fontFamily = pixelFont(),
-        fontSize = 20.sp,
+        fontSize = if (compact) 14.sp else 20.sp,
         color = MenuColors.SECTION_TITLE,
     )
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(if (compact) 4.dp else 8.dp))
 }
 
 @Composable
-private fun ControlLine(key: String, action: String) {
+private fun ControlLine(key: String, action: String, compact: Boolean) {
     Text(
         text = "$key  -  $action",
         fontFamily = pixelFont(),
-        fontSize = 14.sp,
+        fontSize = if (compact) 11.sp else 14.sp,
         color = Color.LightGray,
     )
-    Spacer(modifier = Modifier.height(4.dp))
+    Spacer(modifier = Modifier.height(if (compact) 2.dp else 4.dp))
 }
 
 @Composable
-private fun TipLine(text: String) {
+private fun TipLine(text: String, compact: Boolean) {
     Text(
         text = "- $text",
         fontFamily = pixelFont(),
-        fontSize = 14.sp,
+        fontSize = if (compact) 11.sp else 14.sp,
         color = Color.LightGray,
     )
-    Spacer(modifier = Modifier.height(4.dp))
+    Spacer(modifier = Modifier.height(if (compact) 2.dp else 4.dp))
 }

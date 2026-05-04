@@ -271,7 +271,7 @@ class ChargeShrineStep : TutorialStep("Stand on the shrine for 3 seconds to char
     override fun isComplete(ctx: StepContext): Boolean = shrine?.isActivated == true
 }
 
-class PickUpgradeStep : TutorialStep("Now you see three upgrades. Walk into the orb to unlock it") {
+class PickUpgradeStep : TutorialStep("Now you can see an upgrade. Walk into the orb to unlock it") {
     private var snapshotUnlockedCount = 0
 
     override fun setup(ctx: StepContext) {

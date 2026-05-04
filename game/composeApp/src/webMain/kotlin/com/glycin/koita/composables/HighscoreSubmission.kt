@@ -1,13 +1,10 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -29,7 +26,6 @@ import kotlinx.coroutines.launch
 
 private const val NAME_MAX_LENGTH = 50
 private const val EMAIL_MAX_LENGTH = 255
-private val FIELD_WIDTH = 320.dp
 
 @Composable
 fun HighscoreSubmission(
@@ -42,6 +38,10 @@ fun HighscoreSubmission(
     var hasError by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    val compact = isCompact()
+    val fieldFontSize = if (compact) 12.sp else 16.sp
+    val fieldWidth = if (compact) 240.dp else 320.dp
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -49,7 +49,7 @@ fun HighscoreSubmission(
         Text(
             text = "FINAL SCORE",
             fontFamily = pixelFont(),
-            fontSize = 18.sp,
+            fontSize = if (compact) 12.sp else 18.sp,
             color = MenuColors.SECTION_TITLE,
         )
 
@@ -58,11 +58,11 @@ fun HighscoreSubmission(
         Text(
             text = "$score",
             fontFamily = pixelFont(),
-            fontSize = 40.sp,
+            fontSize = if (compact) 22.sp else 40.sp,
             color = Color.White,
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(if (compact) 8.dp else 20.dp))
 
         SubmissionField(
             value = name,
@@ -73,7 +73,7 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(if (compact) 4.dp else 8.dp))
 
         SubmissionField(
             value = email,
@@ -84,31 +84,32 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(if (compact) 8.dp else 16.dp))
 
         when {
             hasError -> Text(
                 text = "Could not submit score",
                 fontFamily = pixelFont(),
-                fontSize = 14.sp,
+                fontSize = fieldFontSize,
                 color = MenuColors.ERROR_TEXT,
             )
             submitting -> Text(
                 text = "Submitting...",
                 fontFamily = pixelFont(),
-                fontSize = 14.sp,
+                fontSize = fieldFontSize,
                 color = Color.LightGray,
             )
-            else -> Spacer(modifier = Modifier.height(20.dp))
+            else -> Spacer(modifier = Modifier.height(if (compact) 12.dp else 20.dp))
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(if (compact) 6.dp else 12.dp))
 
-        OutlinedButton(
+        MenuOutlinedButton(
+            text = "Submit",
             onClick = {
                 val trimmedName = name.trim()
                 val trimmedEmail = email.trim()
-                if (trimmedName.isEmpty() || submitting) return@OutlinedButton
+                if (trimmedName.isEmpty() || submitting) return@MenuOutlinedButton
                 submitting = true
                 hasError = false
                 scope.launch {
@@ -126,20 +127,8 @@ fun HighscoreSubmission(
                 }
             },
             enabled = name.trim().isNotEmpty() && !submitting,
-            modifier = Modifier.width(FIELD_WIDTH).height(44.dp),
-            border = BorderStroke(2.dp, Color.White),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.White,
-                disabledContentColor = Color.Gray,
-            ),
-        ) {
-            Text(
-                text = "Submit",
-                fontFamily = pixelFont(),
-                fontSize = 16.sp,
-            )
-        }
+            width = fieldWidth,
+        )
     }
 }
 
@@ -150,6 +139,10 @@ private fun SubmissionField(
     placeholder: String,
     enabled: Boolean,
 ) {
+    val compact = isCompact()
+    val fontSize = if (compact) 12.sp else 16.sp
+    val width = if (compact) 240.dp else 320.dp
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -157,18 +150,18 @@ private fun SubmissionField(
         singleLine = true,
         textStyle = TextStyle(
             fontFamily = pixelFont(),
-            fontSize = 16.sp,
+            fontSize = fontSize,
             color = Color.White,
         ),
         placeholder = {
             Text(
                 text = placeholder,
                 fontFamily = pixelFont(),
-                fontSize = 16.sp,
+                fontSize = fontSize,
                 color = Color.LightGray,
             )
         },
-        modifier = Modifier.width(FIELD_WIDTH),
+        modifier = Modifier.width(width),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = MenuColors.INPUT_BACKGROUND,
             unfocusedContainerColor = MenuColors.INPUT_BACKGROUND,

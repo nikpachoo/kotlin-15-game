@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
@@ -80,6 +81,9 @@ class GameState {
 
     fun endRunAndGoTo(screen: Screen) {
         resetForNewGame()
+        if (screen == Screen.MAIN_MENU) {
+            SoundManager.stopCurrentLoop()
+        }
         currentScreen = screen
     }
 

@@ -60,7 +60,7 @@ object SpawnSettings {
 
     val ZONE_5 = SpawnZone(
         depthMin = 0.70f,
-        depthMax = 0.90f,
+        depthMax = 0.95f,
         slime = 0..0,
         stoneGolem = 0..0,
         hydra = 1..2,

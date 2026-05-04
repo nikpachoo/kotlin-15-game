@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.gameplay.GameState
@@ -48,44 +50,87 @@ fun MainMenu(gameState: GameState) {
             .background(backgroundBrush),
         contentAlignment = Alignment.Center,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            GameBanner()
-
-            Spacer(modifier = Modifier.size(28.dp))
-
-            Column(
-                modifier = Modifier
-                    .width(480.dp)
-                    .background(MenuColors.SIDEBAR)
-                    .padding(horizontal = 48.dp, vertical = 42.dp),
-            ) {
-                KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
-
-                Spacer(modifier = Modifier.size(36.dp))
-
-                MenuItem("Start") { gameState.currentScreen = Screen.GAME }
-                MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
-                MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
-                MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
-            }
+        if (isCompact()) {
+            CompactMainMenu(gameState)
+        } else {
+            NormalMainMenu(gameState)
         }
     }
 }
 
 @Composable
+private fun NormalMainMenu(gameState: GameState) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        GameBanner()
+
+        Spacer(modifier = Modifier.size(28.dp))
+
+        Column(
+            modifier = Modifier
+                .width(480.dp)
+                .background(MenuColors.SIDEBAR)
+                .padding(horizontal = 48.dp, vertical = 42.dp),
+        ) {
+            KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+            Spacer(modifier = Modifier.size(36.dp))
+
+            MenuItems(gameState)
+        }
+    }
+}
+
+@Composable
+private fun CompactMainMenu(gameState: GameState) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            GameBanner()
+            KotlinLogo()
+        }
+
+        Column(
+            modifier = Modifier
+                .background(MenuColors.SIDEBAR)
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+        ) {
+            MenuItems(gameState)
+        }
+    }
+}
+
+@Composable
+private fun MenuItems(gameState: GameState) {
+    MenuItem("Start") { gameState.currentScreen = Screen.GAME }
+    MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
+    MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
+    MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
+}
+
+@Composable
 private fun GameBanner() {
+    val compact = isCompact()
     Box(
         modifier = Modifier
             .background(MenuColors.MAIN_BACKGROUND_DARK)
             .border(width = 4.dp, color = MenuColors.SIDEBAR)
-            .padding(horizontal = 56.dp, vertical = 20.dp),
+            .padding(
+                horizontal = if (compact) 20.dp else 56.dp,
+                vertical = if (compact) 8.dp else 20.dp,
+            ),
     ) {
         Text(
             text = "KGame",
             fontFamily = pixelFont(),
-            fontSize = 80.sp,
+            fontSize = if (compact) 36.sp else 80.sp,
             color = Color.White,
         )
     }
@@ -93,9 +138,10 @@ private fun GameBanner() {
 
 @Composable
 private fun KotlinLogo(modifier: Modifier = Modifier) {
+    val boxSize: Dp = compactOr(compact = 40.dp, normal = 96.dp)
     Box(
         modifier = modifier
-            .size(96.dp)
+            .size(boxSize)
             .drawWithCache {
                 val logoPath = Path().apply {
                     moveTo(0f, 0f)
@@ -112,26 +158,28 @@ private fun KotlinLogo(modifier: Modifier = Modifier) {
 
 @Composable
 private fun MenuItem(text: String, onClick: () -> Unit) {
+    val compact = isCompact()
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
+    val markerSize = if (compact) 12.dp else 20.dp
 
     Row(
         modifier = Modifier
             .hoverable(interactionSource)
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(vertical = if (compact) 4.dp else 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (hovered) {
-            Box(modifier = Modifier.size(20.dp).background(Color.Black))
+            Box(modifier = Modifier.size(markerSize).background(Color.Black))
         } else {
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(markerSize))
         }
-        Spacer(modifier = Modifier.width(18.dp))
+        Spacer(modifier = Modifier.width(if (compact) 10.dp else 18.dp))
         Text(
             text = text,
             fontFamily = pixelFont(),
-            fontSize = 32.sp,
+            fontSize = if (compact) 18.sp else 32.sp,
             color = Color.Black,
         )
     }

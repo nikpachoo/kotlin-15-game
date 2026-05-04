@@ -1,6 +1,5 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +44,9 @@ fun HighscoresScreen(gameState: GameState) {
         loading = false
     }
 
+    val compact = isCompact()
+    val rowFontSize = if (compact) 12.sp else 16.sp
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,18 +60,18 @@ fun HighscoresScreen(gameState: GameState) {
             Text(
                 text = "HIGHSCORES",
                 fontFamily = pixelFont(),
-                fontSize = 36.sp,
+                fontSize = if (compact) 22.sp else 36.sp,
                 color = Color.White,
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 10.dp else 32.dp))
 
             when {
                 loading -> {
                     Text(
                         text = "Loading...",
                         fontFamily = pixelFont(),
-                        fontSize = 16.sp,
+                        fontSize = rowFontSize,
                         color = Color.LightGray,
                     )
                 }
@@ -79,7 +79,7 @@ fun HighscoresScreen(gameState: GameState) {
                     Text(
                         text = "Could not load highscores",
                         fontFamily = pixelFont(),
-                        fontSize = 16.sp,
+                        fontSize = rowFontSize,
                         color = MenuColors.ERROR_TEXT,
                     )
                 }
@@ -89,49 +89,41 @@ fun HighscoresScreen(gameState: GameState) {
                         Text(
                             text = "No highscores yet",
                             fontFamily = pixelFont(),
-                            fontSize = 16.sp,
+                            fontSize = rowFontSize,
                             color = Color.LightGray,
                         )
                     } else {
                         entries.forEachIndexed { index, entry ->
                             HighscoreRow(rank = index + 1, entry = entry)
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(if (compact) 2.dp else 4.dp))
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 12.dp else 32.dp))
 
-            OutlinedButton(
+            MenuOutlinedButton(
+                text = "Back",
                 onClick = { gameState.currentScreen = Screen.MAIN_MENU },
-                modifier = Modifier.width(160.dp).height(44.dp),
-                border = BorderStroke(2.dp, Color.White),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = "Back",
-                    fontFamily = pixelFont(),
-                    fontSize = 16.sp,
-                )
-            }
+            )
         }
     }
 }
 
 @Composable
 private fun HighscoreRow(rank: Int, entry: HighscoreEntry) {
+    val compact = isCompact()
+    val fontSize = if (compact) 12.sp else 16.sp
+
     Row(
-        modifier = Modifier.width(300.dp),
+        modifier = Modifier.width(if (compact) 240.dp else 300.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             text = "#$rank  ${entry.name}",
             fontFamily = pixelFont(),
-            fontSize = 16.sp,
+            fontSize = fontSize,
             color = when (rank) {
                 1 -> MenuColors.RANK_GOLD
                 2 -> MenuColors.RANK_SILVER
@@ -142,7 +134,7 @@ private fun HighscoreRow(rank: Int, entry: HighscoreEntry) {
         Text(
             text = "${entry.score}",
             fontFamily = pixelFont(),
-            fontSize = 16.sp,
+            fontSize = fontSize,
             color = Color.White,
         )
     }

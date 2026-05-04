@@ -6,7 +6,7 @@ A celebration of Kotlin's 15th birthday: a browser based 2D sandbox game written
 
 This repository contains two independent Gradle projects.
 
-### [`game/`](./game) — Koita
+### [`game/`](./game) — KGame
 
 A 2D sandbox game built with **Kotlin Multiplatform Compose** targeting **WebAssembly**. It runs directly in the browser and showcases what Kotlin/Wasm can do: procedural world generation, chunk based terrain, fluid simulation, particle effects, a sprite animated player, a roster of enemies with distinct AI, an unlock system with Kotlin themed names (Elvis Operator, Smart Casts, Coroutines…), ultimate attacks, a portal, and a final boss.
 
@@ -19,9 +19,9 @@ cd game
 
 See [`game/README.md`](./game/README.md) for more build targets and [`game/CLAUDE.md`](./game/CLAUDE.md) for architecture details.
 
-### [`highscore-server/`](./highscore-server) — Koita Server
+### [`highscore-server/`](./highscore-server) — KGame Server
 
-A **Ktor 3** backend (Kotlin/JVM 21) that stores and serves highscores for Koita. Uses Exposed ORM against PostgreSQL (H2 for embedded/testing), kotlinx.serialization for JSON, and HTTP Basic Auth. Tests boot the full app against a Testcontainers Postgres instance.
+A **Ktor 3** backend (Kotlin/JVM 21) that stores and serves highscores for KGame. Uses Exposed ORM against PostgreSQL (H2 for embedded/testing), kotlinx.serialization for JSON, and HTTP Basic Auth. Tests boot the full app against a Testcontainers Postgres instance.
 
 Run locally:
 

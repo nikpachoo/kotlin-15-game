@@ -1,17 +1,12 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +21,8 @@ import com.glycin.koita.ui.pixelFont
 
 @Composable
 fun OptionsScreen(gameState: GameState) {
+    val compact = isCompact()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,11 +36,11 @@ fun OptionsScreen(gameState: GameState) {
             Text(
                 text = "OPTIONS",
                 fontFamily = pixelFont(),
-                fontSize = 36.sp,
+                fontSize = if (compact) 22.sp else 36.sp,
                 color = Color.White,
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 12.dp else 32.dp))
 
             VolumeSlider(
                 label = "Music",
@@ -54,7 +51,7 @@ fun OptionsScreen(gameState: GameState) {
                 },
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(if (compact) 6.dp else 12.dp))
 
             VolumeSlider(
                 label = "SFX",
@@ -65,30 +62,19 @@ fun OptionsScreen(gameState: GameState) {
                 },
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(if (compact) 6.dp else 12.dp))
 
             DevModeToggle(
                 value = gameState.devMode,
                 onValueChange = { gameState.devMode = it },
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(if (compact) 16.dp else 32.dp))
 
-            OutlinedButton(
+            MenuOutlinedButton(
+                text = "Back",
                 onClick = { gameState.currentScreen = Screen.MAIN_MENU },
-                modifier = Modifier.width(160.dp).height(44.dp),
-                border = BorderStroke(2.dp, Color.White),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = "Back",
-                    fontFamily = pixelFont(),
-                    fontSize = 16.sp,
-                )
-            }
+            )
         }
     }
 }
