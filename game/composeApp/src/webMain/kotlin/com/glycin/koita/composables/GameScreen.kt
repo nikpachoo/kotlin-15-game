@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -202,11 +203,12 @@ fun GameScreen(gameState: GameState) {
             awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent()
-                    val rawPos = event.changes.first().position
-                    val virtualPos = camera.actualToVirtual(rawPos.x, rawPos.y)
+                    val change = event.changes.first()
+                    val virtualPos = camera.actualToVirtual(change.position.x, change.position.y)
                     mouse.updatePosition(virtualPos, camera.screenToWorld(virtualPos.x, virtualPos.y))
+                    val isTouch = change.type == PointerType.Touch
                     mouse.updateButtons(
-                        leftPressed = event.buttons.isPrimaryPressed && !input.uiCapturing,
+                        leftPressed = (event.buttons.isPrimaryPressed || (isTouch && change.pressed)) && !input.uiCapturing,
                         rightPressed = event.buttons.isSecondaryPressed && !input.uiCapturing,
                     )
                 }
