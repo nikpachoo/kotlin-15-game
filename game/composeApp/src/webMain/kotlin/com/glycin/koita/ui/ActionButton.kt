@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,7 +30,7 @@ private const val DISABLED_ALPHA = 0.35f
 fun ActionButton(
     label: String,
     keyHint: String,
-    key: Key,
+    key: Key?,
     input: Input,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -39,7 +43,8 @@ fun ActionButton(
     val buttonSize = if (compact) 44.dp else 64.dp
     val keyHintSize = if (compact) 13.sp else 18.sp
     val labelSize = if (compact) 11.sp else 14.sp
-    val pressed = input.keyMap[key] == true
+    var localPressed by remember { mutableStateOf(false) }
+    val pressed = localPressed || (key != null && input.keyMap[key] == true)
     val columnModifier = if (fillWidth) modifier.fillMaxWidth() else modifier
     Column(
         modifier = columnModifier.alpha(if (enabled) 1f else DISABLED_ALPHA),
@@ -58,10 +63,13 @@ fun ActionButton(
             size = buttonSize,
             active = enabled && pressed,
             input = input,
-            key = key,
+            key = key ?: Unit,
             fillWidth = fillWidth,
-            onPressChange = if (enabled && onTap == null) {
-                { down -> input.keyMap[key] = down }
+            onPressChange = if (enabled) {
+                { down ->
+                    localPressed = down
+                    if (onTap == null && key != null) input.keyMap[key] = down
+                }
             } else null,
             onTap = onTap?.takeIf { enabled },
         ) {
