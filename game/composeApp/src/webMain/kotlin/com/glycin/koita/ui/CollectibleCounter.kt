@@ -41,7 +41,7 @@ fun CollectiblesPanel(
         verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 6.dp),
     ) {
         CollectibleCounter("MATERIALS", simple, MATERIALS_COLOR)
-        CollectibleCounter("MINERAL", minerals, MINERAL_COLOR)
+        CollectibleCounter("MINERALS", minerals, MINERAL_COLOR)
         CollectibleCounter("ORE", rich, HudColors.ORE_COLOR)
     }
 }

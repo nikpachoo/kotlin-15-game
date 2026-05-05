@@ -10,7 +10,6 @@ import com.glycin.koita.composables.GameOverScreen
 import com.glycin.koita.composables.GameScreen
 import com.glycin.koita.composables.GameWonScreen
 import com.glycin.koita.composables.HighscoresScreen
-import com.glycin.koita.composables.HowToPlayScreen
 import com.glycin.koita.composables.LocalLayoutMode
 import com.glycin.koita.composables.MainMenu
 import com.glycin.koita.composables.OptionsScreen
@@ -28,7 +27,6 @@ fun App() {
         CompositionLocalProvider(LocalLayoutMode provides mode) {
             when (gameState.currentScreen) {
                 Screen.MAIN_MENU -> MainMenu(gameState)
-                Screen.HOW_TO_PLAY -> HowToPlayScreen(gameState)
                 Screen.TUTORIAL -> TutorialScreen(gameState)
                 Screen.OPTIONS -> OptionsScreen(gameState)
                 Screen.HIGHSCORES -> HighscoresScreen(gameState)
