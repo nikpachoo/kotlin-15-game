@@ -10,6 +10,16 @@ import com.glycin.koita.world.isOutOfWorldBounds
 
 fun Float.lerp(b: Float, t: Float) = this + t * (b - this)
 
+fun <T> List<T>.nextAfter(current: T): T {
+    val idx = indexOf(current).coerceAtLeast(0)
+    return this[(idx + 1) % size]
+}
+
+fun <T> List<T>.prevBefore(current: T): T {
+    val idx = indexOf(current).coerceAtLeast(0)
+    return this[(idx - 1 + size) % size]
+}
+
 fun Vec2.isOutOfWorldBounds(): Boolean = isOutOfWorldBounds(x, y)
 
 fun Tile.activate(tileX: Int, tileY: Int, sourcePosition: Vec2, particleSystem: ParticleSystem, impactRadius: Float) {

@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Input
+import com.glycin.koita.util.nextAfter
+import com.glycin.koita.util.prevBefore
 
 @Composable
 fun <T> Carousel(
@@ -32,9 +34,6 @@ fun <T> Carousel(
 ) {
     if (items.isEmpty()) return
     val compact = isCompact()
-    val size = items.size
-    val current = items.indexOf(selected).takeIf { it >= 0 } ?: 0
-    val currentItem = items[current]
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,7 +50,7 @@ fun <T> Carousel(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CarouselArrow(label, isPrev = true, input = input) {
-                onSelect(items[(current - 1 + size) % size])
+                onSelect(items.prevBefore(selected))
             }
             Box(
                 modifier = Modifier
@@ -61,14 +60,14 @@ fun <T> Carousel(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = labelOf(currentItem),
+                    text = labelOf(selected),
                     fontFamily = pixelFont(),
                     fontSize = if (compact) 11.sp else 14.sp,
                     color = HudColors.PANEL_ACCENT,
                 )
             }
             CarouselArrow(label, isPrev = false, input = input) {
-                onSelect(items[(current + 1) % size])
+                onSelect(items.nextAfter(selected))
             }
         }
     }

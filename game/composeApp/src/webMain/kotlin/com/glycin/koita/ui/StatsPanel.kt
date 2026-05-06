@@ -16,7 +16,7 @@ private val STATS_CORNER_RADIUS = 6.dp
 @Composable
 fun StatsPanel(
     score: Int,
-    elapsedSeconds: Int,
+    elapsedSeconds: Int?,
     modifier: Modifier = Modifier,
 ) {
     val compact = isCompact()
@@ -35,12 +35,14 @@ fun StatsPanel(
             fontSize = if (compact) 16.sp else 22.sp,
             color = HudColors.PANEL_ACCENT,
         )
-        Text(
-            text = formatTime(elapsedSeconds),
-            fontFamily = pixelFont(),
-            fontSize = if (compact) 11.sp else 14.sp,
-            color = Color.LightGray,
-        )
+        if (elapsedSeconds != null) {
+            Text(
+                text = formatTime(elapsedSeconds),
+                fontFamily = pixelFont(),
+                fontSize = if (compact) 11.sp else 14.sp,
+                color = Color.LightGray,
+            )
+        }
     }
 }
 

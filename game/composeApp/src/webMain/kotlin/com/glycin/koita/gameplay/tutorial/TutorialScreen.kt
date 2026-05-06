@@ -225,7 +225,7 @@ fun TutorialScreen(appState: GameState) {
                     gameState.ultimateTriggered = false
                 }
 
-                if (mouse.isLeftPressed) {
+                if (mouse.isLeftPressed || gameState.autoFireActive) {
                     player.useWeapon()
                 }
 

@@ -52,6 +52,8 @@ class GameState {
     var miningRadiusMultiplier = 1.0f
     var visionMultiplier = 1.0f
     var visionFallOfMultiplier = 1.0f
+
+    var autoFireActive = false
     
     var pickupNotification by mutableStateOf<String?>(null)
     val pickupCounts = mutableStateMapOf<String, Int>()

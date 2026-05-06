@@ -18,6 +18,12 @@ class Mouse(
         worldPosition = wPosition
     }
 
+    fun updatePosition(screenPos: Offset, worldX: Float, worldY: Float) {
+        position = screenPos
+        worldPosition.x = worldX
+        worldPosition.y = worldY
+    }
+
     fun updateButtons(leftPressed: Boolean, rightPressed: Boolean) {
         isLeftJustPressed = leftPressed && !wasLeftPressed
         isRightJustPressed = rightPressed && !wasRightPressed

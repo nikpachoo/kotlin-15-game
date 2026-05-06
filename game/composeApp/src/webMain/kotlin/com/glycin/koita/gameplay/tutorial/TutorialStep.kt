@@ -105,7 +105,7 @@ abstract class MineRectStep(prompt: String) : TutorialStep(prompt) {
     }
 }
 
-class MoveStep : TutorialStep("Use WASD or the arrow keys to move") {
+class MoveStep : TutorialStep("Use WASD to move") {
     private var startX = 0f
 
     override fun setup(ctx: StepContext) {

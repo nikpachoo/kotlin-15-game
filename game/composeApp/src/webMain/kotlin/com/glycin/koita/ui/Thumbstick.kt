@@ -19,10 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.glycin.koita.core.Input
 import kotlin.math.hypot
-import kotlin.math.max
-
-private const val TAP_TIMEOUT_MS = 250L
-private const val TAP_SLOP_FRACTION = 0.25f
 
 @Composable
 fun Thumbstick(
@@ -31,7 +27,6 @@ fun Thumbstick(
     size: Dp = 120.dp,
     onMove: (Offset) -> Unit = {},
     onRelease: () -> Unit = {},
-    onTap: () -> Unit = {},
 ) {
     var knobOffset by remember { mutableStateOf(Offset.Zero) }
     var pressed by remember { mutableStateOf(false) }
@@ -41,14 +36,10 @@ fun Thumbstick(
             .size(size)
             .pointerInput(Unit) {
                 val radiusPx = this.size.width / 2f
-                val tapSlopPx = radiusPx * TAP_SLOP_FRACTION
                 val center = Offset(this.size.width / 2f, this.size.height / 2f)
                 try {
                     awaitPointerEventScope {
                         var activePointerId: PointerId? = null
-                        var pressStartMs = 0L
-                        var maxMovementPx = 0f
-                        var didDrag = false
                         while (true) {
                             val event = awaitPointerEvent()
                             val change = activePointerId?.let { id -> event.changes.firstOrNull { it.id == id } }
@@ -63,30 +54,17 @@ fun Thumbstick(
                                     pressed = true
                                     activePointerId = change.id
                                     input.acquireUiCapture()
-                                    pressStartMs = change.uptimeMillis
-                                    maxMovementPx = 0f
-                                    didDrag = false
                                 }
-                                maxMovementPx = max(maxMovementPx, len)
-                                if (!didDrag && maxMovementPx > tapSlopPx) didDrag = true
-
                                 knobOffset = clamped
-                                if (didDrag) {
-                                    val normalized = Offset(clamped.x / radiusPx, clamped.y / radiusPx)
-                                    onMove(normalized)
-                                }
+                                val normalized = Offset(clamped.x / radiusPx, clamped.y / radiusPx)
+                                onMove(normalized)
                                 change.consume()
                             } else if (pressed) {
-                                val elapsedMs = change.uptimeMillis - pressStartMs
                                 pressed = false
                                 activePointerId = null
                                 knobOffset = Offset.Zero
                                 input.releaseUiCapture()
-                                if (didDrag) {
-                                    onRelease()
-                                } else if (elapsedMs <= TAP_TIMEOUT_MS) {
-                                    onTap()
-                                }
+                                onRelease()
                                 change.consume()
                             }
                         }
