@@ -28,7 +28,8 @@ class TutorialDirector(
         WeaponSwitchInfoStep(),
         UpgradeCombinationInfoStep(),
         PortalGoalStep(),
-        PlaceholderStep(),
+        DigUpStep(),
+        CompleteTutorialStep(),
     )
 
     private var activeStep: TutorialStep? = null
@@ -73,6 +74,6 @@ class TutorialDirector(
     }
 
     companion object {
-        const val STEP_COUNT = 24
+        const val STEP_COUNT = 25
     }
 }

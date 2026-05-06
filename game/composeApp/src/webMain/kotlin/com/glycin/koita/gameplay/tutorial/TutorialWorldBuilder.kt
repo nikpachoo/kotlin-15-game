@@ -45,7 +45,11 @@ private const val SHRINE_GAP_TILES = 4
 private const val SHRINE_WIDTH_TILES = 16
 private const val SHRINE_HEIGHT_TILES = 32
 
+private const val DIG_UP_POCKET_PADDING_TILES = 1
+
 data class TileRect(val left: Int, val right: Int, val top: Int, val bottom: Int)
+
+data class LavaPoolLayout(val leftWallX: Int, val rightWallX: Int, val wallTop: Int, val poolBottom: Int)
 
 object TutorialWorldBuilder {
 
@@ -77,7 +81,7 @@ object TutorialWorldBuilder {
         return TileRect(left, right, top, bottom)
     }
 
-    fun placeLavaPool(world: World, player: Player) {
+    fun placeLavaPool(world: World, player: Player): LavaPoolLayout {
         val structureWidth = LAVA_POOL_WIDTH_TILES + 2
         val structureLeft = structureLeftTile(player, LAVA_POOL_GAP_TILES, structureWidth)
         val leftWallX = structureLeft
@@ -96,6 +100,56 @@ object TutorialWorldBuilder {
             for (x in lavaLeft..lavaRight) {
                 setIfDestructible(world, x, y, Tile.LAVA)
             }
+        }
+
+        return LavaPoolLayout(leftWallX, rightWallX, wallTop, poolBottom)
+    }
+
+    fun fillWorldSolid(world: World, player: Player) {
+        for (cy in 0 until world.chunksHigh) {
+            for (cx in 0 until world.chunksWide) {
+                world.getChunk(cx, cy)?.fillWith(Tile.STONE)
+            }
+        }
+
+        val tileSize = WorldConstants.TILE_SIZE
+        val playerLeftTile = (player.position.x / tileSize).toInt() - DIG_UP_POCKET_PADDING_TILES
+        val playerRightTile = ((player.position.x + player.width) / tileSize).toInt() + DIG_UP_POCKET_PADDING_TILES
+        val playerTopTile = (player.position.y / tileSize).toInt()
+        val playerBottomTile = ((player.position.y + player.height) / tileSize).toInt()
+
+        for (y in playerTopTile..playerBottomTile) {
+            for (x in playerLeftTile..playerRightTile) {
+                setIfDestructible(world, x, y, Tile.AIR)
+            }
+        }
+
+        val digUpTiles = (TutorialConstants.DIG_UP_THRESHOLD_PX / tileSize).toInt()
+        val surfaceTileY = (playerTopTile - digUpTiles).coerceAtLeast(0)
+        for (cy in 0 until world.chunksHigh) {
+            val chunkTopTile = cy * WorldConstants.CHUNK_SIZE
+            val chunkBottomTile = chunkTopTile + WorldConstants.CHUNK_SIZE - 1
+            when {
+                chunkBottomTile < surfaceTileY -> {
+                    for (cx in 0 until world.chunksWide) {
+                        world.getChunk(cx, cy)?.fillWith(Tile.AIR)
+                    }
+                }
+                chunkTopTile < surfaceTileY -> {
+                    for (y in chunkTopTile until surfaceTileY) {
+                        for (x in 0 until WorldConstants.WORLD_WIDTH_TILES) {
+                            setIfDestructible(world, x, y, Tile.AIR)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun clearLavaPool(world: World, layout: LavaPoolLayout) {
+        for (y in layout.wallTop..layout.poolBottom) {
+            world[layout.leftWallX, y] = Tile.AIR
+            world[layout.rightWallX, y] = Tile.AIR
         }
     }
 
@@ -208,11 +262,13 @@ object TutorialWorldBuilder {
 
     private fun structureLeftTile(player: Player, gapTiles: Int, structureWidthTiles: Int): Int {
         val tileSize = WorldConstants.TILE_SIZE
-        return if (player.facing == PlayerFacing.RIGHT) {
+        val raw = if (player.facing == PlayerFacing.RIGHT) {
             ((player.position.x + player.width) / tileSize).toInt() + gapTiles
         } else {
             (player.position.x / tileSize).toInt() - gapTiles - structureWidthTiles
         }
+        val maxLeft = WorldConstants.WORLD_WIDTH_TILES - 1 - structureWidthTiles
+        return raw.coerceIn(1, maxLeft)
     }
 
     private fun setIfDestructible(world: World, x: Int, y: Int, tile: Tile) {

@@ -37,4 +37,5 @@ object TutorialConstants {
 
     const val MOVE_THRESHOLD_PX = 48f
     const val JUMP_THRESHOLD_PX = 36f
+    const val DIG_UP_THRESHOLD_PX = TILE_SIZE * 60f
 }

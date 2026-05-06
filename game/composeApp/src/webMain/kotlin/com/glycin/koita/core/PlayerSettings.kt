@@ -33,7 +33,7 @@ object PlayerSettings {
     const val MINING_PULL_DURATION = 0.15f
 
     // Shrine activation lift
-    const val SHRINE_LIFT_FORCE = 850f
+    const val SHRINE_LIFT_FORCE = 425f
 
     // Anchor (Immutability)
     const val ANCHOR_EXIT_DELAY = 0.3f

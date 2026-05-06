@@ -145,6 +145,23 @@ class MineBlockStep : MineRectStep("Hold left click on the block to mine it") {
         TutorialWorldBuilder.placeMiningTarget(ctx.world, ctx.player)
 }
 
+class DigUpStep : TutorialStep("Dig up to reach the surface. That is your goal in the game") {
+    private var startY = 0f
+
+    override fun setup(ctx: StepContext) {
+        ctx.player.equip(HOTKEY_PICKAXE)
+        TutorialWorldBuilder.fillWorldSolid(ctx.world, ctx.player)
+        startY = ctx.player.position.y
+    }
+
+    override fun isComplete(ctx: StepContext): Boolean =
+        startY - ctx.player.position.y >= TutorialConstants.DIG_UP_THRESHOLD_PX
+
+    override fun cleanup(ctx: StepContext) {
+        TutorialWorldBuilder.clearNonIndestructible(ctx.world)
+    }
+}
+
 class ShowResourcesStep : ContinueOnEnterStep(
     "Look at the top-right. Your score and materials updated when you mined.",
 )
@@ -183,9 +200,10 @@ class PlaceBlockStep : TutorialStep("Left click to place a block when the indica
 
 class LavaJumpStep : TutorialStep("Jump in the lava until it damages you") {
     private var snapshotHealth = 0
+    private var lavaPoolLayout: LavaPoolLayout? = null
 
     override fun setup(ctx: StepContext) {
-        TutorialWorldBuilder.placeLavaPool(ctx.world, ctx.player)
+        lavaPoolLayout = TutorialWorldBuilder.placeLavaPool(ctx.world, ctx.player)
         snapshotHealth = ctx.player.health
     }
 
@@ -194,6 +212,7 @@ class LavaJumpStep : TutorialStep("Jump in the lava until it damages you") {
 
     override fun cleanup(ctx: StepContext) {
         TutorialWorldBuilder.clearNonIndestructible(ctx.world)
+        lavaPoolLayout?.let { TutorialWorldBuilder.clearLavaPool(ctx.world, it) }
     }
 }
 
@@ -298,6 +317,6 @@ class PortalGoalStep : ContinueOnEnterStep(
     "Your goal is to help Kodee reach the top of the world and pass through the portal there.",
 )
 
-class PlaceholderStep : TutorialStep("") {
-    override fun isComplete(ctx: StepContext): Boolean = true
+class CompleteTutorialStep : TutorialStep("Press ESC to complete the tutorial") {
+    override fun isComplete(ctx: StepContext): Boolean = false
 }

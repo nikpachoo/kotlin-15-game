@@ -204,11 +204,11 @@ fun GameScreen(gameState: GameState) {
                 while (true) {
                     val event = awaitPointerEvent()
                     val change = event.changes.first()
+                    if (change.type == PointerType.Touch) continue
                     val virtualPos = camera.actualToVirtual(change.position.x, change.position.y)
                     mouse.updatePosition(virtualPos, camera.screenToWorld(virtualPos.x, virtualPos.y))
-                    val isTouch = change.type == PointerType.Touch
                     mouse.updateButtons(
-                        leftPressed = (event.buttons.isPrimaryPressed || (isTouch && change.pressed)) && !input.uiCapturing,
+                        leftPressed = event.buttons.isPrimaryPressed && !input.uiCapturing,
                         rightPressed = event.buttons.isSecondaryPressed && !input.uiCapturing,
                     )
                 }
