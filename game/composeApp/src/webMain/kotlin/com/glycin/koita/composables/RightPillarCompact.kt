@@ -101,19 +101,18 @@ fun BoxScope.RightPillarCompact(
             },
         )
 
-        ActionButton(
-            label = "Down",
-            keyHint = "S",
-            key = Key.S,
-            input = input,
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
+            ActionButton(
+                label = "Down",
+                keyHint = "S",
+                key = Key.S,
+                input = input,
+                modifier = Modifier.weight(1f),
+                fillWidth = true,
+            )
             ActionButton(
                 label = "Dash",
                 keyHint = "Shift",
@@ -134,5 +133,7 @@ fun BoxScope.RightPillarCompact(
                 onTap = { gameState.ultimateTriggered = true },
             )
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
