@@ -4,6 +4,7 @@ object PlayerSettings {
     const val BASE_SPEED = 200f
     const val BASE_JUMP_FORCE = 500f
     const val MAX_FALL_SPEED = 500f
+    const val STEP_UP_HEIGHT = 4f
 
     // Jetpack
     const val JETPACK_MAX_FUEL = 1f

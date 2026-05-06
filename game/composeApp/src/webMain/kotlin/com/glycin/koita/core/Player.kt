@@ -332,6 +332,8 @@ class Player(
                 val newPosX = Vec2(position.x + moveX, position.y)
                 if (!collisionDetector.checkAABB(newPosX, width, height, position)) {
                     position = newPosX
+                } else if (isGrounded) {
+                    tryStepUp(newPosX)
                 }
             }
 
@@ -427,6 +429,13 @@ class Player(
         }
 
         updateState(deltaTime, horizontalInput)
+    }
+
+    private fun tryStepUp(blockedNewPos: Vec2): Boolean {
+        val stepped = Vec2(blockedNewPos.x, blockedNewPos.y - PlayerSettings.STEP_UP_HEIGHT)
+        if (collisionDetector.checkAABB(stepped, width, height, position)) return false
+        position = stepped
+        return true
     }
 
     private fun updateState(deltaTime: Float, horizontalInput: Float) {
