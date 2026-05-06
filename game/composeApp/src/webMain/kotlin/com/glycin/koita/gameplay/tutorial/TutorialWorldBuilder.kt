@@ -89,8 +89,8 @@ object TutorialWorldBuilder {
         val wallTop = lavaTop - LAVA_POOL_WALL_LIP_TILES
 
         for (y in wallTop..poolBottom) {
-            setIfDestructible(world, leftWallX, y, Tile.STONE)
-            setIfDestructible(world, rightWallX, y, Tile.STONE)
+            setIfDestructible(world, leftWallX, y, Tile.KOTLINIUM)
+            setIfDestructible(world, rightWallX, y, Tile.KOTLINIUM)
         }
         for (y in lavaTop..poolBottom) {
             for (x in lavaLeft..lavaRight) {

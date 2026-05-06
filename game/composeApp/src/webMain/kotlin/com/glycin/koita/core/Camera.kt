@@ -1,5 +1,8 @@
 package com.glycin.koita.core
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
@@ -13,15 +16,15 @@ class Camera(
     var canvasWidth: Float = 0f,
     var canvasHeight: Float = 0f,
 ) {
-    var scale: Float = 1f
+    var scale: Float by mutableStateOf(1f)
         private set
-    var offsetX: Float = 0f
+    var offsetX: Float by mutableStateOf(0f)
         private set
-    var offsetY: Float = 0f
+    var offsetY: Float by mutableStateOf(0f)
         private set
-    var actualWidth: Float = 0f
+    var actualWidth: Float by mutableStateOf(0f)
         private set
-    var actualHeight: Float = 0f
+    var actualHeight: Float by mutableStateOf(0f)
         private set
 
     private var halfWidth: Float = 0f
