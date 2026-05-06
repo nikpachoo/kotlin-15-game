@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -30,6 +31,8 @@ fun Thumbstick(
 ) {
     var knobOffset by remember { mutableStateOf(Offset.Zero) }
     var pressed by remember { mutableStateOf(false) }
+    val currentOnMove by rememberUpdatedState(onMove)
+    val currentOnRelease by rememberUpdatedState(onRelease)
 
     Box(
         modifier = modifier
@@ -57,14 +60,14 @@ fun Thumbstick(
                                 }
                                 knobOffset = clamped
                                 val normalized = Offset(clamped.x / radiusPx, clamped.y / radiusPx)
-                                onMove(normalized)
+                                currentOnMove(normalized)
                                 change.consume()
                             } else if (pressed) {
                                 pressed = false
                                 activePointerId = null
                                 knobOffset = Offset.Zero
                                 input.releaseUiCapture()
-                                onRelease()
+                                currentOnRelease()
                                 change.consume()
                             }
                         }
