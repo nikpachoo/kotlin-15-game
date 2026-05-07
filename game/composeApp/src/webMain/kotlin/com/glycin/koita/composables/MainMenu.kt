@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.util.requestBrowserFullscreen
 
 @Composable
 fun MainMenu(gameState: GameState) {
@@ -109,8 +110,15 @@ private fun CompactMainMenu(gameState: GameState) {
 
 @Composable
 private fun MenuItems(gameState: GameState) {
-    MenuItem("Start") { gameState.currentScreen = Screen.GAME }
-    MenuItem("How to Play") { gameState.currentScreen = Screen.TUTORIAL }
+    val compact = isCompact()
+    MenuItem("Start") {
+        if (compact) requestBrowserFullscreen()
+        gameState.currentScreen = Screen.GAME
+    }
+    MenuItem("How to Play") {
+        if (compact) requestBrowserFullscreen()
+        gameState.currentScreen = Screen.TUTORIAL
+    }
     MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
     MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
 }
