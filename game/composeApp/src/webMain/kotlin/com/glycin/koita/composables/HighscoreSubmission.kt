@@ -21,6 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.rest.ApiClient
+import com.glycin.koita.rest.HighscoresResponse
 import com.glycin.koita.ui.pixelFont
 import com.glycin.koita.util.formatScore
 import kotlinx.coroutines.launch
@@ -35,7 +36,7 @@ private fun sanitizeName(input: String): String =
 @Composable
 fun HighscoreSubmission(
     score: Int,
-    onSubmitted: () -> Unit,
+    onSubmitted: (HighscoresResponse) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -117,12 +118,12 @@ fun HighscoreSubmission(
                 hasError = false
                 scope.launch {
                     try {
-                        ApiClient.createUser(
+                        val response = ApiClient.createUser(
                             name = trimmedName,
                             score = score,
                             email = trimmedEmail.ifBlank { null },
                         )
-                        onSubmitted()
+                        onSubmitted(response)
                     } catch (_: Exception) {
                         hasError = true
                         submitting = false

@@ -49,10 +49,10 @@ object ApiClient {
         }
     }
 
-    suspend fun createUser(name: String, score: Int, email: String? = null) {
-        client.post("$BASE_URL/users") {
+    suspend fun createUser(name: String, score: Int, email: String? = null): HighscoresResponse {
+        return client.post("$BASE_URL/users") {
             setBody(CreateUserRequest(name, score, email))
-        }
+        }.body()
     }
 
     suspend fun getHighscores(): HighscoresResponse {

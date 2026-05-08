@@ -84,7 +84,7 @@ private fun MainMenuPanel(gameState: GameState) {
             if (compact) requestBrowserFullscreen()
             gameState.currentScreen = Screen.TUTORIAL
         }
-        MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
+        MenuItem("Settings") { gameState.currentScreen = Screen.OPTIONS }
         MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
 
         Spacer(modifier = Modifier.size(compactOr(16.dp, 32.dp)))

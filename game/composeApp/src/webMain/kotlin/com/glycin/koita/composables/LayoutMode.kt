@@ -1,6 +1,7 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
@@ -38,6 +39,27 @@ fun isCompact(): Boolean = LocalLayoutMode.current == LayoutMode.COMPACT
 
 @Composable
 fun <T> compactOr(compact: T, normal: T): T = if (isCompact()) compact else normal
+
+internal data class MenuPanelLayout(
+    val backTabSize: Dp,
+    val panelGap: Dp,
+    val panelWidth: Dp,
+)
+
+@Composable
+internal fun BoxWithConstraintsScope.menuPanelLayout(
+    normalPanelWidth: Dp = 540.dp,
+    compactWidthRatio: Float = 0.95f,
+): MenuPanelLayout {
+    val backTabSize = compactOr(40.dp, 56.dp)
+    val panelGap = compactOr(8.dp, 12.dp)
+    val panelWidth = if (isCompact()) {
+        maxWidth * compactWidthRatio - backTabSize - panelGap
+    } else {
+        normalPanelWidth
+    }
+    return MenuPanelLayout(backTabSize, panelGap, panelWidth)
+}
 
 @Composable
 fun MenuOutlinedButton(

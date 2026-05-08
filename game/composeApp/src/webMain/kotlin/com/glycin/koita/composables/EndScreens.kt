@@ -90,7 +90,10 @@ private fun EndScreen(
 
             HighscoreSubmission(
                 score = gameState.score,
-                onSubmitted = { gameState.endRunAndGoTo(Screen.HIGHSCORES) },
+                onSubmitted = { response ->
+                    gameState.pendingHighscoresResponse = response
+                    gameState.endRunAndGoTo(Screen.HIGHSCORES)
+                },
             )
 
             Spacer(modifier = Modifier.height(if (compact) 10.dp else 24.dp))

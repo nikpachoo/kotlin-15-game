@@ -1,7 +1,6 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,9 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +48,12 @@ fun HighscoresScreen(gameState: GameState) {
     var uiState by remember { mutableStateOf<HighscoresUiState>(HighscoresUiState.Loading) }
 
     LaunchedEffect(Unit) {
+        val pending = gameState.pendingHighscoresResponse
+        if (pending != null) {
+            gameState.pendingHighscoresResponse = null
+            uiState = HighscoresUiState.Loaded(pending)
+            return@LaunchedEffect
+        }
         uiState = try {
             HighscoresUiState.Loaded(ApiClient.getHighscores())
         } catch (_: Exception) {
@@ -63,15 +66,8 @@ fun HighscoresScreen(gameState: GameState) {
             .fillMaxSize()
             .background(rememberMenuBackgroundBrush()),
     ) {
-        val compact = isCompact()
-        val backTabSize = compactOr(40.dp, 56.dp)
-        val panelGap = compactOr(8.dp, 12.dp)
+        val layout = menuPanelLayout()
         val panelHeight = maxHeight * compactOr(0.9f, 0.85f)
-        val maxPanelWidth = if (compact) {
-            maxWidth * 0.95f - backTabSize - panelGap
-        } else {
-            540.dp
-        }
 
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -80,14 +76,14 @@ fun HighscoresScreen(gameState: GameState) {
         ) {
             Row(
                 verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.spacedBy(panelGap),
+                horizontalArrangement = Arrangement.spacedBy(layout.panelGap),
             ) {
                 BackTab(
-                    boxSize = backTabSize,
+                    boxSize = layout.backTabSize,
                     onClick = { gameState.currentScreen = Screen.MAIN_MENU },
                 )
                 HighscorePanel(
-                    width = maxPanelWidth,
+                    width = layout.panelWidth,
                     height = panelHeight,
                 ) {
                     when (val state = uiState) {
@@ -157,6 +153,9 @@ private fun ColumnScope.HighscoreList(response: HighscoresResponse) {
     val rowModifier = Modifier
         .fillMaxWidth()
         .weight(1f)
+    val ellipsisModifier = Modifier
+        .fillMaxWidth()
+        .weight(0.5f)
     repeat(TOP_SLOTS) { i ->
         val entry = response.top.getOrNull(i)
         HighscoreRow(
@@ -166,19 +165,41 @@ private fun ColumnScope.HighscoreList(response: HighscoresResponse) {
         )
     }
     response.userEntry?.let { userEntry ->
+        EllipsisRow(modifier = ellipsisModifier)
         HighscoreRow(
             rank = userEntry.rank,
             entry = userEntry,
             modifier = rowModifier,
+            isUser = true,
         )
     }
 }
 
 @Composable
-private fun HighscoreRow(rank: Int, entry: HighscoreEntry?, modifier: Modifier) {
+private fun EllipsisRow(modifier: Modifier) {
+    Box(
+        modifier = modifier.background(Color.White.copy(alpha = 0.15f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "···",
+            fontFamily = pixelFont(),
+            fontSize = compactOr(16.sp, 24.sp),
+            color = Color.White.copy(alpha = 0.6f),
+        )
+    }
+}
+
+@Composable
+private fun HighscoreRow(
+    rank: Int,
+    entry: HighscoreEntry?,
+    modifier: Modifier,
+    isUser: Boolean = false,
+) {
     val isTop3 = rank <= 3
     val rowBackground = if (isTop3) Color.White else Color.White.copy(alpha = 0.25f)
-    val textColor = if (isTop3) Color.Black else Color.Black.copy(alpha = 0.7f)
+    val textColor = if (isTop3 || isUser) Color.Black else Color.Black.copy(alpha = 0.7f)
     val medalColor = when (rank) {
         1 -> MenuColors.RANK_GOLD
         2 -> MenuColors.RANK_SILVER
@@ -215,15 +236,21 @@ private fun HighscoreRow(rank: Int, entry: HighscoreEntry?, modifier: Modifier) 
                 )
             }
         }
-        Text(
-            text = entry?.name.orEmpty(),
-            fontFamily = pixelFont(),
-            fontSize = rowFontSize,
-            color = textColor,
+        Row(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = compactOr(10.dp, 18.dp)),
-        )
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(compactOr(6.dp, 10.dp)),
+        ) {
+            if (isUser) YouPill()
+            Text(
+                text = entry?.name.orEmpty(),
+                fontFamily = pixelFont(),
+                fontSize = rowFontSize,
+                color = textColor,
+            )
+        }
         Text(
             text = entry?.score?.formatScore().orEmpty(),
             fontFamily = pixelFont(),
@@ -231,6 +258,19 @@ private fun HighscoreRow(rank: Int, entry: HighscoreEntry?, modifier: Modifier) 
             color = textColor,
         )
     }
+}
+
+@Composable
+private fun YouPill() {
+    Text(
+        text = "YOU",
+        fontFamily = pixelFont(),
+        fontSize = compactOr(10.sp, 14.sp),
+        color = Color.White,
+        modifier = Modifier
+            .background(MenuColors.YOU_ACCENT)
+            .padding(horizontal = compactOr(6.dp, 8.dp), vertical = compactOr(2.dp, 4.dp)),
+    )
 }
 
 @Composable
@@ -250,28 +290,3 @@ private fun ColumnScope.CenteredMessage(text: String, color: Color) {
     }
 }
 
-@Composable
-private fun BackTab(boxSize: Dp, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(boxSize)
-            .background(MenuColors.SIDEBAR)
-            .clickable(onClick = onClick)
-            .padding(compactOr(10.dp, 14.dp))
-            .drawWithCache {
-                val w = size.width
-                val h = size.height
-                val arrowPath = Path().apply {
-                    moveTo(0f, h * 0.5f)
-                    lineTo(w * 0.45f, h * 0.1f)
-                    lineTo(w * 0.45f, h * 0.35f)
-                    lineTo(w, h * 0.35f)
-                    lineTo(w, h * 0.65f)
-                    lineTo(w * 0.45f, h * 0.65f)
-                    lineTo(w * 0.45f, h * 0.9f)
-                    close()
-                }
-                onDrawBehind { drawPath(arrowPath, Color.White) }
-            },
-    )
-}

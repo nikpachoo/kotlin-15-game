@@ -9,6 +9,7 @@ import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
+import com.glycin.koita.rest.HighscoresResponse
 
 enum class Screen {
     MAIN_MENU,
@@ -33,8 +34,9 @@ class GameState {
     var selectedWeapon by mutableStateOf(AttackWeapon.MISSILE)
     var isPaused by mutableStateOf(false)
     var musicVolume by mutableStateOf(0.25f)
-    var sfxVolume by mutableStateOf(1f)
+    var sfxVolume by mutableStateOf(0.5f)
     var devMode by mutableStateOf(false)
+    var pendingHighscoresResponse by mutableStateOf<HighscoresResponse?>(null)
 
     var canDoubleJump = false
     var canJetpack = false

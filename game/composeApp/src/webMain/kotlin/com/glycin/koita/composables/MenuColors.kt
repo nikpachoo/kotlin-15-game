@@ -31,9 +31,11 @@ internal object MenuColors {
     val RANK_BRONZE = Color(0xFFCD7F32)
 
     val SIDEBAR = Color(0xFFFF5530)
+    val SLIDER_TRACK = Color.White.copy(alpha = 0.35f)
     val MAIN_BACKGROUND_DARK = Color(0xFF1A0A2E)
     val MAIN_BACKGROUND_MID = Color(0xFF4B0AC9)
     val MAIN_BACKGROUND_LIGHT = Color(0xFF6B30F9)
+    val YOU_ACCENT = MAIN_BACKGROUND_LIGHT
 
     val CARD_MOVEMENT_BORDER = Color(0xFF8C83FF)
     val CARD_BUILD_BORDER = Color(0xFF8CFF83)

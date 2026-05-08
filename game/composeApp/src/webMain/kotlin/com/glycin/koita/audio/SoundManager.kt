@@ -17,7 +17,7 @@ object SoundManager {
             updateMusicVolumes()
         }
 
-    var sfxVolume: Float = 1f
+    var sfxVolume: Float = 0.5f
         set(value) {
             field = value.coerceIn(0f, 1f)
         }
