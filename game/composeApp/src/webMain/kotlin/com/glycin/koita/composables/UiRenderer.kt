@@ -130,6 +130,7 @@ fun UiRenderer(
         if (gameState.bossSpawned) {
             BossHealthBar(
                 healthPercent = gameState.bossHealthPercent,
+                bossName = gameState.bossName,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
         }

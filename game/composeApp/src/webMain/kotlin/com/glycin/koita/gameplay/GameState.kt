@@ -77,9 +77,10 @@ class GameState {
 
     // Void
     var passedPortal by mutableStateOf(false)
-    var bossSpawned = false
+    var bossSpawned by mutableStateOf(false)
     var bossDefeated = false
     var bossHealthPercent by mutableStateOf(0f)
+    var bossName by mutableStateOf("The Final Void")
     var reachedSurfaceMusic = false
 
     fun endRunAndGoTo(screen: Screen) {
@@ -137,6 +138,7 @@ class GameState {
         bossSpawned = false
         bossDefeated = false
         bossHealthPercent = 0f
+        bossName = "The Final Void"
         reachedSurfaceMusic = false
     }
 }

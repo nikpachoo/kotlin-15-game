@@ -24,6 +24,7 @@ private val BAR_FILL_COLOR = Color(0xFFCC44FF)
 @Composable
 fun BossHealthBar(
     healthPercent: Float,
+    bossName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -34,7 +35,7 @@ fun BossHealthBar(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "The Final Void",
+            text = bossName,
             fontFamily = pixelFont(),
             fontSize = 22.sp,
             color = Color.White,

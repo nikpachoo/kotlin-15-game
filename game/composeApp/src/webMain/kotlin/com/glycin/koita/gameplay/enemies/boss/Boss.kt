@@ -25,6 +25,17 @@ import kotlin.random.Random
 
 enum class BossAnimState { IDLE, ATTACK_1, ATTACK_2 }
 
+private const val BOSS_NAME_PREFIX = "The"
+private const val BOSS_NAME_SUFFIX = "Final Void"
+
+private val BOSS_KEYWORD_POOL = listOf(
+    "Public", "Private", "Protected", "Internal",
+    "Static", "Final", "Abstract", "Open", "Override",
+    "Synchronized", "Native", "Strictfp", "Default", "Void",
+    "Inline", "Suspend", "Tailrec", "Infix", "Operator",
+    "External", "Noinline", "Crossinline", "Expect", "Actual",
+)
+
 fun interface BossCommand {
     fun update(deltaTime: Float): Boolean
 }
@@ -103,9 +114,13 @@ class Boss(
     private var nextIdleInterval = rollIdleInterval()
     private var lastAttack = -1
 
+    private val shuffledKeywords = BOSS_KEYWORD_POOL.shuffled()
+    private var keywordCount = 0
+
     init {
         commandQueue.addLast(shieldCommand())
         commandQueue.addLast(lavaStreamCommand())
+        gameState.bossName = "$BOSS_NAME_PREFIX $BOSS_NAME_SUFFIX"
     }
 
     fun update(deltaTime: Float) {
@@ -525,6 +540,19 @@ class Boss(
             isAlive = false
             gameState.bossHealthPercent = 0f
         }
+        updateBossNameKeywords()
+    }
+
+    private fun updateBossNameKeywords() {
+        val missing = (maxHealth - health).coerceAtLeast(0f)
+        val target = (missing / (maxHealth * 0.1f)).toInt().coerceAtMost(shuffledKeywords.size)
+        if (target <= keywordCount) return
+        keywordCount = target
+        gameState.bossName = shuffledKeywords.take(keywordCount).joinToString(
+            prefix = "$BOSS_NAME_PREFIX ",
+            separator = " ",
+            postfix = " $BOSS_NAME_SUFFIX",
+        )
     }
 
     private fun consumeFirstActiveShield() {
