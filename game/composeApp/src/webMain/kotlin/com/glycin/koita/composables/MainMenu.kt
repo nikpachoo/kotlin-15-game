@@ -1,10 +1,14 @@
 package com.glycin.koita.composables
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +16,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +39,8 @@ import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.ui.pixelFont
 import com.glycin.koita.util.requestBrowserFullscreen
 
+private const val HOVER_ANIMATION_MS = 300
+
 @Composable
 fun MainMenu(gameState: GameState) {
     val backgroundBrush = remember {
@@ -51,102 +59,54 @@ fun MainMenu(gameState: GameState) {
             .background(backgroundBrush),
         contentAlignment = Alignment.Center,
     ) {
-        if (isCompact()) {
-            CompactMainMenu(gameState)
-        } else {
-            NormalMainMenu(gameState)
-        }
+        MainMenuPanel(gameState)
     }
 }
 
 @Composable
-private fun NormalMainMenu(gameState: GameState) {
+private fun MainMenuPanel(gameState: GameState) {
+    val compact = isCompact()
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        GameBanner()
-
-        Spacer(modifier = Modifier.size(28.dp))
-
-        Column(
-            modifier = Modifier
-                .width(480.dp)
-                .background(MenuColors.SIDEBAR)
-                .padding(horizontal = 48.dp, vertical = 42.dp),
-        ) {
-            KotlinLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
-
-            Spacer(modifier = Modifier.size(36.dp))
-
-            MenuItems(gameState)
-        }
-    }
-}
-
-@Composable
-private fun CompactMainMenu(gameState: GameState) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            GameBanner()
-            KotlinLogo()
-        }
-
-        Column(
-            modifier = Modifier
-                .background(MenuColors.SIDEBAR)
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-        ) {
-            MenuItems(gameState)
-        }
-    }
-}
-
-@Composable
-private fun MenuItems(gameState: GameState) {
-    val compact = isCompact()
-    MenuItem("Start") {
-        if (compact) requestBrowserFullscreen()
-        gameState.currentScreen = Screen.GAME
-    }
-    MenuItem("How to Play") {
-        if (compact) requestBrowserFullscreen()
-        gameState.currentScreen = Screen.TUTORIAL
-    }
-    MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
-    MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
-}
-
-@Composable
-private fun GameBanner() {
-    val compact = isCompact()
-    Box(
         modifier = Modifier
-            .background(MenuColors.MAIN_BACKGROUND_DARK)
-            .border(width = 4.dp, color = MenuColors.SIDEBAR)
-            .padding(
-                horizontal = if (compact) 20.dp else 56.dp,
-                vertical = if (compact) 8.dp else 20.dp,
-            ),
+            .width(compactOr(320.dp, 480.dp))
+            .background(MenuColors.SIDEBAR),
     ) {
-        Text(
-            text = "KGame",
-            fontFamily = pixelFont(),
-            fontSize = if (compact) 36.sp else 80.sp,
-            color = Color.White,
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = compactOr(24.dp, 48.dp),
+                    vertical = compactOr(20.dp, 36.dp),
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            KotlinLogo(boxSize = compactOr(32.dp, 64.dp))
+            Text(
+                text = "Game",
+                fontFamily = pixelFont(),
+                fontSize = compactOr(28.sp, 56.sp),
+                color = Color.White,
+            )
+        }
+
+        MenuItem("Start") {
+            if (compact) requestBrowserFullscreen()
+            gameState.currentScreen = Screen.GAME
+        }
+        MenuItem("How to Play") {
+            if (compact) requestBrowserFullscreen()
+            gameState.currentScreen = Screen.TUTORIAL
+        }
+        MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
+        MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
+
+        Spacer(modifier = Modifier.size(compactOr(16.dp, 32.dp)))
     }
 }
 
 @Composable
-private fun KotlinLogo(modifier: Modifier = Modifier) {
-    val boxSize: Dp = compactOr(compact = 40.dp, normal = 96.dp)
+private fun KotlinLogo(boxSize: Dp, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(boxSize)
@@ -166,29 +126,41 @@ private fun KotlinLogo(modifier: Modifier = Modifier) {
 
 @Composable
 private fun MenuItem(text: String, onClick: () -> Unit) {
-    val compact = isCompact()
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val markerSize = if (compact) 12.dp else 20.dp
+    val focused by interactionSource.collectIsFocusedAsState()
+    val active = hovered || focused
+    val maxOffset = compactOr(12.dp, 20.dp)
+    val hoverOffset by animateDpAsState(
+        targetValue = if (active) maxOffset else 0.dp,
+        animationSpec = tween(durationMillis = HOVER_ANIMATION_MS, easing = EaseOut),
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (active) Color.White else Color.Black,
+        animationSpec = tween(durationMillis = HOVER_ANIMATION_MS, easing = EaseOut),
+    )
 
-    Row(
+    Box(
         modifier = Modifier
+            .fillMaxWidth()
             .hoverable(interactionSource)
-            .clickable(onClick = onClick)
-            .padding(vertical = if (compact) 4.dp else 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            ),
     ) {
-        if (hovered) {
-            Box(modifier = Modifier.size(markerSize).background(Color.Black))
-        } else {
-            Spacer(modifier = Modifier.size(markerSize))
-        }
-        Spacer(modifier = Modifier.width(if (compact) 10.dp else 18.dp))
         Text(
             text = text,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 18.sp else 32.sp,
-            color = Color.Black,
+            fontSize = compactOr(18.sp, 32.sp),
+            color = textColor,
+            modifier = Modifier
+                .offset(x = hoverOffset)
+                .padding(
+                    horizontal = compactOr(24.dp, 48.dp),
+                    vertical = compactOr(8.dp, 12.dp),
+                ),
         )
     }
 }
