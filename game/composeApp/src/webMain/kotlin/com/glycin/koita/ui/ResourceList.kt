@@ -48,7 +48,7 @@ private fun ResourceRow(
             text = "x${count.formatScore()}",
             fontFamily = pixelFont(),
             fontSize = 22.sp,
-            color = HudColors.SCORE_PINK,
+            color = dotColor,
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
