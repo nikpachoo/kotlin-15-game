@@ -230,11 +230,25 @@ class Player(
     }
 
     fun heal() {
-        if (!canHeal) return
+        when {
+            health >= maxHealth -> {
+                gameState.pickupNotification = "Already at full health"
+                return
+            }
+            healCooldownTimer > 0f -> {
+                gameState.pickupNotification = "Heal on cooldown"
+                return
+            }
+            gameState.collectedRich < gameState.nextHealCost -> {
+                gameState.pickupNotification = "Need ${gameState.nextHealCost} ORE"
+                return
+            }
+        }
         gameState.collectedRich -= gameState.nextHealCost
         health = (health + 1).coerceAtMost(maxHealth)
         healCooldownTimer = PlayerSettings.HEAL_COOLDOWN_SECONDS
         gameState.nextHealCost *= 2
+        gameState.pickupNotification = "+1 HP"
     }
 
     // TODO: im rechecking the neighboroing tiles multiple times here, maybe check them once for each frame and memoize the result
