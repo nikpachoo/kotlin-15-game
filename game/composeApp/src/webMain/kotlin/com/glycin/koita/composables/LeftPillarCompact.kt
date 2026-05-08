@@ -92,15 +92,15 @@ fun LeftPillarCompact(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            val currentMode = HOTKEY_ENTRIES.firstOrNull { it.modeIndex == gameState.selectedHotkeyIndex }
+            val currentLabel = MODE_LABELS.getOrNull(gameState.selectedHotkeyIndex) ?: "Mode"
             ActionButton(
-                label = currentMode?.label ?: "Mode",
+                label = currentLabel,
                 keyHint = "",
                 key = null,
                 input = input,
                 modifier = Modifier.weight(1f),
                 fillWidth = true,
-                onTap = { player.equip((gameState.selectedHotkeyIndex + 1) % HOTKEY_ENTRIES.size) },
+                onTap = { player.equip((gameState.selectedHotkeyIndex + 1) % MODE_LABELS.size) },
             )
             ActionButton(
                 label = "Heal",

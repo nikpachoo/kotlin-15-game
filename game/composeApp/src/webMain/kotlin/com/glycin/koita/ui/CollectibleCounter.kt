@@ -20,8 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.glycin.koita.composables.isCompact
 
 private val COLLECTIBLES_CORNER_RADIUS = 6.dp
-private val MATERIALS_COLOR = Color(0xFF5D564E)
-private val MINERAL_COLOR = Color(0xFF7B4D41)
 
 @Composable
 fun CollectiblesPanel(
@@ -40,8 +38,8 @@ fun CollectiblesPanel(
             ),
         verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 6.dp),
     ) {
-        CollectibleCounter("MATERIALS", simple, MATERIALS_COLOR)
-        CollectibleCounter("MINERALS", minerals, MINERAL_COLOR)
+        CollectibleCounter("MATERIALS", simple, HudColors.MATERIALS_COLOR)
+        CollectibleCounter("MINERALS", minerals, HudColors.MINERALS_COLOR)
         CollectibleCounter("ORE", rich, HudColors.ORE_COLOR)
     }
 }

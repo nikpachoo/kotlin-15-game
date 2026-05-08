@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -21,11 +19,15 @@ import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
-import com.glycin.koita.ui.ActionButton
-import com.glycin.koita.ui.Carousel
-import com.glycin.koita.ui.CollectiblesPanel
 import com.glycin.koita.ui.HudColors
-import com.glycin.koita.ui.StatsPanel
+import com.glycin.koita.ui.KeyChipButton
+import com.glycin.koita.ui.ResourceList
+import com.glycin.koita.ui.ScoreReadout
+import com.glycin.koita.ui.SelectorPanel
+
+private val CHIP_SIZE = 56.dp
+private val GROUP_GAP = 16.dp
+private val ACTION_GAP = 8.dp
 
 @Composable
 fun BoxScope.RightPillarRegular(
@@ -41,98 +43,86 @@ fun BoxScope.RightPillarRegular(
             .fillMaxHeight()
             .align(Alignment.TopEnd)
             .padding(panelPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(GROUP_GAP),
     ) {
-        StatsPanel(
+        ScoreReadout(
             score = gameState.score,
             elapsedSeconds = gameState.elapsedTimeSeconds,
         )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        CollectiblesPanel(
+        ResourceList(
+            materials = gameState.collectedSimple,
             minerals = gameState.collectedMinerals,
-            simple = gameState.collectedSimple,
-            rich = gameState.collectedRich,
+            ore = gameState.collectedRich,
         )
 
-        Spacer(modifier = Modifier.weight(2f))
+        Spacer(modifier = Modifier.weight(1f))
 
-        Carousel(
-            label = "BLOCK",
+        SelectorPanel(
+            headerLabel = "Block",
             items = BuildBlock.availableFor(gameState),
             selected = gameState.selectedBlock,
             onSelect = { gameState.selectedBlock = it },
             labelOf = { it.displayName },
             input = input,
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.size(8.dp))
-
-        Carousel(
-            label = "WEAPON",
+        SelectorPanel(
+            headerLabel = "Weapon",
             items = AttackWeapon.availableFor(gameState),
             selected = gameState.selectedWeapon,
             onSelect = { gameState.selectedWeapon = it },
             labelOf = { it.displayName },
             input = input,
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
-
-        ActionButtonGrid(
-            actions = listOf(
-                ActionSpec("Ult", "R", Key.R, gameState.ultimateAvailable != null,
-                    onTap = { gameState.ultimateTriggered = true }),
-                ActionSpec("Dash", "Shift", Key.ShiftLeft, gameState.canDash),
-                ActionSpec("Heal", "E", Key.E, player.canHeal,
-                    cost = gameState.nextHealCost,
-                    costDotColor = HudColors.ORE_COLOR,
-                    onTap = { player.heal() }),
-                ActionSpec("Jump", "Space", Key.Spacebar),
-            ),
-            input = input,
-        )
-
-        Spacer(modifier = Modifier.weight(3f))
+        ActionStack(player = player, input = input, gameState = gameState)
     }
 }
 
-private data class ActionSpec(
-    val label: String,
-    val keyHint: String,
-    val key: Key,
-    val enabled: Boolean = true,
-    val cost: Int? = null,
-    val costDotColor: Color? = null,
-    val onTap: (() -> Unit)? = null,
-)
-
 @Composable
-private fun ActionButtonGrid(
-    actions: List<ActionSpec>,
+private fun ActionStack(
+    player: Player,
     input: Input,
+    gameState: GameState,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(ACTION_GAP),
     ) {
-        actions.forEach { it.Render(input = input) }
+        KeyChipButton(
+            label = "Ult",
+            keyHint = "R",
+            input = input,
+            key = Key.R,
+            size = CHIP_SIZE,
+            fillWidth = true,
+            enabled = gameState.ultimateAvailable != null,
+            onTap = { gameState.ultimateTriggered = true },
+        )
+        KeyChipButton(
+            label = "Dash",
+            keyHint = "Shift",
+            input = input,
+            key = Key.ShiftLeft,
+            size = CHIP_SIZE,
+            fillWidth = true,
+            enabled = gameState.canDash,
+        )
+        KeyChipButton(
+            label = "Heal",
+            keyHint = "E",
+            input = input,
+            key = Key.E,
+            size = CHIP_SIZE,
+            fillWidth = true,
+            enabled = player.canHeal,
+            cost = gameState.nextHealCost,
+            costDotColor = HudColors.ORE_COLOR,
+            onTap = { player.heal() },
+        )
     }
-}
-
-@Composable
-private fun ActionSpec.Render(input: Input) {
-    ActionButton(
-        label = label,
-        keyHint = keyHint,
-        key = key,
-        input = input,
-        fillWidth = true,
-        enabled = enabled,
-        cost = cost,
-        costDotColor = costDotColor,
-        onTap = onTap,
-    )
 }

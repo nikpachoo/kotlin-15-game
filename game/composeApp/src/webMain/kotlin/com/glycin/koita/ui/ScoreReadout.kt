@@ -1,46 +1,36 @@
 package com.glycin.koita.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.glycin.koita.composables.isCompact
+import com.glycin.koita.util.formatScore
 import com.glycin.koita.util.formatTime
 
-private val STATS_CORNER_RADIUS = 6.dp
-
 @Composable
-fun StatsPanel(
+fun ScoreReadout(
     score: Int,
     elapsedSeconds: Int?,
     modifier: Modifier = Modifier,
 ) {
-    val compact = isCompact()
     Column(
-        modifier = modifier
-            .hudPanel(STATS_CORNER_RADIUS)
-            .padding(
-                horizontal = if (compact) 10.dp else 16.dp,
-                vertical = if (compact) 6.dp else 10.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+        horizontalAlignment = Alignment.End,
     ) {
         Text(
-            text = "$score",
+            text = score.formatScore(),
             fontFamily = pixelFont(),
-            fontSize = if (compact) 16.sp else 22.sp,
-            color = HudColors.PANEL_ACCENT,
+            fontSize = 28.sp,
+            color = HudColors.SCORE_PINK,
         )
         if (elapsedSeconds != null) {
             Text(
                 text = elapsedSeconds.formatTime(),
                 fontFamily = pixelFont(),
-                fontSize = if (compact) 11.sp else 14.sp,
+                fontSize = 14.sp,
                 color = Color.LightGray,
             )
         }

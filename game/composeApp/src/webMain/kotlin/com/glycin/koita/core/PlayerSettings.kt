@@ -28,7 +28,7 @@ object PlayerSettings {
     const val HOVER_MAX_FALL_SPEED = 50f
 
     // Jump
-    const val JUMP_PAD_MULTIPLIER = 3f
+    const val JUMP_PAD_MULTIPLIER = 2f
 
     const val MINING_BOOST_FORCE = 350f
     const val MINING_PULL_DURATION = 0.15f

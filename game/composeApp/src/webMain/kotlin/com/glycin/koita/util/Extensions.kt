@@ -14,6 +14,12 @@ fun Int.formatScore(): String = toString().formatScoreDigits()
 
 fun Long.formatScore(): String = toString().formatScoreDigits()
 
+fun Int.formatTime(): String {
+    val minutes = (this / 60).toString().padStart(2, '0')
+    val seconds = (this % 60).toString().padStart(2, '0')
+    return "$minutes:$seconds"
+}
+
 private fun String.formatScoreDigits(): String {
     val negative = startsWith("-")
     val digits = if (negative) substring(1) else this

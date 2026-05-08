@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.glycin.koita.core.Camera
@@ -20,7 +21,6 @@ import com.glycin.koita.gameplay.ultimates.UltimateManager
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.EnemyHealthBars
-import com.glycin.koita.ui.HotkeyEntry
 import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
@@ -29,11 +29,15 @@ import com.glycin.koita.ui.UltimateUnlockedBanner
 
 internal const val AIM_RANGE = 200f
 
-internal val HOTKEY_ENTRIES = listOf(
-    HotkeyEntry(keyHint = "3", label = "Build", modeIndex = 2),
-    HotkeyEntry(keyHint = "2", label = "Attack", modeIndex = 1),
-    HotkeyEntry(keyHint = "1", label = "Mine", modeIndex = 0),
+internal data class HotkeyMode(val label: String, val keyHint: String, val key: Key)
+
+internal val HOTKEY_MODES = listOf(
+    HotkeyMode("Mine", "1", Key.One),
+    HotkeyMode("Attack", "2", Key.Two),
+    HotkeyMode("Build", "3", Key.Three),
 )
+
+internal val MODE_LABELS: List<String> = HOTKEY_MODES.map { it.label }
 
 @Composable
 fun UiRenderer(
@@ -70,8 +74,26 @@ fun UiRenderer(
                 autoFire = autoFire,
             )
         } else {
-            LeftPillarRegular(player, input, gameState, panelWidth, panelPadding)
-            RightPillarRegular(player, input, gameState, panelWidth, panelPadding)
+            LeftPillarRegular(
+                player = player,
+                input = input,
+                gameState = gameState,
+                panelWidth = panelWidth,
+                panelPadding = panelPadding,
+            )
+            RightPillarRegular(
+                player = player,
+                input = input,
+                gameState = gameState,
+                panelWidth = panelWidth,
+                panelPadding = panelPadding,
+            )
+            TopBar(
+                player = player,
+                input = input,
+                gameState = gameState,
+                panelPadding = panelPadding,
+            )
         }
 
         PickupNotification(
