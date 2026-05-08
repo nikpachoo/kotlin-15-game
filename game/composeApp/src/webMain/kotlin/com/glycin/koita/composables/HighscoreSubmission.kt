@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.rest.ApiClient
 import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.util.formatScore
 import kotlinx.coroutines.launch
 
 private const val NAME_MAX_LENGTH = 16
@@ -60,7 +61,7 @@ fun HighscoreSubmission(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "$score",
+            text = score.formatScore(),
             fontFamily = pixelFont(),
             fontSize = if (compact) 22.sp else 40.sp,
             color = Color.White,

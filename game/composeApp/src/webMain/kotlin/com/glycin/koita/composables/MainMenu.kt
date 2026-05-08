@@ -27,11 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.gameplay.GameState
@@ -43,20 +39,10 @@ private const val HOVER_ANIMATION_MS = 300
 
 @Composable
 fun MainMenu(gameState: GameState) {
-    val backgroundBrush = remember {
-        Brush.verticalGradient(
-            colors = listOf(
-                MenuColors.MAIN_BACKGROUND_DARK,
-                MenuColors.MAIN_BACKGROUND_MID,
-                MenuColors.MAIN_BACKGROUND_LIGHT,
-            ),
-        )
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundBrush),
+            .background(rememberMenuBackgroundBrush()),
         contentAlignment = Alignment.Center,
     ) {
         MainMenuPanel(gameState)
@@ -103,25 +89,6 @@ private fun MainMenuPanel(gameState: GameState) {
 
         Spacer(modifier = Modifier.size(compactOr(16.dp, 32.dp)))
     }
-}
-
-@Composable
-private fun KotlinLogo(boxSize: Dp, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(boxSize)
-            .drawWithCache {
-                val logoPath = Path().apply {
-                    moveTo(0f, 0f)
-                    lineTo(size.width, 0f)
-                    lineTo(size.width / 2f, size.height / 2f)
-                    lineTo(size.width, size.height)
-                    lineTo(0f, size.height)
-                    close()
-                }
-                onDrawBehind { drawPath(logoPath, Color.White) }
-            },
-    )
 }
 
 @Composable

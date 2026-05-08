@@ -10,6 +10,17 @@ import com.glycin.koita.world.isOutOfWorldBounds
 
 fun Float.lerp(b: Float, t: Float) = this + t * (b - this)
 
+fun Int.formatScore(): String = toString().formatScoreDigits()
+
+fun Long.formatScore(): String = toString().formatScoreDigits()
+
+private fun String.formatScoreDigits(): String {
+    val negative = startsWith("-")
+    val digits = if (negative) substring(1) else this
+    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
+    return if (negative) "-$grouped" else grouped
+}
+
 fun <T> List<T>.nextAfter(current: T): T {
     val idx = indexOf(current).coerceAtLeast(0)
     return this[(idx + 1) % size]

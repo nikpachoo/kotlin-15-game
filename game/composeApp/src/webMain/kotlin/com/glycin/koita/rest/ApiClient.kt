@@ -22,6 +22,14 @@ data class CreateUserRequest(
 data class HighscoreEntry(
     val name: String,
     val score: Int,
+    val rank: Int,
+)
+
+@Serializable
+data class HighscoresResponse(
+    val top: List<HighscoreEntry>,
+    val totalEntries: Long,
+    val userEntry: HighscoreEntry? = null,
 )
 
 object ApiClient {
@@ -47,7 +55,7 @@ object ApiClient {
         }
     }
 
-    suspend fun getHighscores(): List<HighscoreEntry> {
+    suspend fun getHighscores(): HighscoresResponse {
         return client.get("$BASE_URL/highscores").body()
     }
 }

@@ -2,6 +2,7 @@ package com.glycin
 
 import com.glycin.model.CreateUserRequest
 import com.glycin.model.HighscoreEntry
+import com.glycin.model.HighscoresResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -10,17 +11,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-private const val HONEYPOT_FAKE_ID = 0
-
 fun Application.configureRouting(userService: UserService) {
     routing {
         get("/highscores") {
-            val topScores = userService.topHighscores()
-            val highscores = topScores.map { HighscoreEntry(
-                name = it.name,
-                score = it.score
-            ) }
-            call.respond(HttpStatusCode.OK, highscores)
+            call.respond(HttpStatusCode.OK, userService.leaderboard().toResponse())
         }
 
         rateLimit(SUBMIT_LIMITER) {
@@ -32,7 +26,7 @@ fun Application.configureRouting(userService: UserService) {
                 val request = call.receive<CreateUserRequest>()
                 when (validateSubmission(request)) {
                     SubmissionRejection.HONEYPOT -> {
-                        call.respond(HttpStatusCode.Created, HONEYPOT_FAKE_ID)
+                        call.respond(HttpStatusCode.Created, userService.leaderboard().toResponse())
                         return@post
                     }
                     SubmissionRejection.NAME -> {
@@ -41,8 +35,11 @@ fun Application.configureRouting(userService: UserService) {
                     }
                     null -> {}
                 }
-                val id = userService.create(ExposedUser(request.name, request.score, request.email))
-                call.respond(HttpStatusCode.Created, id)
+                val result = userService.submit(ExposedUser(request.name, request.score, request.email))
+                val userEntry = if (result.rank > result.snapshot.top.size) {
+                    HighscoreEntry(name = request.name, score = request.score, rank = result.rank)
+                } else null
+                call.respond(HttpStatusCode.Created, result.snapshot.toResponse(userEntry))
             }
         }
 
@@ -76,3 +73,12 @@ fun Application.configureRouting(userService: UserService) {
         }
     }
 }
+
+private fun LeaderboardSnapshot.toResponse(userEntry: HighscoreEntry? = null) =
+    HighscoresResponse(
+        top = top.mapIndexed { index, user ->
+            HighscoreEntry(name = user.name, score = user.score, rank = index + 1)
+        },
+        totalEntries = total,
+        userEntry = userEntry,
+    )

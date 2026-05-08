@@ -1,7 +1,21 @@
 package com.glycin.koita.composables
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.glycin.koita.gameplay.upgrades.UnlockGroup
+
+@Composable
+internal fun rememberMenuBackgroundBrush(): Brush = remember {
+    Brush.verticalGradient(
+        colors = listOf(
+            MenuColors.MAIN_BACKGROUND_DARK,
+            MenuColors.MAIN_BACKGROUND_MID,
+            MenuColors.MAIN_BACKGROUND_LIGHT,
+        ),
+    )
+}
 
 internal object MenuColors {
     val BACKGROUND = Color(0xFF1A1A2E)

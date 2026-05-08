@@ -1,7 +1,7 @@
 package com.glycin
 
 import com.glycin.model.CreateUserRequest
-import com.glycin.model.HighscoreEntry
+import com.glycin.model.HighscoresResponse
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.defaultRequest
@@ -11,9 +11,10 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import java.util.Base64
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.testcontainers.containers.PostgreSQLContainer
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -25,6 +26,15 @@ class UserIntegrationTest {
         private val postgres = PostgreSQLContainer("postgres:17").apply {
             start()
         }
+        private val testDatabase by lazy {
+            Database.connect(postgres.jdbcUrl, user = postgres.username, password = postgres.password)
+        }
+    }
+
+    private fun userIdByName(name: String): Int = transaction(testDatabase) {
+        UserService.Users.selectAll()
+            .where { UserService.Users.name eq name }
+            .single()[UserService.Users.id]
     }
 
     private val testUsername = "admin"
@@ -83,7 +93,7 @@ class UserIntegrationTest {
     }
 
     @Test
-    fun `POST users is public and creates user and returns ID`() = testApplication {
+    fun `POST users is public and returns submission response with rank`() = testApplication {
         configureTestApp()
         val client = jsonClient()
         val response = client.post("/users") {
@@ -91,8 +101,13 @@ class UserIntegrationTest {
             setBody(CreateUserRequest("Alice", 100, "alice@test.com"))
         }
         assertEquals(HttpStatusCode.Created, response.status)
-        val id = response.body<Int>()
-        assert(id > 0)
+        val body = response.body<HighscoresResponse>()
+        val alice = body.top.singleOrNull { it.name == "Alice" && it.score == 100 }
+        assertNotNull(alice)
+        assert(alice.rank > 0)
+        assertNull(body.userEntry)
+        assert(body.totalEntries >= body.top.size.toLong())
+        assert(body.totalEntries > 0)
     }
 
     @Test
@@ -104,7 +119,8 @@ class UserIntegrationTest {
             contentType(ContentType.Application.Json)
             setBody(CreateUserRequest("Bob", 200, "bob@test.com"))
         }
-        val id = createResponse.body<Int>()
+        assertEquals(HttpStatusCode.Created, createResponse.status)
+        val id = userIdByName("Bob")
 
         val getResponse = client.get("/users/$id") {
             header(HttpHeaders.Authorization, basicAuthHeader)
@@ -141,7 +157,8 @@ class UserIntegrationTest {
             contentType(ContentType.Application.Json)
             setBody(CreateUserRequest("Charlie", 50))
         }
-        val id = createResponse.body<Int>()
+        assertEquals(HttpStatusCode.Created, createResponse.status)
+        val id = userIdByName("Charlie")
 
         val updateResponse = client.put("/users/$id") {
             contentType(ContentType.Application.Json)
@@ -179,7 +196,8 @@ class UserIntegrationTest {
             contentType(ContentType.Application.Json)
             setBody(CreateUserRequest("DeleteMe", 0))
         }
-        val id = createResponse.body<Int>()
+        assertEquals(HttpStatusCode.Created, createResponse.status)
+        val id = userIdByName("DeleteMe")
 
         val deleteResponse = client.delete("/users/$id") {
             header(HttpHeaders.Authorization, basicAuthHeader)
@@ -240,10 +258,12 @@ class UserIntegrationTest {
             setBody("""{"name":"Bot","score":1,"website":"http://spam.example"}""")
         }
         assertEquals(HttpStatusCode.Created, postResponse.status)
-        assertEquals(0, postResponse.body<Int>())
+        val body = postResponse.body<HighscoresResponse>()
+        assertNull(body.userEntry)
+        assertEquals(emptyList(), body.top.filter { it.name == "Bot" })
 
-        val highscores = client.get("/highscores").body<List<HighscoreEntry>>()
-        assertEquals(emptyList(), highscores.filter { it.name == "Bot" })
+        val highscores = client.get("/highscores").body<HighscoresResponse>()
+        assertEquals(emptyList(), highscores.top.filter { it.name == "Bot" })
     }
 
     @Test
@@ -261,8 +281,10 @@ class UserIntegrationTest {
 
         val response = client.get("/highscores")
         assertEquals(HttpStatusCode.OK, response.status)
-        val scores = response.body<List<HighscoreEntry>>()
-        val scoreValues = scores.map { it.score }
+        val body = response.body<HighscoresResponse>()
+        val scoreValues = body.top.map { it.score }
         assertEquals(scoreValues, scoreValues.sortedDescending())
+        assert(body.totalEntries >= body.top.size.toLong())
+        assert(body.totalEntries > 0)
     }
 }

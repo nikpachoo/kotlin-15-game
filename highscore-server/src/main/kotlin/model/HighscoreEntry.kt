@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class HighscoreEntry(
     val name: String,
     val score: Int,
+    val rank: Int,
 )
