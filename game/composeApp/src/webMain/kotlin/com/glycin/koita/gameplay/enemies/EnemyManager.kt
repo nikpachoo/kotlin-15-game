@@ -152,7 +152,7 @@ class EnemyManager(
         return nearest
     }
 
-    fun damageInRange(pos: Vec2, range: Float, damage: Float) {
+    fun damageInRange(pos: Vec2, range: Float, damage: Float, shieldDamage: Int = 1) {
         val rangeSq = range * range
         for (i in 0..<enemies.size) {
             val e = enemies[i]
@@ -163,11 +163,11 @@ class EnemyManager(
         }
         val b = boss
         if (b != null && b.isAlive && Vec2.fastDistance(b.center, pos) <= rangeSq) {
-            b.takeDamage(damage)
+            b.takeDamage(damage, shieldDamage)
         }
     }
 
-    fun damageFirstColliding(px: Float, py: Float, w: Float, h: Float, damage: Float): Boolean {
+    fun damageFirstColliding(px: Float, py: Float, w: Float, h: Float, damage: Float, shieldDamage: Int = 1): Boolean {
         for (i in 0..<enemies.size) {
             val e = enemies[i]
             if (e.isAlive &&
@@ -187,7 +187,7 @@ class EnemyManager(
             py < b.position.y + b.height &&
             py + h > b.position.y
         ) {
-            b.takeDamage(damage)
+            b.takeDamage(damage, shieldDamage)
             return true
         }
         return false
@@ -237,11 +237,11 @@ class EnemyManager(
         return nearestCenter
     }
 
-    fun destroyShieldsInRadius(pos: Vec2, radius: Float) {
-        boss?.destroyShieldsInRadius(pos, radius)
+    fun destroyShieldsInRadius(pos: Vec2, radius: Float, maxCount: Int = Int.MAX_VALUE) {
+        boss?.destroyShieldsInRadius(pos, radius, maxCount)
     }
 
-    fun damageInBeam(origin: Vec2, direction: Vec2, length: Float, width: Float, damage: Float) {
+    fun damageInBeam(origin: Vec2, direction: Vec2, length: Float, width: Float, damage: Float, shieldDamage: Int = 1) {
         val ox = origin.x
         val oy = origin.y
         val dirX = direction.x
@@ -268,7 +268,7 @@ class EnemyManager(
             if (proj > 0f && proj < length) {
                 val perpDist = abs(toX * dirY - toY * dirX)
                 if (perpDist < width) {
-                    b.takeDamage(damage)
+                    b.takeDamage(damage, shieldDamage)
                 }
             }
         }

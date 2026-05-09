@@ -13,6 +13,8 @@ abstract class UltimateAttack(
     var isActive = false
         protected set
 
+    abstract val bossShieldDamage: Int
+
     abstract fun activate(player: Player)
     abstract fun update(deltaTime: Float, player: Player)
     abstract fun deactivate(player: Player)

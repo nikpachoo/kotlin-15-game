@@ -364,7 +364,7 @@ class Boss(
             when (weapon) {
                 is MagicMissile -> {
                     if (!weapon.isAlive) return@forEach
-                    if (hitShield(weapon.position, weapon.baseSize, weapon.baseSize)) {
+                    if (hitShield(weapon.position, weapon.baseSize, weapon.baseSize, weapon.bossShieldDamage)) {
                         weapon.isAlive = false
                     } else if (overlaps(weapon.position, weapon.baseSize, weapon.baseSize)) {
                         applyDamage(2f * gameState.damageMultiplier)
@@ -373,7 +373,8 @@ class Boss(
                 }
                 is Laser -> {
                     if (!weapon.isActive) return@forEach
-                    if (lineHitsShield(weapon.start, weapon.end)) return@forEach
+                    if (!weapon.didDamageTick) return@forEach
+                    if (lineHitsShield(weapon.start, weapon.end, weapon.bossShieldDamage)) return@forEach
                     if (overlaps(weapon.end, 8f, 8f)) {
                         applyDamage(0.25f * gameState.damageMultiplier)
                     }
@@ -381,7 +382,7 @@ class Boss(
                 is SuperSoaker -> {
                     weapon.droplets.forEach { droplet ->
                         if (!droplet.alive) return@forEach
-                        if (hitShield(droplet.position, 4f, 4f)) {
+                        if (hitShield(droplet.position, 4f, 4f, weapon.bossShieldDamage)) {
                             droplet.alive = false
                         } else if (overlaps(droplet.position, 4f, 4f)) {
                             applyDamage(0.15f * gameState.damageMultiplier)
@@ -391,7 +392,7 @@ class Boss(
 
                 is Rocket -> {
                     if (!weapon.isAlive) return@forEach
-                    if (hitShield(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
+                    if (hitShield(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE, weapon.bossShieldDamage)) {
                         weapon.detonate()
                     } else if (overlaps(weapon.position, Rocket.BASE_SIZE, Rocket.BASE_SIZE)) {
                         applyDamage(4f * gameState.damageMultiplier)
@@ -400,7 +401,7 @@ class Boss(
                 }
                 is Sniper -> {
                     if (!weapon.bulletActive) return@forEach
-                    if (lineHitsShield(weapon.bulletStart, weapon.bulletEnd)) {
+                    if (lineHitsShield(weapon.bulletStart, weapon.bulletEnd, weapon.bossShieldDamage)) {
                         weapon.bulletActive = false
                     } else if (lineOverlaps(
                             weapon.bulletStart, weapon.bulletEnd,
@@ -415,8 +416,11 @@ class Boss(
         }
     }
 
-    private fun hitShield(pos: Vec2, w: Float, h: Float): Boolean {
+    private fun hitShield(pos: Vec2, w: Float, h: Float, damage: Int): Boolean {
+        if (damage <= 0) return false
+        val effective = damage + gameState.damageUpCount
         val tileSize = WorldConstants.TILE_SIZE.toFloat()
+        var destroyed = 0
         for (i in 0 until maxShieldTiles) {
             if (!shieldActive[i]) continue
             val sx = shieldPositions[i * 2]
@@ -424,19 +428,23 @@ class Boss(
             if (pos.x < sx + tileSize && pos.x + w > sx &&
                 pos.y < sy + tileSize && pos.y + h > sy) {
                 destroyShield(i)
-                return true
+                destroyed++
+                if (destroyed >= effective) return true
             }
         }
-        return false
+        return destroyed > 0
     }
 
-    private fun lineHitsShield(start: Vec2, end: Vec2): Boolean {
+    private fun lineHitsShield(start: Vec2, end: Vec2, damage: Int): Boolean {
+        if (damage <= 0) return false
+        val effective = damage + gameState.damageUpCount
         val dx = end.x - start.x
         val dy = end.y - start.y
         val len = sqrt(dx * dx + dy * dy)
-        if (len == 0f) return hitShield(start, 1f, 1f)
+        if (len == 0f) return hitShield(start, 1f, 1f, damage)
         val tileSize = WorldConstants.TILE_SIZE.toFloat()
         val steps = (len / (tileSize * 0.5f)).toInt().coerceAtLeast(20)
+        var destroyed = 0
         for (s in 0..steps) {
             val t = s.toFloat() / steps
             val px = start.x + dx * t
@@ -447,11 +455,12 @@ class Boss(
                 val sy = shieldPositions[i * 2 + 1]
                 if (px >= sx && px < sx + tileSize && py >= sy && py < sy + tileSize) {
                     destroyShield(i)
-                    return true
+                    destroyed++
+                    if (destroyed >= effective) return true
                 }
             }
         }
-        return false
+        return destroyed > 0
     }
 
     private fun destroyShield(i: Int) {
@@ -523,10 +532,10 @@ class Boss(
                 pos.y + h > position.y
     }
 
-    fun takeDamage(amount: Float) {
+    fun takeDamage(amount: Float, shieldDamage: Int = 1) {
         if (!isAlive) return
         if (shieldCount > 0) {
-            consumeFirstActiveShield()
+            consumeFirstActiveShields(shieldDamage + gameState.damageUpCount)
             return
         }
         applyDamage(amount)
@@ -555,27 +564,34 @@ class Boss(
         )
     }
 
-    private fun consumeFirstActiveShield() {
+    private fun consumeFirstActiveShields(count: Int) {
+        if (count <= 0) return
+        var remaining = count
         for (i in 0 until maxShieldTiles) {
             if (shieldActive[i]) {
                 destroyShield(i)
-                return
+                remaining--
+                if (remaining <= 0) return
             }
         }
     }
 
-    fun destroyShieldsInRadius(pos: Vec2, radius: Float) {
-        if (shieldCount == 0) return
+    fun destroyShieldsInRadius(pos: Vec2, radius: Float, maxCount: Int = Int.MAX_VALUE) {
+        if (shieldCount == 0 || maxCount <= 0) return
+        val effective = if (maxCount == Int.MAX_VALUE) maxCount else maxCount + gameState.damageUpCount
         val px = pos.x
         val py = pos.y
         val rSq = radius * radius
         val halfTile = WorldConstants.TILE_SIZE * 0.5f
+        var destroyed = 0
         for (i in 0 until maxShieldTiles) {
             if (!shieldActive[i]) continue
             val sx = shieldPositions[i * 2] + halfTile
             val sy = shieldPositions[i * 2 + 1] + halfTile
             if (Vec2.fastDistance(px, py, sx, sy) <= rSq) {
                 destroyShield(i)
+                destroyed++
+                if (destroyed >= effective) return
             }
         }
     }

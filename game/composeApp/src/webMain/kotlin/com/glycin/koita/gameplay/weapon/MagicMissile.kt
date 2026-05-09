@@ -26,6 +26,7 @@ class MagicMissile(
     private val enemyManager: EnemyManager,
 ) : Weapon {
     override var isAlive = true
+    override val bossShieldDamage: Int = 1
 
     val direction = direction.normalized()
 

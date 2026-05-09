@@ -35,6 +35,8 @@ class Kamehameha(
     name = "Kamehameha",
     requiredUnlockIds = setOf(UnlockId.GROUND_POUND, UnlockId.SNIPER, UnlockId.TURRET),
 ) {
+    override val bossShieldDamage: Int = 2
+
     private var phase = Phase.INACTIVE
     private var chargeTimer = 0f
     private var beamTimer = 0f
@@ -119,6 +121,7 @@ class Kamehameha(
             length = beamEndDistance,
             width = BEAM_WIDTH,
             damage = BEAM_DAMAGE_PER_SECOND * deltaTime,
+            shieldDamage = bossShieldDamage,
         )
     }
 

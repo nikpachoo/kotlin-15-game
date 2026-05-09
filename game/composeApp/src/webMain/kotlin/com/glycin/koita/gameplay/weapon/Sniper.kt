@@ -48,6 +48,8 @@ class Sniper(
     override val isAlive: Boolean
         get() = isCharging || bulletActive
 
+    override val bossShieldDamage: Int = 3
+
     private var wasActive = false
     private var bulletFlashTimer = 0f
     private var lastOrigin = Vec2.zero()

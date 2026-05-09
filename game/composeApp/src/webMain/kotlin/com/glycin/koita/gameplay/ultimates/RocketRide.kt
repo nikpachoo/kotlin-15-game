@@ -41,6 +41,8 @@ class RocketRide(
     name = "Ride the Rocket",
     requiredUnlockIds = setOf(UnlockId.JETPACK, UnlockId.EXPLODING_BLOCKS, UnlockId.ROCKET_LAUNCHER),
 ) {
+    override val bossShieldDamage: Int = 1
+
     private var timer = 0f
     private var dismountRequested = false
     private var currentDirection = Vec2.zero()
@@ -90,14 +92,14 @@ class RocketRide(
             return
         }
 
-        enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime)
+        enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime, bossShieldDamage)
     }
 
     private fun performFinalExplosion(player: Player) {
         val center = player.center
         val affectedTiles = collisionDetector.getTilesInRadius(center, FINAL_EXPLOSION_RADIUS)
         explodeTerrain(affectedTiles, center, FINAL_EXPLOSION_RADIUS, world, particleSystem)
-        enemyManager.damageInRange(center, FINAL_EXPLOSION_RADIUS, FINAL_EXPLOSION_DAMAGE)
+        enemyManager.damageInRange(center, FINAL_EXPLOSION_RADIUS, FINAL_EXPLOSION_DAMAGE, bossShieldDamage)
         SoundManager.playOneShot(Sounds.EXPLODE)
     }
 

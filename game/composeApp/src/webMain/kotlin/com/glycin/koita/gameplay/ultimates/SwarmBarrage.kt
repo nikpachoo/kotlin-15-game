@@ -31,6 +31,8 @@ class SwarmBarrage(
     name = "Swarm Barrage",
     requiredUnlockIds = setOf(UnlockId.DOUBLE_JUMP, UnlockId.HOMING_MISSILES, UnlockId.INVULNERABLE),
 ) {
+    override val bossShieldDamage: Int = 2
+
     private val missilePositions = FloatArray(MISSILE_POOL_SIZE * 2)
     private val missileDirections = FloatArray(MISSILE_POOL_SIZE * 2)
     private val missileActive = BooleanArray(MISSILE_POOL_SIZE)
@@ -101,7 +103,7 @@ class SwarmBarrage(
                 continue
             }
 
-            if (enemyManager.damageFirstColliding(newX - MISSILE_SIZE / 2, newY - MISSILE_SIZE / 2, MISSILE_SIZE, MISSILE_SIZE, DAMAGE_PER_MISSILE)) {
+            if (enemyManager.damageFirstColliding(newX - MISSILE_SIZE / 2, newY - MISSILE_SIZE / 2, MISSILE_SIZE, MISSILE_SIZE, DAMAGE_PER_MISSILE, bossShieldDamage)) {
                 explodeMissile(newX, newY)
                 missileActive[i] = false
                 continue

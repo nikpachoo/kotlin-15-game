@@ -33,6 +33,8 @@ class SuperSaiyanDash(
     name = "Super Saiyan Dash",
     requiredUnlockIds = setOf(UnlockId.DASH, UnlockId.LASER, UnlockId.BOUNCY_BLOCKS),
 ) {
+    override val bossShieldDamage: Int = 1
+
     private var timer = 0f
 
     override fun activate(player: Player) {
@@ -60,7 +62,7 @@ class SuperSaiyanDash(
             return
         }
 
-        enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime)
+        enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime, bossShieldDamage)
     }
 
     override fun deactivate(player: Player) {

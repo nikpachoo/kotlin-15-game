@@ -22,6 +22,10 @@ class Laser(
     var isActive = false
 
     override val isAlive: Boolean get() = isActive
+    override val bossShieldDamage: Int = 1
+
+    var didDamageTick: Boolean = false
+        private set
 
     private var terrainDamageTimer = 0f
     private var damageCooldown = 0f
@@ -33,10 +37,12 @@ class Laser(
     fun update(deltaTime: Float, origin: Vec2, target: Vec2) {
         start = origin
         end = collisionDetector.raycast(origin, target, maxRange)
+        didDamageTick = false
 
         if (damageCooldown > 0f) damageCooldown -= deltaTime
 
         if (damageCooldown <= 0f) {
+            didDamageTick = true
             val dir = (end - start).normalized()
             val length = Vec2.distance(start, end)
             val step = 8f

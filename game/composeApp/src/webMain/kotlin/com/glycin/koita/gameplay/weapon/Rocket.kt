@@ -26,6 +26,7 @@ class Rocket(
     private val enemyManager: EnemyManager,
 ) : Weapon {
     override var isAlive = true
+    override val bossShieldDamage: Int = 4
 
     val direction = direction.normalized()
     private var flightTime = 0f
@@ -107,7 +108,7 @@ class Rocket(
         val affectedTiles = collisionDetector.getTilesInRadius(position, impactRadius)
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
-        enemyManager.destroyShieldsInRadius(position, impactRadius)
-        enemyManager.damageInRange(position, impactRadius, EXPLOSION_DAMAGE * gameState.damageMultiplier)
+        enemyManager.destroyShieldsInRadius(position, impactRadius, bossShieldDamage)
+        enemyManager.damageInRange(position, impactRadius, EXPLOSION_DAMAGE * gameState.damageMultiplier, bossShieldDamage)
     }
 }

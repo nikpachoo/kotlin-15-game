@@ -22,6 +22,8 @@ class GiantForm(
     name = "Giant Form",
     requiredUnlockIds = setOf(UnlockId.SLOW_FALL, UnlockId.SUPER_SOAKER, UnlockId.RESOURCE_SHIELD),
 ) {
+    override val bossShieldDamage: Int = 1
+
     private var timer = 0f
     private var currentScale = 1f
 
@@ -60,7 +62,7 @@ class GiantForm(
         val center = player.center
         val auraRadius = AURA_RADIUS * currentScale
 
-        enemyManager.damageInRange(center, auraRadius, DAMAGE_PER_SECOND * deltaTime)
+        enemyManager.damageInRange(center, auraRadius, DAMAGE_PER_SECOND * deltaTime, bossShieldDamage)
     }
 
     override fun deactivate(player: Player) {

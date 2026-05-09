@@ -9,6 +9,7 @@ import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.core.PlayerSettings
 import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
+import com.glycin.koita.gameplay.pickups.PickupCatalog
 import com.glycin.koita.rest.HighscoresResponse
 
 enum class Screen {
@@ -59,6 +60,8 @@ class GameState {
     
     var pickupNotification by mutableStateOf<String?>(null)
     val pickupCounts = mutableStateMapOf<String, Int>()
+
+    val damageUpCount: Int get() = pickupCounts[PickupCatalog.DAMAGE_UP] ?: 0
 
     var nextHealCost by mutableStateOf(PlayerSettings.HEAL_COST)
 

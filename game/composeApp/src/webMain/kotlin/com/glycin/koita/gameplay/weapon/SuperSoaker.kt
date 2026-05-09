@@ -26,6 +26,7 @@ class SuperSoaker(
 
     var isActive = false
     override val isAlive: Boolean get() = isActive || droplets.isNotEmpty()
+    override val bossShieldDamage: Int = 1
 
     val droplets = mutableListOf<WaterDroplet>()
 
