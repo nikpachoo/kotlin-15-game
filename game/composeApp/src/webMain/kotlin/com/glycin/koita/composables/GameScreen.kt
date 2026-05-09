@@ -142,7 +142,10 @@ fun GameScreen(gameState: GameState) {
     }
 
     remember(enemyManager, ultimateManager) {
-        enemyManager.onEnemyKilled = { ultimateManager.notifyEnemyKilled() }
+        enemyManager.onEnemyKilled = { score ->
+            ultimateManager.notifyEnemyKilled()
+            gameState.score += score
+        }
     }
 
     val spawnPosition = Vec2(startWorldPosX, startWorldPosY)

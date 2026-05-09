@@ -30,6 +30,7 @@ class Hydra( //TODO: Find some different behaviour for the hydra
     override val contactDamage = 1
     override val dropChance = 0.02f
     override val spriteOffsetY = -20f
+    override val scoreReward = 400
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.hydra_sheet,

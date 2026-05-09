@@ -37,6 +37,7 @@ class DashingPhantom(
     override val contactDamage = 2
     override val dropChance = 0.07f
     override val spriteOffsetY = -24f
+    override val scoreReward = 700
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.null_phantom_sheet,

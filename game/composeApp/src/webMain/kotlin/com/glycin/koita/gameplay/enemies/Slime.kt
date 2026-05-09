@@ -33,6 +33,7 @@ class Slime(
     override val contactDamage = 1
     override val dropChance = 0.01f
     override val spriteOffsetY = -8f
+    override val scoreReward = 100
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.slime_sheet,

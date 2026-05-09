@@ -23,7 +23,7 @@ abstract class Enemy(
 
     var isAlive = true
         protected set
-    var onKill: () -> Unit = {}
+    var onKill: (Int) -> Unit = {}
 
     abstract val spriteAnimator: SpriteAnimator
     open val canAttack: Boolean = true
@@ -31,6 +31,7 @@ abstract class Enemy(
     open val contactDamageCooldown: Float = 1.0f
     open val dropChance: Float = 0.02f
     open val spriteOffsetY: Float = 0f
+    open val scoreReward: Int = 0
 
     private var contactDamageTimer = 0f
     private var hurtTimer = 0f
@@ -90,7 +91,7 @@ abstract class Enemy(
             health = 0f
             enemyState = EnemyState.DEATH
             SoundManager.playOneShot(Sounds.ENEMY_DEATH)
-            onKill()
+            onKill(scoreReward)
         } else {
             enemyState = EnemyState.HURT
             hurtTimer = hurtDuration

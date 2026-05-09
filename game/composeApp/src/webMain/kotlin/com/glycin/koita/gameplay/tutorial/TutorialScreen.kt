@@ -140,7 +140,7 @@ fun TutorialScreen(appState: GameState) {
     }
 
     remember(enemyManager, ultimateManager) {
-        enemyManager.onEnemyKilled = { ultimateManager.notifyEnemyKilled() }
+        enemyManager.onEnemyKilled = { _ -> ultimateManager.notifyEnemyKilled() }
     }
 
     val parallaxBackground = remember { ParallaxBackground(camera = camera) }

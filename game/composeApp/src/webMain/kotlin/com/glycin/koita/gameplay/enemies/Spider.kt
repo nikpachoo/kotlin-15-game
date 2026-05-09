@@ -34,6 +34,7 @@ class Spider(
     override val contactDamage = 1
     override val dropChance = 0.02f
     override val spriteOffsetY = 0f
+    override val scoreReward = 200
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.spider_sheet,

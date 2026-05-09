@@ -28,6 +28,7 @@ class Wraith(
     override val contactDamage = 2
     override val dropChance = 0.05f
     override val spriteOffsetY = 0f
+    override val scoreReward = 400
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.wraith_sheet,

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -22,14 +23,12 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.HudButton
 import com.glycin.koita.ui.ResourceList
 import com.glycin.koita.ui.ScoreReadout
 import com.glycin.koita.ui.pixelFont
-
-private val THUMBSTICK_SIZE = 100.dp
-private val SIDE_CHIP_WIDTH = 60.dp
-private val SIDE_CHIP_HEIGHT = 36.dp
+import com.glycin.koita.util.nextAfter
 
 @Composable
 fun BoxScope.RightPillarCompact(
@@ -64,33 +63,39 @@ fun BoxScope.RightPillarCompact(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(modifier = Modifier.fillMaxWidth().height(THUMBSTICK_SIZE)) {
+        Box(modifier = Modifier.fillMaxWidth().height(COMPACT_ACTION_BOX_HEIGHT)) {
             AimThumbstick(
                 player = player,
                 camera = camera,
                 input = input,
                 modifier = Modifier.align(Alignment.CenterStart),
-                size = THUMBSTICK_SIZE,
+                size = COMPACT_THUMBSTICK_SIZE,
             )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .width(SIDE_CHIP_WIDTH)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                HOTKEY_MODES.forEachIndexed { index, mode ->
-                    ModeChip(
-                        label = mode.label,
-                        selected = gameState.selectedHotkeyIndex == index,
-                        input = input,
-                        onTap = { player.equip(index) },
-                    )
+            HOTKEY_MODES.forEachIndexed { index, mode ->
+                val isEdge = index == 0 || index == HOTKEY_MODES.lastIndex
+                val alignment = when (index) {
+                    0 -> Alignment.TopEnd
+                    HOTKEY_MODES.lastIndex -> Alignment.BottomEnd
+                    else -> Alignment.CenterEnd
                 }
+                val offsetX = if (isEdge) -COMPACT_CHIP_INSET else 0.dp
+                ModeChip(
+                    label = mode.label,
+                    selected = gameState.selectedHotkeyIndex == index,
+                    input = input,
+                    modifier = Modifier.align(alignment).offset(x = offsetX),
+                    onTap = { player.equip(index) },
+                )
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        CycleSelectorButton(
+            currentLabel = gameState.selectedBlock.displayName,
+            input = input,
+            onTap = {
+                gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
+            },
+        )
     }
 }
 
@@ -103,17 +108,16 @@ private fun ModeChip(
     modifier: Modifier = Modifier,
 ) {
     HudButton(
-        size = SIDE_CHIP_HEIGHT,
+        size = COMPACT_SIDE_CHIP_SIZE,
         active = selected,
         input = input,
         modifier = modifier,
-        fillWidth = true,
         onTap = onTap,
     ) {
         Text(
             text = label,
             fontFamily = pixelFont(),
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             color = Color.White,
         )
     }

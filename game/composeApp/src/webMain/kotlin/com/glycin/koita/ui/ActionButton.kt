@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.composables.isCompact
@@ -38,9 +39,10 @@ fun ActionButton(
     cost: Int? = null,
     costDotColor: Color? = null,
     onTap: (() -> Unit)? = null,
+    size: Dp? = null,
 ) {
     val compact = isCompact()
-    val buttonSize = if (compact) 44.dp else 64.dp
+    val buttonSize = size ?: if (compact) 44.dp else 64.dp
     val keyHintSize = if (compact) 13.sp else 18.sp
     val labelSize = if (compact) 11.sp else 14.sp
     var localPressed by remember { mutableStateOf(false) }

@@ -39,6 +39,7 @@ class Confuser(
     override val contactDamage = 3
     override val dropChance = 0.1f
     override val spriteOffsetY = -32f
+    override val scoreReward = 1000
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.confuser_sheet,

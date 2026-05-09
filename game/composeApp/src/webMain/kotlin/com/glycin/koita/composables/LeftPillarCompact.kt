@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -23,16 +24,11 @@ import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.modes.AttackWeapon
-import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.Health
 import com.glycin.koita.ui.HudButton
-import com.glycin.koita.ui.HudColors
 import com.glycin.koita.ui.pixelFont
 import com.glycin.koita.util.nextAfter
-
-private val THUMBSTICK_SIZE = 100.dp
-private val SIDE_BUTTON_WIDTH = 60.dp
 
 @Composable
 fun LeftPillarCompact(
@@ -71,82 +67,42 @@ fun LeftPillarCompact(
             Health(currentHp = player.health, maxHp = player.maxHealth)
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(modifier = Modifier.fillMaxWidth().height(COMPACT_ACTION_BOX_HEIGHT)) {
+            MovementThumbstick(
+                input = input,
+                modifier = Modifier.align(Alignment.CenterEnd),
+                size = COMPACT_THUMBSTICK_SIZE,
+            )
+            ActionButton(
+                label = "Heal",
+                keyHint = "E",
+                key = Key.E,
+                input = input,
+                modifier = Modifier.align(Alignment.TopStart).offset(x = COMPACT_CHIP_INSET),
+                enabled = player.canHeal,
+                size = COMPACT_SIDE_CHIP_SIZE,
+                onTap = { player.heal() },
+            )
+            ActionButton(
+                label = "Ult",
+                keyHint = "R",
+                key = Key.R,
+                input = input,
+                modifier = Modifier.align(Alignment.BottomStart).offset(x = COMPACT_CHIP_INSET),
+                enabled = gameState.ultimateAvailable != null,
+                size = COMPACT_SIDE_CHIP_SIZE,
+                onTap = { gameState.ultimateTriggered = true },
+            )
+        }
+
         CycleSelectorButton(
             currentLabel = gameState.selectedWeapon.displayName,
             input = input,
             onTap = {
                 gameState.selectedWeapon = AttackWeapon.availableFor(gameState).nextAfter(gameState.selectedWeapon)
             },
-        )
-
-        CycleSelectorButton(
-            currentLabel = gameState.selectedBlock.displayName,
-            input = input,
-            onTap = {
-                gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
-            },
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(modifier = Modifier.fillMaxWidth().height(THUMBSTICK_SIZE)) {
-            MovementThumbstick(
-                input = input,
-                modifier = Modifier.align(Alignment.CenterEnd),
-                size = THUMBSTICK_SIZE,
-            )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .width(SIDE_BUTTON_WIDTH)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                ActionButton(
-                    label = "Heal",
-                    keyHint = "E",
-                    key = Key.E,
-                    input = input,
-                    fillWidth = true,
-                    enabled = player.canHeal,
-                    cost = gameState.nextHealCost,
-                    costDotColor = HudColors.ORE_COLOR,
-                    onTap = { player.heal() },
-                )
-                ActionButton(
-                    label = "Ult",
-                    keyHint = "R",
-                    key = Key.R,
-                    input = input,
-                    fillWidth = true,
-                    enabled = gameState.ultimateAvailable != null,
-                    onTap = { gameState.ultimateTriggered = true },
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-    }
-}
-
-@Composable
-private fun CycleSelectorButton(
-    currentLabel: String,
-    input: Input,
-    onTap: () -> Unit,
-) {
-    HudButton(
-        size = 44.dp,
-        active = false,
-        input = input,
-        fillWidth = true,
-        onTap = onTap,
-    ) {
-        Text(
-            text = "$currentLabel  cycle >",
-            fontFamily = pixelFont(),
-            fontSize = 12.sp,
-            color = Color.White,
         )
     }
 }

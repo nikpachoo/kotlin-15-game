@@ -85,22 +85,20 @@ class CollectibleSystem(
     }
 
     private fun onCollected(tile: Tile) {
-        val multiplier = when (tile.category) {
+        when (tile.category) {
             TileCategory.MINERALS -> {
                 gameState.collectedMinerals++
-                2
+                gameState.score += 1
             }
             TileCategory.SIMPLE -> {
                 gameState.collectedSimple++
-                1
             }
             TileCategory.RICH -> {
                 gameState.collectedRich++
-                10
+                gameState.score += 2
             }
-            TileCategory.NONE -> 1
+            TileCategory.NONE -> Unit
         }
-        gameState.score += tile.ordinal * multiplier
     }
 
     fun clear() {

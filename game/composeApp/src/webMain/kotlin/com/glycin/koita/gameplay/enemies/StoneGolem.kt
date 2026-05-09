@@ -33,6 +33,7 @@ class StoneGolem(
     override val contactDamage = 2
     override val dropChance = 0.03f
     override val spriteOffsetY = -32f
+    override val scoreReward = 300
 
     override val spriteAnimator = SpriteAnimator(
         sprite = Res.drawable.stone_golem_sheet,
