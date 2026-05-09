@@ -55,6 +55,11 @@ class GameState {
     var miningRadiusMultiplier = 1.0f
     var visionMultiplier = 1.0f
     var visionFallOfMultiplier = 1.0f
+    var scoreMultiplier by mutableStateOf(1)
+
+    fun addScore(base: Int) {
+        score += base * scoreMultiplier
+    }
 
     var pickupNotification by mutableStateOf<String?>(null)
     val pickupCounts = mutableStateMapOf<String, Int>()
@@ -119,6 +124,7 @@ class GameState {
         miningRadiusMultiplier = 1.0f
         visionMultiplier = 1.0f
         visionFallOfMultiplier = 1.0f
+        scoreMultiplier = 1
 
         pickupNotification = null
         pickupCounts.clear()

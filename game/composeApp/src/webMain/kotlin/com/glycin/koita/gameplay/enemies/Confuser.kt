@@ -23,7 +23,7 @@ class Confuser(
     world: World,
     private val player: Player,
     private val fluidSimulator: FluidSimulator,
-    health: Float = 8f,
+    health: Float = 24f,
 ) : Enemy(
     position = position,
     width = 64f,

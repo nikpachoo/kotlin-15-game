@@ -88,14 +88,14 @@ class CollectibleSystem(
         when (tile.category) {
             TileCategory.MINERALS -> {
                 gameState.collectedMinerals++
-                gameState.score += 1
+                gameState.addScore(1)
             }
             TileCategory.SIMPLE -> {
                 gameState.collectedSimple++
             }
             TileCategory.RICH -> {
                 gameState.collectedRich++
-                gameState.score += 2
+                gameState.addScore(2)
             }
             TileCategory.NONE -> Unit
         }

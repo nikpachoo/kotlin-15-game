@@ -16,6 +16,7 @@ import com.glycin.koita.gameplay.ResourceShield
 import com.glycin.koita.gameplay.modes.BuildMode
 import com.glycin.koita.gameplay.modes.MiningMode
 import com.glycin.koita.gameplay.modes.AttackMode
+import com.glycin.koita.gameplay.SpawnSettings
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
@@ -162,8 +163,19 @@ class Player(
         updateTimers(deltaTime)
         updateDrone(center)
         resourceShield.update(deltaTime)
+        updateScoreMultiplier()
         animator.update(deltaTime, state, onHurtComplete)
         droneAnimator.update(deltaTime, droneState)
+    }
+
+    private fun updateScoreMultiplier() {
+        val newMult = SpawnSettings.scoreMultiplierForY(center.y)
+        val oldMult = gameState.scoreMultiplier
+        if (newMult == oldMult) return
+        gameState.scoreMultiplier = newMult
+        if (newMult > oldMult) {
+            gameState.pickupNotification = "Score multiplier ×$newMult!"
+        }
     }
 
     fun enterBoostState() {

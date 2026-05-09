@@ -144,7 +144,7 @@ fun GameScreen(gameState: GameState) {
     remember(enemyManager, ultimateManager) {
         enemyManager.onEnemyKilled = { score ->
             ultimateManager.notifyEnemyKilled()
-            gameState.score += score
+            gameState.addScore(score)
         }
     }
 
