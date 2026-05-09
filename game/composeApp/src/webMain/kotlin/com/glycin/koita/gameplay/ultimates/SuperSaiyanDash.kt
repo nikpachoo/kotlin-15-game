@@ -85,7 +85,7 @@ class SuperSaiyanDash(
         val elapsed = DURATION - timer
 
         drawAmbientGlow(cx, t)
-        drawAuraTrail(cx, t)
+        drawTrailLine(cx)
         drawAura(cx, t, scale = 1f, alpha = 1f, phaseOffset = 0f)
         drawDestructionRing(cx)
         if (elapsed < SHOCKWAVE_DURATION) {
@@ -102,15 +102,13 @@ class SuperSaiyanDash(
         )
     }
 
-    private fun DrawScope.drawAuraTrail(cx: Offset, t: Float) {
-        for (i in 1..TRAIL_NODE_COUNT) {
-            val yOffset = i * TRAIL_NODE_SPACING
-            val scale = 1f - i * 0.16f
-            val alpha = 0.65f - i * 0.11f
-            if (alpha <= 0f || scale <= 0.05f) continue
-            val nodeCenter = Offset(cx.x, cx.y + yOffset)
-            drawAura(nodeCenter, t, scale, alpha, phaseOffset = i * 0.7f)
-        }
+    private fun DrawScope.drawTrailLine(cx: Offset) {
+        drawLine(
+            color = AURA_OUTER_YELLOW,
+            start = cx,
+            end = Offset(cx.x, cx.y + TRAIL_LENGTH),
+            strokeWidth = TRAIL_WIDTH,
+        )
     }
 
     private fun DrawScope.drawAura(
@@ -227,8 +225,8 @@ class SuperSaiyanDash(
         private const val AURA_CORE_HALF_X = 40f
         private const val AURA_CORE_HALF_Y = 50f
 
-        private const val TRAIL_NODE_COUNT = 5
-        private const val TRAIL_NODE_SPACING = 55f
+        private const val TRAIL_LENGTH = 640f
+        private const val TRAIL_WIDTH = 12f
 
         private const val HALF_PI = (PI / 2.0).toFloat()
     }
