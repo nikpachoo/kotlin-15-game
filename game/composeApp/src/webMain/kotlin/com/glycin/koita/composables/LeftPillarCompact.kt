@@ -24,6 +24,7 @@ import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.modes.AttackWeapon
+import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.ActionButton
 import com.glycin.koita.ui.Health
 import com.glycin.koita.ui.HudButton
@@ -97,12 +98,25 @@ fun LeftPillarCompact(
             )
         }
 
-        CycleSelectorButton(
-            currentLabel = gameState.selectedWeapon.displayName,
-            input = input,
-            onTap = {
-                gameState.selectedWeapon = AttackWeapon.availableFor(gameState).nextAfter(gameState.selectedWeapon)
-            },
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        ) {
+            CycleSelectorButton(
+                currentLabel = gameState.selectedWeapon.displayName,
+                input = input,
+                onTap = {
+                    gameState.selectedWeapon = AttackWeapon.availableFor(gameState).nextAfter(gameState.selectedWeapon)
+                },
+            )
+            CycleSelectorButton(
+                currentLabel = gameState.selectedBlock.displayName,
+                input = input,
+                onTap = {
+                    gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
+                },
+            )
+        }
     }
 }

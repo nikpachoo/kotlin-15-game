@@ -3,7 +3,6 @@ package com.glycin.koita.composables
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.core.Input
 import com.glycin.koita.ui.HudButton
@@ -16,16 +15,15 @@ internal fun CycleSelectorButton(
     onTap: () -> Unit,
 ) {
     HudButton(
-        size = 44.dp,
+        size = COMPACT_SIDE_CHIP_SIZE,
         active = false,
         input = input,
-        fillWidth = true,
         onTap = onTap,
     ) {
         Text(
-            text = "$currentLabel  cycle >",
+            text = currentLabel,
             fontFamily = pixelFont(),
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             color = Color.White,
         )
     }

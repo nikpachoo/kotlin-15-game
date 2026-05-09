@@ -23,12 +23,10 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
-import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui.HudButton
 import com.glycin.koita.ui.ResourceList
 import com.glycin.koita.ui.ScoreReadout
 import com.glycin.koita.ui.pixelFont
-import com.glycin.koita.util.nextAfter
 
 @Composable
 fun BoxScope.RightPillarCompact(
@@ -88,14 +86,6 @@ fun BoxScope.RightPillarCompact(
                 )
             }
         }
-
-        CycleSelectorButton(
-            currentLabel = gameState.selectedBlock.displayName,
-            input = input,
-            onTap = {
-                gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
-            },
-        )
     }
 }
 
