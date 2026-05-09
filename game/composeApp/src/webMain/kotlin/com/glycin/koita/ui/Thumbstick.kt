@@ -92,7 +92,7 @@ fun Thumbstick(
                 center = center,
             )
             drawCircle(
-                color = HudColors.BUTTON_BORDER,
+                color = if (pressed) HudColors.BUTTON_BORDER_HOVER else HudColors.BUTTON_BORDER,
                 radius = baseRadius,
                 center = center,
                 style = Stroke(width = 3f),

@@ -60,6 +60,7 @@ class UltimateManager(
         lastActivated = ultimate
         ultimate.activate(player)
         gameState.ultimateActive = true
+        if (ultimate.usesBoostAnimation) player.enterBoostState()
         SoundManager.playOneShot(Sounds.ULTIMATE_USE)
     }
 

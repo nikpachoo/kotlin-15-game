@@ -1,11 +1,13 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -29,6 +31,9 @@ import com.glycin.koita.ui.HudColors
 import com.glycin.koita.ui.pixelFont
 import com.glycin.koita.util.nextAfter
 
+private val THUMBSTICK_SIZE = 100.dp
+private val SIDE_BUTTON_WIDTH = 60.dp
+
 @Composable
 fun LeftPillarCompact(
     player: Player,
@@ -36,8 +41,6 @@ fun LeftPillarCompact(
     gameState: GameState,
     panelWidth: Dp,
     panelPadding: Dp,
-    autoFire: Boolean,
-    onToggleAutoFire: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -47,73 +50,25 @@ fun LeftPillarCompact(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Health(currentHp = player.health, maxHp = player.maxHealth)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        HudButton(
-            size = 44.dp,
-            active = autoFire,
-            input = input,
-            fillWidth = true,
-            onTap = onToggleAutoFire,
-        ) {
-            Text(
-                text = "AUTO",
-                fontFamily = pixelFont(),
-                fontSize = 13.sp,
-                color = Color.White,
-            )
-        }
-
         Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            ActionButton(
-                label = "Left",
-                keyHint = "A",
-                key = Key.A,
+            HudButton(
+                size = 40.dp,
+                active = false,
                 input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-            )
-            ActionButton(
-                label = "Right",
-                keyHint = "D",
-                key = Key.D,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            val currentLabel = MODE_LABELS.getOrNull(gameState.selectedHotkeyIndex) ?: "Mode"
-            ActionButton(
-                label = currentLabel,
-                keyHint = "",
-                key = null,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-                onTap = { player.equip((gameState.selectedHotkeyIndex + 1) % MODE_LABELS.size) },
-            )
-            ActionButton(
-                label = "Heal",
-                keyHint = "E",
-                key = Key.E,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-                enabled = player.canHeal,
-                cost = gameState.nextHealCost,
-                costDotColor = HudColors.ORE_COLOR,
-                onTap = { player.heal() },
-            )
+                onTap = { gameState.isPaused = !gameState.isPaused },
+            ) {
+                Text(
+                    text = "ESC",
+                    fontFamily = pixelFont(),
+                    fontSize = 11.sp,
+                    color = Color.White,
+                )
+            }
+            Health(currentHp = player.health, maxHp = player.maxHealth)
         }
 
         CycleSelectorButton(
@@ -131,6 +86,46 @@ fun LeftPillarCompact(
                 gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
             },
         )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(modifier = Modifier.fillMaxWidth().height(THUMBSTICK_SIZE)) {
+            MovementThumbstick(
+                input = input,
+                modifier = Modifier.align(Alignment.CenterEnd),
+                size = THUMBSTICK_SIZE,
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .width(SIDE_BUTTON_WIDTH)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                ActionButton(
+                    label = "Heal",
+                    keyHint = "E",
+                    key = Key.E,
+                    input = input,
+                    fillWidth = true,
+                    enabled = player.canHeal,
+                    cost = gameState.nextHealCost,
+                    costDotColor = HudColors.ORE_COLOR,
+                    onTap = { player.heal() },
+                )
+                ActionButton(
+                    label = "Ult",
+                    keyHint = "R",
+                    key = Key.R,
+                    input = input,
+                    fillWidth = true,
+                    enabled = gameState.ultimateAvailable != null,
+                    onTap = { gameState.ultimateTriggered = true },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

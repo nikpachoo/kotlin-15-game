@@ -32,10 +32,11 @@ class Kamehameha(
     private val camera: Camera,
 ) : UltimateAttack(
     id = UltimateId.KAMEHAMEHA,
-    name = "Kamehameha",
+    name = "Kotlihameha",
     requiredUnlockIds = setOf(UnlockId.GROUND_POUND, UnlockId.SNIPER, UnlockId.TURRET),
 ) {
     override val bossShieldDamage: Int = 2
+    override val usesBoostAnimation: Boolean = true
 
     private var phase = Phase.INACTIVE
     private var chargeTimer = 0f

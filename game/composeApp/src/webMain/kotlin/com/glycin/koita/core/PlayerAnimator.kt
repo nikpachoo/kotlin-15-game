@@ -21,7 +21,7 @@ class PlayerAnimator(
     private val fallFrames: IntRange = 26..28
     private val attackFrames: IntRange = 72..79
     private val hurtFrames: IntRange = 32..41
-    private val boostFrames: IntRange = 0..9
+    private val boostFrames: IntRange = 0..6
     private val deathFrames: IntRange = 16..25
     private val immutableFrame: Int = 55
 

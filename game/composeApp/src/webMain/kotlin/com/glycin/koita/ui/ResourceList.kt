@@ -15,9 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.composables.compactOr
 import com.glycin.koita.util.formatScore
-
-private val DOT_SIZE = 10.dp
 
 @Composable
 fun ResourceList(
@@ -29,7 +28,7 @@ fun ResourceList(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(compactOr(6.dp, 8.dp)),
     ) {
         ResourceRow("materials", materials, HudColors.MATERIALS_COLOR)
         ResourceRow("minerals", minerals, HudColors.MINERALS_COLOR)
@@ -47,23 +46,23 @@ private fun ResourceRow(
         Text(
             text = "x${count.formatScore()}",
             fontFamily = pixelFont(),
-            fontSize = 22.sp,
+            fontSize = compactOr(18.sp, 22.sp),
             color = dotColor,
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(compactOr(4.dp, 6.dp)),
         ) {
             Box(
                 modifier = Modifier
-                    .size(DOT_SIZE)
+                    .size(compactOr(8.dp, 10.dp))
                     .background(dotColor, CircleShape)
                     .border(1.dp, HudColors.PANEL_BORDER, CircleShape),
             )
             Text(
                 text = label,
                 fontFamily = pixelFont(),
-                fontSize = 12.sp,
+                fontSize = compactOr(10.sp, 12.sp),
                 color = dotColor,
             )
         }

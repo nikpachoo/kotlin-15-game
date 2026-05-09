@@ -1,16 +1,16 @@
 package com.glycin.koita.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
@@ -21,13 +21,12 @@ import com.glycin.koita.gameplay.ultimates.UltimateManager
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.ui.BossHealthBar
 import com.glycin.koita.ui.EnemyHealthBars
+import com.glycin.koita.ui.KeyChipButton
 import com.glycin.koita.ui.Notification
 import com.glycin.koita.ui.PickupNotification
 import com.glycin.koita.ui.PlacementGhost
 import com.glycin.koita.ui.UltimateBar
 import com.glycin.koita.ui.UltimateUnlockedBanner
-
-internal const val AIM_RANGE = 200f
 
 internal data class HotkeyMode(val label: String, val keyHint: String, val key: Key)
 
@@ -37,7 +36,33 @@ internal val HOTKEY_MODES = listOf(
     HotkeyMode("Build", "3", Key.Three),
 )
 
-internal val MODE_LABELS: List<String> = HOTKEY_MODES.map { it.label }
+@Composable
+internal fun ModeRow(
+    player: Player,
+    input: Input,
+    gameState: GameState,
+    size: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        HOTKEY_MODES.forEachIndexed { index, mode ->
+            KeyChipButton(
+                label = mode.label,
+                keyHint = mode.keyHint,
+                input = input,
+                modifier = Modifier.weight(1f),
+                key = mode.key,
+                size = size,
+                fillWidth = true,
+                selected = gameState.selectedHotkeyIndex == index,
+                onTap = { player.equip(index) },
+            )
+        }
+    }
+}
 
 @Composable
 fun UiRenderer(
@@ -54,15 +79,12 @@ fun UiRenderer(
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (compact) {
-            var autoFire by remember { mutableStateOf(false) }
             LeftPillarCompact(
                 player = player,
                 input = input,
                 gameState = gameState,
                 panelWidth = panelWidth,
                 panelPadding = panelPadding,
-                autoFire = autoFire,
-                onToggleAutoFire = { autoFire = !autoFire },
             )
             RightPillarCompact(
                 player = player,
@@ -71,7 +93,6 @@ fun UiRenderer(
                 camera = camera,
                 panelWidth = panelWidth,
                 panelPadding = panelPadding,
-                autoFire = autoFire,
             )
         } else {
             LeftPillarRegular(

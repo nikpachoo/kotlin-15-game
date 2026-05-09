@@ -263,7 +263,7 @@ fun GameScreen(gameState: GameState) {
                     gameState.ultimateTriggered = false
                 }
 
-                if (mouse.isLeftPressed || gameState.autoFireActive) {
+                if (mouse.isLeftPressed) {
                     player.useWeapon()
                 }
 

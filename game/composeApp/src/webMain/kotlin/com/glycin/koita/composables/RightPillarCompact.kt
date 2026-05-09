@@ -1,12 +1,13 @@
 package com.glycin.koita.composables
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,12 +22,14 @@ import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
-import com.glycin.koita.ui.ActionButton
-import com.glycin.koita.ui.CollectiblesPanel
 import com.glycin.koita.ui.HudButton
-import com.glycin.koita.ui.StatsPanel
-import com.glycin.koita.ui.Thumbstick
+import com.glycin.koita.ui.ResourceList
+import com.glycin.koita.ui.ScoreReadout
 import com.glycin.koita.ui.pixelFont
+
+private val THUMBSTICK_SIZE = 100.dp
+private val SIDE_CHIP_WIDTH = 60.dp
+private val SIDE_CHIP_HEIGHT = 36.dp
 
 @Composable
 fun BoxScope.RightPillarCompact(
@@ -37,7 +39,6 @@ fun BoxScope.RightPillarCompact(
     camera: Camera,
     panelWidth: Dp,
     panelPadding: Dp,
-    autoFire: Boolean,
 ) {
     Column(
         modifier = Modifier
@@ -48,92 +49,72 @@ fun BoxScope.RightPillarCompact(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            StatsPanel(
-                score = gameState.score,
-                elapsedSeconds = null,
-                modifier = Modifier.weight(1f),
-            )
-            HudButton(
-                size = 40.dp,
-                active = false,
+        ScoreReadout(
+            score = gameState.score,
+            elapsedSeconds = gameState.elapsedTimeSeconds,
+            modifier = Modifier.align(Alignment.End),
+        )
+
+        ResourceList(
+            materials = gameState.collectedSimple,
+            minerals = gameState.collectedMinerals,
+            ore = gameState.collectedRich,
+            modifier = Modifier.align(Alignment.End),
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(modifier = Modifier.fillMaxWidth().height(THUMBSTICK_SIZE)) {
+            AimThumbstick(
+                player = player,
+                camera = camera,
                 input = input,
-                onTap = { gameState.isPaused = !gameState.isPaused },
+                modifier = Modifier.align(Alignment.CenterStart),
+                size = THUMBSTICK_SIZE,
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(SIDE_CHIP_WIDTH)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(
-                    text = "ESC",
-                    fontFamily = pixelFont(),
-                    fontSize = 11.sp,
-                    color = Color.White,
-                )
+                HOTKEY_MODES.forEachIndexed { index, mode ->
+                    ModeChip(
+                        label = mode.label,
+                        selected = gameState.selectedHotkeyIndex == index,
+                        input = input,
+                        onTap = { player.equip(index) },
+                    )
+                }
             }
         }
 
-        CollectiblesPanel(
-            minerals = gameState.collectedMinerals,
-            simple = gameState.collectedSimple,
-            rich = gameState.collectedRich,
-        )
-
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
 
-        ActionButton(
-            label = "Jump",
-            keyHint = "Space",
-            key = Key.Spacebar,
-            input = input,
+@Composable
+private fun ModeChip(
+    label: String,
+    selected: Boolean,
+    input: Input,
+    onTap: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    HudButton(
+        size = SIDE_CHIP_HEIGHT,
+        active = selected,
+        input = input,
+        modifier = modifier,
+        fillWidth = true,
+        onTap = onTap,
+    ) {
+        Text(
+            text = label,
+            fontFamily = pixelFont(),
+            fontSize = 10.sp,
+            color = Color.White,
         )
-
-        Thumbstick(
-            input = input,
-            onMove = { normalized ->
-                val worldX = player.center.x + normalized.x * AIM_RANGE
-                val worldY = player.center.y + normalized.y * AIM_RANGE
-                input.mouse.updatePosition(camera.worldToScreen(worldX, worldY), worldX, worldY)
-                gameState.autoFireActive = autoFire
-            },
-            onRelease = {
-                gameState.autoFireActive = false
-            },
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            ActionButton(
-                label = "Down",
-                keyHint = "S",
-                key = Key.S,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-            )
-            ActionButton(
-                label = "Dash",
-                keyHint = "Shift",
-                key = Key.ShiftLeft,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-                enabled = gameState.canDash,
-            )
-            ActionButton(
-                label = "Ult",
-                keyHint = "R",
-                key = Key.R,
-                input = input,
-                modifier = Modifier.weight(1f),
-                fillWidth = true,
-                enabled = gameState.ultimateAvailable != null,
-                onTap = { gameState.ultimateTriggered = true },
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }

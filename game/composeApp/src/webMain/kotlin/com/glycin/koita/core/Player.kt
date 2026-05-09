@@ -166,6 +166,10 @@ class Player(
         droneAnimator.update(deltaTime, droneState)
     }
 
+    fun enterBoostState() {
+        state = PlayerState.BOOST
+    }
+
     private fun updateTimers(deltaTime: Float) {
         if (attackTimer > 0f) {
             attackTimer -= deltaTime
@@ -187,6 +191,7 @@ class Player(
 
     fun useWeapon() {
         if (isAnchorLocked) return
+        if (gameState.ultimateActive) return
         currentWeapon.use()
         state = PlayerState.ATTACKING
         attackTimer = attackDuration

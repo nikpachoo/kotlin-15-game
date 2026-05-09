@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -52,7 +51,7 @@ fun LeftPillarRegular(
             fillWidth = true,
         )
 
-        ModeRow(player = player, input = input, gameState = gameState)
+        ModeRow(player = player, input = input, gameState = gameState, size = CHIP_SIZE)
     }
 }
 
@@ -67,32 +66,6 @@ private fun KeyboardCluster(input: Input) {
             KeyChipButton(label = "←", keyHint = "A", input = input, key = Key.A, size = CHIP_SIZE)
             KeyChipButton(label = "↓", keyHint = "S", input = input, key = Key.S, size = CHIP_SIZE)
             KeyChipButton(label = "→", keyHint = "D", input = input, key = Key.D, size = CHIP_SIZE)
-        }
-    }
-}
-
-@Composable
-private fun ModeRow(
-    player: Player,
-    input: Input,
-    gameState: GameState,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(GAP),
-    ) {
-        HOTKEY_MODES.forEachIndexed { index, mode ->
-            KeyChipButton(
-                label = mode.label,
-                keyHint = mode.keyHint,
-                input = input,
-                modifier = Modifier.weight(1f),
-                key = mode.key,
-                size = CHIP_SIZE,
-                fillWidth = true,
-                selected = gameState.selectedHotkeyIndex == index,
-                onTap = { player.equip(index) },
-            )
         }
     }
 }

@@ -42,6 +42,7 @@ class RocketRide(
     requiredUnlockIds = setOf(UnlockId.JETPACK, UnlockId.EXPLODING_BLOCKS, UnlockId.ROCKET_LAUNCHER),
 ) {
     override val bossShieldDamage: Int = 1
+    override val usesBoostAnimation: Boolean = true
 
     private var timer = 0f
     private var dismountRequested = false
