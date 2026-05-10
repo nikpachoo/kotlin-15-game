@@ -34,7 +34,7 @@ class PlayerAnimator(
         frameDuration = frameDuration,
     )
 
-    fun update(deltaTime: Float, state: PlayerState, onHurtComplete: () -> Unit) {
+    fun update(deltaTime: Float, state: PlayerState, onHurtComplete: () -> Unit, onDeathComplete: () -> Unit) {
         when (state) {
             PlayerState.WALKING -> spriteAnimator.animate(deltaTime, walkFrames)
             PlayerState.IDLE -> spriteAnimator.animate(deltaTime, idleFrames)
@@ -44,6 +44,7 @@ class PlayerAnimator(
             PlayerState.HURT -> spriteAnimator.animateOneShot(deltaTime, hurtFrames, onHurtComplete)
             PlayerState.BOOST -> spriteAnimator.animate(deltaTime, boostFrames)
             PlayerState.IMMUTABLE -> spriteAnimator.setFrame(immutableFrame)
+            PlayerState.DEAD -> spriteAnimator.animateOneShot(deltaTime, deathFrames, onDeathComplete)
         }
     }
 }

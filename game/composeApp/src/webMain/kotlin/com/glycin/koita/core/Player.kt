@@ -132,6 +132,11 @@ class Player(
         state = PlayerState.IDLE
         droneState = getDroneIdleState()
     }
+    private val onDeathComplete: () -> Unit = {
+        isDead = true
+    }
+    var isDead by mutableStateOf(false)
+        private set
     val droneAnimator = DroneAnimator()
     var droneState = DroneState.MINING_IDLE
 
@@ -156,6 +161,10 @@ class Player(
     }
 
     fun update(deltaTime: Float) {
+        if (state == PlayerState.DEAD) {
+            animator.update(deltaTime, state, onHurtComplete, onDeathComplete)
+            return
+        }
         center = Vec2(position.x + width / 2f, position.y + height / 2f) // Small optimization, calculate the center once each frame
         updatePosition(deltaTime)
         updateAttacks(deltaTime)
@@ -164,7 +173,7 @@ class Player(
         updateDrone(center)
         resourceShield.update(deltaTime)
         updateScoreMultiplier()
-        animator.update(deltaTime, state, onHurtComplete)
+        animator.update(deltaTime, state, onHurtComplete, onDeathComplete)
         droneAnimator.update(deltaTime, droneState)
     }
 
@@ -179,6 +188,7 @@ class Player(
     }
 
     fun enterBoostState() {
+        if (state == PlayerState.DEAD) return
         state = PlayerState.BOOST
     }
 
@@ -202,6 +212,7 @@ class Player(
     }
 
     fun useWeapon() {
+        if (state == PlayerState.DEAD) return
         if (isAnchorLocked) return
         if (gameState.ultimateActive) return
         currentWeapon.use()
@@ -230,14 +241,20 @@ class Player(
     }
 
     fun takeDamage(amount: Int) {
+        if (state == PlayerState.DEAD) return
         if (gameState.ultimateActive) return
         if (isAnchorLocked) return
         if (invulnerabilityTimer > 0f) return
         health = (health - amount).coerceAtLeast(0)
+        SoundManager.playOneShot(Sounds.HIT)
+        droneState = getDroneIdleState()
+        if (health == 0) {
+            state = PlayerState.DEAD
+            velocity = Vec2.zero()
+            return
+        }
         invulnerabilityTimer = PlayerSettings.INVULNERABILITY_DURATION
         state = PlayerState.HURT
-        droneState = getDroneIdleState()
-        SoundManager.playOneShot(Sounds.HIT)
     }
 
     val canHeal: Boolean by derivedStateOf {
@@ -316,6 +333,7 @@ class Player(
             if (lavaDamageTimer <= 0f) {
                 takeDamage(1)
                 lavaDamageTimer = PlayerSettings.LAVA_DAMAGE_INTERVAL
+                if (state == PlayerState.DEAD) return
             }
         } else {
             lavaDamageTimer = 0f
@@ -328,6 +346,7 @@ class Player(
                 if (drownDamageTimer <= 0f) {
                     takeDamage(1)
                     drownDamageTimer = PlayerSettings.DROWN_DAMAGE_INTERVAL
+                    if (state == PlayerState.DEAD) return
                 }
             }
         } else {
@@ -470,7 +489,7 @@ class Player(
     }
 
     private fun updateState(deltaTime: Float, horizontalInput: Float) {
-        if (state == PlayerState.HURT || state == PlayerState.ATTACKING) return
+        if (state == PlayerState.HURT || state == PlayerState.ATTACKING || state == PlayerState.DEAD) return
 
         state = when {
             !isGrounded && velocity.y < 0f -> {

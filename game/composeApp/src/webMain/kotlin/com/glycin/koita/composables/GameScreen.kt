@@ -281,7 +281,7 @@ fun GameScreen(gameState: GameState) {
                     gameState.currentScreen = Screen.GAME_WON
                     SoundManager.stopCurrentLoop()
                     SoundManager.playOneShot(Sounds.GAME_WIN)
-                } else if (player.health == 0 && gameState.currentScreen != Screen.GAME_OVER) {
+                } else if (player.isDead && gameState.currentScreen != Screen.GAME_OVER) {
                     gameState.currentScreen = Screen.GAME_OVER
                     SoundManager.stopCurrentLoop()
                     SoundManager.playOneShot(Sounds.GAME_OVER)
