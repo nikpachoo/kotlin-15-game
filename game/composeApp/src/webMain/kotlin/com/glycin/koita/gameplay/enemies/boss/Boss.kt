@@ -16,6 +16,7 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import com.glycin.koita.util.TWO_PI
+import com.glycin.koita.util.lerp
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.boss_sheet
 import kotlin.math.cos
@@ -372,12 +373,20 @@ class Boss(
                     }
                 }
                 is Laser -> {
-                    if (!weapon.isActive) return@forEach
-                    if (!weapon.didDamageTick) return@forEach
-                    if (lineHitsShield(weapon.start, weapon.end, weapon.bossShieldDamage)) return@forEach
-                    if (overlaps(weapon.end, 8f, 8f)) {
-                        applyDamage(0.25f * gameState.damageMultiplier)
+                    if (!isAlive) return@forEach
+                    val shieldT = firstShieldHitT(weapon.start, weapon.end)
+                    val bossT = lineHitsBoxT(weapon.start, weapon.end, position, width, height)
+
+                    if (weapon.didDamageTick) {
+                        val shieldFirst = shieldT != null && (bossT == null || shieldT <= bossT)
+                        if (shieldFirst) {
+                            lineHitsShield(weapon.start, weapon.end, weapon.bossShieldDamage)
+                        } else if (bossT != null) {
+                            applyDamage(0.25f * gameState.damageMultiplier)
+                        }
                     }
+
+                    truncateLaserEnd(weapon, shieldT, bossT)
                 }
                 is SuperSoaker -> {
                     weapon.droplets.forEach { droplet ->
@@ -437,14 +446,38 @@ class Boss(
 
     private fun lineHitsShield(start: Vec2, end: Vec2, damage: Int): Boolean {
         if (damage <= 0) return false
+        if (start.x == end.x && start.y == end.y) return hitShield(start, 1f, 1f, damage)
         val effective = damage + gameState.damageUpCount
+        var destroyed = 0
+        forEachShieldHitOnLine(start, end) { i, _ ->
+            destroyShield(i)
+            destroyed++
+            destroyed >= effective
+        }
+        return destroyed > 0
+    }
+
+    private fun firstShieldHitT(start: Vec2, end: Vec2): Float? {
+        var hitT: Float? = null
+        forEachShieldHitOnLine(start, end) { _, t ->
+            hitT = t
+            true
+        }
+        return hitT
+    }
+
+    private inline fun forEachShieldHitOnLine(
+        start: Vec2,
+        end: Vec2,
+        onHit: (shieldIndex: Int, t: Float) -> Boolean,
+    ) {
+        if (shieldCount == 0) return
         val dx = end.x - start.x
         val dy = end.y - start.y
         val len = sqrt(dx * dx + dy * dy)
-        if (len == 0f) return hitShield(start, 1f, 1f, damage)
+        if (len == 0f) return
         val tileSize = WorldConstants.TILE_SIZE.toFloat()
         val steps = (len / (tileSize * 0.5f)).toInt().coerceAtLeast(20)
-        var destroyed = 0
         for (s in 0..steps) {
             val t = s.toFloat() / steps
             val px = start.x + dx * t
@@ -454,13 +487,62 @@ class Boss(
                 val sx = shieldPositions[i * 2]
                 val sy = shieldPositions[i * 2 + 1]
                 if (px >= sx && px < sx + tileSize && py >= sy && py < sy + tileSize) {
-                    destroyShield(i)
-                    destroyed++
-                    if (destroyed >= effective) return true
+                    if (onHit(i, t)) return
                 }
             }
         }
-        return destroyed > 0
+    }
+
+    private fun lineHitsBoxT(
+        start: Vec2,
+        end: Vec2,
+        boxPos: Vec2,
+        boxW: Float,
+        boxH: Float,
+    ): Float? {
+        val dx = end.x - start.x
+        val dy = end.y - start.y
+        if (dx == 0f && dy == 0f) {
+            val inside = start.x >= boxPos.x && start.x < boxPos.x + boxW &&
+                    start.y >= boxPos.y && start.y < boxPos.y + boxH
+            return if (inside) 0f else null
+        }
+
+        var tEnter = Float.NEGATIVE_INFINITY
+        var tExit = Float.POSITIVE_INFINITY
+
+        if (dx == 0f) {
+            if (start.x < boxPos.x || start.x > boxPos.x + boxW) return null
+        } else {
+            val invDx = 1f / dx
+            val tx1 = (boxPos.x - start.x) * invDx
+            val tx2 = (boxPos.x + boxW - start.x) * invDx
+            tEnter = maxOf(tEnter, minOf(tx1, tx2))
+            tExit = minOf(tExit, maxOf(tx1, tx2))
+        }
+
+        if (dy == 0f) {
+            if (start.y < boxPos.y || start.y > boxPos.y + boxH) return null
+        } else {
+            val invDy = 1f / dy
+            val ty1 = (boxPos.y - start.y) * invDy
+            val ty2 = (boxPos.y + boxH - start.y) * invDy
+            tEnter = maxOf(tEnter, minOf(ty1, ty2))
+            tExit = minOf(tExit, maxOf(ty1, ty2))
+        }
+
+        if (tEnter > tExit || tExit < 0f || tEnter > 1f) return null
+        return if (tEnter < 0f) 0f else tEnter
+    }
+
+    private fun truncateLaserEnd(weapon: Laser, shieldT: Float?, bossT: Float?) {
+        val tMin = when {
+            shieldT == null -> bossT ?: return
+            bossT == null -> shieldT
+            else -> minOf(shieldT, bossT)
+        }
+        weapon.end.x = weapon.start.x.lerp(weapon.end.x, tMin)
+        weapon.end.y = weapon.start.y.lerp(weapon.end.y, tMin)
     }
 
     private fun destroyShield(i: Int) {
