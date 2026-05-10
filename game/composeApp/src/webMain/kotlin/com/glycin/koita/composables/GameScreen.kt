@@ -207,6 +207,10 @@ fun GameScreen(gameState: GameState) {
                 while (true) {
                     val event = awaitPointerEvent()
                     val change = event.changes.first()
+                    if (!musicStarted) {
+                        musicStarted = true
+                        SoundManager.playLoop(Music.BACKGROUND)
+                    }
                     if (change.type == PointerType.Touch) continue
                     val virtualPos = camera.actualToVirtual(change.position.x, change.position.y)
                     mouse.updatePosition(virtualPos, camera.screenToWorld(virtualPos.x, virtualPos.y))
