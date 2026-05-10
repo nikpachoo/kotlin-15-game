@@ -23,6 +23,7 @@ class PlayerAnimator(
     private val hurtFrames: IntRange = 32..41
     private val boostFrames: IntRange = 0..6
     private val deathFrames: IntRange = 16..25
+    private val victoryFrames: IntRange = 0..9
     private val immutableFrame: Int = 55
 
     val spriteAnimator = SpriteAnimator(
@@ -34,7 +35,13 @@ class PlayerAnimator(
         frameDuration = frameDuration,
     )
 
-    fun update(deltaTime: Float, state: PlayerState, onHurtComplete: () -> Unit, onDeathComplete: () -> Unit) {
+    fun update(
+        deltaTime: Float,
+        state: PlayerState,
+        onHurtComplete: () -> Unit,
+        onDeathComplete: () -> Unit,
+        onVictoryComplete: () -> Unit,
+    ) {
         when (state) {
             PlayerState.WALKING -> spriteAnimator.animate(deltaTime, walkFrames)
             PlayerState.IDLE -> spriteAnimator.animate(deltaTime, idleFrames)
@@ -45,6 +52,7 @@ class PlayerAnimator(
             PlayerState.BOOST -> spriteAnimator.animate(deltaTime, boostFrames)
             PlayerState.IMMUTABLE -> spriteAnimator.setFrame(immutableFrame)
             PlayerState.DEAD -> spriteAnimator.animateOneShot(deltaTime, deathFrames, onDeathComplete)
+            PlayerState.VICTORY -> spriteAnimator.animateOneShot(deltaTime, victoryFrames, onVictoryComplete)
         }
     }
 }

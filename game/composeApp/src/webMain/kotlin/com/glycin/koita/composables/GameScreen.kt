@@ -278,6 +278,8 @@ fun GameScreen(gameState: GameState) {
                 if (boss != null && !boss.isAlive && !gameState.bossDefeated) {
                     gameState.bossDefeated = true
                     gameState.score *= 2
+                    player.enterVictoryState()
+                } else if (player.isVictorious && gameState.currentScreen != Screen.GAME_WON) {
                     gameState.currentScreen = Screen.GAME_WON
                     SoundManager.stopCurrentLoop()
                     SoundManager.playOneShot(Sounds.GAME_WIN)

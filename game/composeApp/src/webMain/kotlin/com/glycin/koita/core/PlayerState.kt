@@ -10,6 +10,7 @@ enum class PlayerState {
     BOOST,
     IMMUTABLE,
     DEAD,
+    VICTORY,
 }
 
 enum class PlayerFacing {

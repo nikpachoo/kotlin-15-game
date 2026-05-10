@@ -137,6 +137,11 @@ class Player(
     }
     var isDead by mutableStateOf(false)
         private set
+    private val onVictoryComplete: () -> Unit = {
+        isVictorious = true
+    }
+    var isVictorious by mutableStateOf(false)
+        private set
     val droneAnimator = DroneAnimator()
     var droneState = DroneState.MINING_IDLE
 
@@ -161,8 +166,8 @@ class Player(
     }
 
     fun update(deltaTime: Float) {
-        if (state == PlayerState.DEAD) {
-            animator.update(deltaTime, state, onHurtComplete, onDeathComplete)
+        if (state == PlayerState.DEAD || state == PlayerState.VICTORY) {
+            animator.update(deltaTime, state, onHurtComplete, onDeathComplete, onVictoryComplete)
             return
         }
         center = Vec2(position.x + width / 2f, position.y + height / 2f) // Small optimization, calculate the center once each frame
@@ -173,7 +178,7 @@ class Player(
         updateDrone(center)
         resourceShield.update(deltaTime)
         updateScoreMultiplier()
-        animator.update(deltaTime, state, onHurtComplete, onDeathComplete)
+        animator.update(deltaTime, state, onHurtComplete, onDeathComplete, onVictoryComplete)
         droneAnimator.update(deltaTime, droneState)
     }
 
@@ -188,8 +193,15 @@ class Player(
     }
 
     fun enterBoostState() {
-        if (state == PlayerState.DEAD) return
+        if (state == PlayerState.DEAD || state == PlayerState.VICTORY) return
         state = PlayerState.BOOST
+    }
+
+    fun enterVictoryState() {
+        if (state == PlayerState.DEAD || state == PlayerState.VICTORY) return
+        state = PlayerState.VICTORY
+        velocity = Vec2.zero()
+        droneState = getDroneIdleState()
     }
 
     private fun updateTimers(deltaTime: Float) {
@@ -212,7 +224,7 @@ class Player(
     }
 
     fun useWeapon() {
-        if (state == PlayerState.DEAD) return
+        if (state == PlayerState.DEAD || state == PlayerState.VICTORY) return
         if (isAnchorLocked) return
         if (gameState.ultimateActive) return
         currentWeapon.use()
@@ -241,7 +253,7 @@ class Player(
     }
 
     fun takeDamage(amount: Int) {
-        if (state == PlayerState.DEAD) return
+        if (state == PlayerState.DEAD || state == PlayerState.VICTORY) return
         if (gameState.ultimateActive) return
         if (isAnchorLocked) return
         if (invulnerabilityTimer > 0f) return
@@ -489,7 +501,7 @@ class Player(
     }
 
     private fun updateState(deltaTime: Float, horizontalInput: Float) {
-        if (state == PlayerState.HURT || state == PlayerState.ATTACKING || state == PlayerState.DEAD) return
+        if (state == PlayerState.HURT || state == PlayerState.ATTACKING || state == PlayerState.DEAD || state == PlayerState.VICTORY) return
 
         state = when {
             !isGrounded && velocity.y < 0f -> {
