@@ -42,7 +42,7 @@ class GameState {
 
     var canDoubleJump = false
     var canJetpack = false
-    var canDash = false
+    var canDash by mutableStateOf(false)
     var canGroundPound = false
     var canHover = false
     var explosiveBlocks = false

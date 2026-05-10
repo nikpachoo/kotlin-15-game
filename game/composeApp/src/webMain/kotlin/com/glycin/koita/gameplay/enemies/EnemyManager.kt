@@ -7,7 +7,9 @@ import com.glycin.koita.gameplay.enemies.boss.Boss
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.util.SpriteSet
 import com.glycin.koita.world.World
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.math.abs
 
 class EnemyManager(
@@ -17,6 +19,7 @@ class EnemyManager(
     private val pickupManager: PickupManager,
 ) {
     private val enemies = mutableListOf<Enemy>()
+    private val spriteSet = SpriteSet()
     private var boss: Boss? = null
     private val activationRange = (GameSettings.BASE_LIGHT_RADIUS + GameSettings.FALL_OFF_DISTANCE) * 2
 
@@ -26,6 +29,7 @@ class EnemyManager(
     fun add(enemy: Enemy) {
         enemy.onKill = killHandler
         enemies.add(enemy)
+        spriteSet.add(enemy.spriteAnimator.sprite)
     }
 
     fun setBoss(boss: Boss?) {
@@ -77,6 +81,7 @@ class EnemyManager(
             val enemy = enemies[i]
             if (!enemy.isAlive) {
                 pickupManager.randomChanceSpawn(enemy.center, enemy.dropChance)
+                spriteSet.remove(enemy.spriteAnimator.sprite)
                 enemies.removeAt(i)
             }
         }
@@ -96,11 +101,11 @@ class EnemyManager(
 
     fun clearAll() {
         enemies.clear()
+        spriteSet.clear()
         boss = null
     }
 
-    //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
-    fun getDistinctSprites() = enemies.map { it.spriteAnimator.sprite }.distinct()
+    fun getDistinctSprites(): Set<DrawableResource> = spriteSet.distinct
 
     //TODO: Optimization, dont use .filter
     fun getEnemiesCollidingWith(pos: Vec2, width: Float, height: Float): List<Enemy> {

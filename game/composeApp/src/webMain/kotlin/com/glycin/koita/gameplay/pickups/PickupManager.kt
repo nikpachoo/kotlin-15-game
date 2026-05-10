@@ -8,7 +8,9 @@ import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.PhysicsConstants
+import com.glycin.koita.util.SpriteSet
 import com.glycin.koita.util.overlapsWith
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -21,6 +23,8 @@ class PickupManager(
 
     private val maxFallSpeed = 400f
     private val activePickups = mutableListOf<Pickup>()
+    private val spriteSet = SpriteSet()
+
     fun randomChanceSpawn(position: Vec2, dropChance: Float = 0.2f) {
         val chance = if (gameState.devMode) 1.0f else dropChance
         if (Random.nextFloat() > chance) return
@@ -28,7 +32,7 @@ class PickupManager(
     }
 
     fun spawnHealth(position: Vec2) {
-        activePickups.add(
+        addPickup(
             HealthPickup(
                 onPickup = { onPlayerMaxHealthIncrease?.invoke() },
                 position = position.copy(),
@@ -48,7 +52,12 @@ class PickupManager(
             else ->
                 HealthPickup(onPickup = { onPlayerMaxHealthIncrease?.invoke() }, position = pos)
         }
+        addPickup(pickup)
+    }
+
+    private fun addPickup(pickup: Pickup) {
         activePickups.add(pickup)
+        spriteSet.add(pickup.spriteAnimator.sprite)
     }
 
     fun update(deltaTime: Float, player: Player) {
@@ -71,15 +80,15 @@ class PickupManager(
             }
         }
 
-        activePickups.removeAll { pickup ->
+        for (i in activePickups.size - 1 downTo 0) {
+            val pickup = activePickups[i]
             if (player.overlapsWith(pickup.position, pickup.size, pickup.size)) {
                 pickup.onPickup()
                 gameState.pickupNotification = pickup.name
                 gameState.pickupCounts[pickup.name] = (gameState.pickupCounts[pickup.name] ?: 0) + 1
                 SoundManager.playOneShot(Sounds.POWERUP_PICKUP)
-                true
-            } else {
-                false
+                spriteSet.remove(pickup.spriteAnimator.sprite)
+                activePickups.removeAt(i)
             }
         }
     }
@@ -93,6 +102,5 @@ class PickupManager(
         }
     }
 
-    //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
-    fun getDistinctSprites() = activePickups.map { it.spriteAnimator.sprite }.distinct()
+    fun getDistinctSprites(): Set<DrawableResource> = spriteSet.distinct
 }

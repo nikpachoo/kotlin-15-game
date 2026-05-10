@@ -7,6 +7,7 @@ import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.util.SpriteSet
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
@@ -23,10 +24,13 @@ class ShrineManager(
 ) {
     private val shrines = mutableListOf<Shrine>()
     private val orbs = mutableListOf<UnlockOrb>()
+    private val shrineSprites = SpriteSet()
+    private val orbSprites = SpriteSet()
     private var nextGroupId = 0
 
     fun add(shrine: Shrine) {
         shrines.add(shrine)
+        shrineSprites.add(shrine.spriteAnimator.sprite)
     }
 
     fun getShrinesInRange(position: Vec2, range: Float): List<Shrine> {
@@ -38,14 +42,9 @@ class ShrineManager(
 
     fun getOrbs() = orbs
 
-    //TODO: Called per-frame by WorldRenderer. Cache a Set<DrawableResource> updated only on add/remove instead of allocating list+set+list every call.
-    fun getDistinctSprites(): List<DrawableResource> {
-        return shrines.map { it.spriteAnimator.sprite }.distinct()
-    }
+    fun getDistinctSprites(): Set<DrawableResource> = shrineSprites.distinct
 
-    fun getDistinctOrbIconSprites(): List<DrawableResource> {
-        return orbs.map { it.unlock.icon.sheet.sprite }.distinct()
-    }
+    fun getDistinctOrbIconSprites(): Set<DrawableResource> = orbSprites.distinct
 
     fun update(deltaTime: Float) {
         shrines.firstOrNull { abs(it.position.y - player.position.y) <= it.height + 25 }?.let { shrineInRange ->
@@ -60,6 +59,7 @@ class ShrineManager(
             if (shrineInRange.isActivated) {
                 explode(shrineInRange)
                 spawnOrbs(shrineInRange)
+                shrineSprites.remove(shrineInRange.spriteAnimator.sprite)
                 shrines.remove(shrineInRange)
             }
         }
@@ -70,7 +70,14 @@ class ShrineManager(
         if (pickedOrb != null) {
             upgradeRepository.upgrade(pickedOrb.unlock.id)
             gameState.pickupNotification = "Unlocked ${pickedOrb.unlock.name}!"
-            orbs.removeAll { it.groupId == pickedOrb.groupId }
+            val groupId = pickedOrb.groupId
+            for (i in orbs.size - 1 downTo 0) {
+                val orb = orbs[i]
+                if (orb.groupId == groupId) {
+                    orbSprites.remove(orb.unlock.icon.sheet.sprite)
+                    orbs.removeAt(i)
+                }
+            }
             SoundManager.playOneShot(Sounds.UPGRADE_UNLOCK)
         }
     }
@@ -100,14 +107,14 @@ class ShrineManager(
             val t = if (choices.size > 1) (2f * index / (choices.size - 1) - 1f) else 0f
             val targetY = baseY - arcHeight * (1f - t * t)
 
-            orbs.add(
-                UnlockOrb(
-                    unlock = upgrade,
-                    startPosition = Vec2(origin.x, origin.y),
-                    targetPosition = Vec2(targetX, targetY),
-                    groupId = groupId,
-                )
+            val orb = UnlockOrb(
+                unlock = upgrade,
+                startPosition = Vec2(origin.x, origin.y),
+                targetPosition = Vec2(targetX, targetY),
+                groupId = groupId,
             )
+            orbs.add(orb)
+            orbSprites.add(orb.unlock.icon.sheet.sprite)
         }
     }
 
@@ -129,14 +136,14 @@ class ShrineManager(
             val targetX = shrineCenter.x + directionX * spreadDistance
             val targetY = shrineCenter.y - verticalOffset + index * verticalSpacing
 
-            orbs.add(
-                UnlockOrb(
-                    unlock = upgrade,
-                    startPosition = Vec2(shrineCenter.x, shrineCenter.y),
-                    targetPosition = Vec2(targetX, targetY),
-                    groupId = groupId,
-                )
+            val orb = UnlockOrb(
+                unlock = upgrade,
+                startPosition = Vec2(shrineCenter.x, shrineCenter.y),
+                targetPosition = Vec2(targetX, targetY),
+                groupId = groupId,
             )
+            orbs.add(orb)
+            orbSprites.add(orb.unlock.icon.sheet.sprite)
         }
     }
 }
