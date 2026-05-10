@@ -84,8 +84,6 @@ fun MovementThumbstick(
             set(Key.Spacebar, false)
             set(Key.S, false)
             set(Key.ShiftLeft, false)
-            tapState.lastLeftTapMs = 0L
-            tapState.lastRightTapMs = 0L
             tapState.inLeftZone = false
             tapState.inRightZone = false
         },
