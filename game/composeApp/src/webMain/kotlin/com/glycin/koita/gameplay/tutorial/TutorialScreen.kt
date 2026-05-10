@@ -26,6 +26,7 @@ import com.glycin.koita.audio.Sounds
 import com.glycin.koita.composables.GameLoop
 import com.glycin.koita.composables.UiRenderer
 import com.glycin.koita.composables.WorldRenderer
+import com.glycin.koita.composables.isCompact
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
@@ -146,7 +147,8 @@ fun TutorialScreen(appState: GameState) {
     val parallaxBackground = remember { ParallaxBackground(camera = camera) }
     val fogOfWar = remember { FogOfWar(camera, player, gameState) }
 
-    val tutorialState = remember { TutorialState(totalSteps = TutorialDirector.STEP_COUNT) }
+    val initialTutorialFlow: TutorialFlow = if (isCompact()) TouchTutorialFlow else KeyboardTutorialFlow
+    val tutorialState = remember { TutorialState(totalSteps = initialTutorialFlow.tutorialSteps.size) }
     val tutorialDirector = remember {
         TutorialDirector(
             context = StepContext(
@@ -162,6 +164,7 @@ fun TutorialScreen(appState: GameState) {
                 upgradeRepository = upgradeRepository,
             ),
             state = tutorialState,
+            flow = initialTutorialFlow,
         )
     }
 
@@ -235,7 +238,7 @@ fun TutorialScreen(appState: GameState) {
 
                 frameCount++
 
-                if (player.health == 0) {
+                if (player.isDead) {
                     SoundManager.playOneShot(Sounds.GAME_OVER)
                     appState.currentScreen = Screen.MAIN_MENU
                 }

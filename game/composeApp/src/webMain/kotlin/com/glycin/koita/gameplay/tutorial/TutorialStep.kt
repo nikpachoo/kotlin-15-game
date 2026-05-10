@@ -105,7 +105,7 @@ abstract class MineRectStep(prompt: String) : TutorialStep(prompt) {
     }
 }
 
-class MoveStep : TutorialStep("Use WASD to move") {
+class MoveStep(prompt: String) : TutorialStep(prompt) {
     private var startX = 0f
 
     override fun setup(ctx: StepContext) {
@@ -116,7 +116,7 @@ class MoveStep : TutorialStep("Use WASD to move") {
         abs(ctx.player.position.x - startX) >= TutorialConstants.MOVE_THRESHOLD_PX
 }
 
-class JumpStep : TutorialStep("Press SPACE to jump") {
+class JumpStep(prompt: String) : TutorialStep(prompt) {
     private var startY = 0f
 
     override fun setup(ctx: StepContext) {
@@ -127,11 +127,9 @@ class JumpStep : TutorialStep("Press SPACE to jump") {
         startY - ctx.player.position.y >= TutorialConstants.JUMP_THRESHOLD_PX
 }
 
-class DroneIntroStep : ContinueOnEnterStep(
-    "The little drone floating beside you is your companion. It carries all of Kodee's tools and switches between them as you equip them.",
-)
+class DroneIntroStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class EquipPickaxeStep : TutorialStep("Press 1 to switch your drone to mining mode") {
+class EquipPickaxeStep(prompt: String) : TutorialStep(prompt) {
     override fun setup(ctx: StepContext) {
         ctx.player.equip(HOTKEY_HAMMER)
     }
@@ -140,12 +138,12 @@ class EquipPickaxeStep : TutorialStep("Press 1 to switch your drone to mining mo
         ctx.gameState.selectedHotkeyIndex == HOTKEY_PICKAXE
 }
 
-class MineBlockStep : MineRectStep("Hold left click on the block to mine it") {
+class MineBlockStep(prompt: String) : MineRectStep(prompt) {
     override fun placeTarget(ctx: StepContext): TileRect =
         TutorialWorldBuilder.placeMiningTarget(ctx.world, ctx.player)
 }
 
-class DigUpStep : TutorialStep("Dig up to reach the surface. That is your goal in the game") {
+class DigUpStep(prompt: String) : TutorialStep(prompt) {
     private var startY = 0f
 
     override fun setup(ctx: StepContext) {
@@ -162,28 +160,26 @@ class DigUpStep : TutorialStep("Dig up to reach the surface. That is your goal i
     }
 }
 
-class ShowResourcesStep : ContinueOnEnterStep(
-    "Look at the top-right. Your score and materials updated when you mined.",
-)
+class ShowResourcesStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class EquipWeaponStep : TutorialStep("Press 2 to switch your drone to attack mode") {
+class EquipWeaponStep(prompt: String) : TutorialStep(prompt) {
     override fun isComplete(ctx: StepContext): Boolean =
         ctx.gameState.selectedHotkeyIndex == HOTKEY_WEAPON
 }
 
-class ShootWeaponStep : TutorialStep("Left click to shoot your weapon") {
+class ShootWeaponStep(prompt: String) : TutorialStep(prompt) {
     override fun isComplete(ctx: StepContext): Boolean {
         val attackMode = ctx.player.currentWeapon as? AttackMode ?: return false
         return attackMode.getActiveWeapon().isNotEmpty()
     }
 }
 
-class EquipHammerStep : TutorialStep("Press 3 to switch your drone to build mode") {
+class EquipHammerStep(prompt: String) : TutorialStep(prompt) {
     override fun isComplete(ctx: StepContext): Boolean =
         ctx.gameState.selectedHotkeyIndex == HOTKEY_HAMMER
 }
 
-class PlaceBlockStep : TutorialStep("Left click to place a block when the indicator is green. This costs some of your mined materials.") {
+class PlaceBlockStep(prompt: String) : TutorialStep(prompt) {
     private var snapshotCollectedSimple = 0
 
     override fun setup(ctx: StepContext) {
@@ -198,7 +194,7 @@ class PlaceBlockStep : TutorialStep("Left click to place a block when the indica
         ctx.gameState.collectedSimple < snapshotCollectedSimple
 }
 
-class LavaJumpStep : TutorialStep("Jump in the lava until it damages you") {
+class LavaJumpStep(prompt: String) : TutorialStep(prompt) {
     private var snapshotHealth = 0
     private var lavaPoolLayout: LavaPoolLayout? = null
 
@@ -216,11 +212,9 @@ class LavaJumpStep : TutorialStep("Jump in the lava until it damages you") {
     }
 }
 
-class ShowHealthStep : ContinueOnEnterStep(
-    "You were hurt. On the top-left you can see your health.",
-)
+class ShowHealthStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class KillSlimeStep : TutorialStep("Defeat the slime") {
+class KillSlimeStep(prompt: String) : TutorialStep(prompt) {
     private var slime: Slime? = null
 
     override fun setup(ctx: StepContext) {
@@ -237,14 +231,14 @@ class KillSlimeStep : TutorialStep("Defeat the slime") {
     override fun isComplete(ctx: StepContext): Boolean = slime?.isAlive == false
 }
 
-class MineGoldStep : MineRectStep("Mine the gold ore") {
+class MineGoldStep(prompt: String) : MineRectStep(prompt) {
     override fun placeTarget(ctx: StepContext): TileRect {
         ctx.player.equip(HOTKEY_PICKAXE)
         return TutorialWorldBuilder.placeGoldOreCluster(ctx.world, ctx.player)
     }
 }
 
-class HealStep : TutorialStep("Press E to heal. This costs 100 ore, and is doubled every time you heal.") {
+class HealStep(prompt: String) : TutorialStep(prompt) {
     private var snapshotHealth = 0
 
     override fun setup(ctx: StepContext) {
@@ -261,7 +255,7 @@ class HealStep : TutorialStep("Press E to heal. This costs 100 ore, and is doubl
         ctx.player.health > snapshotHealth
 }
 
-class PickupHeartStep : TutorialStep("Mine through the stone block to reach the heart pickup") {
+class PickupHeartStep(prompt: String) : TutorialStep(prompt) {
     private var snapshotMaxHealth = 0
 
     override fun setup(ctx: StepContext) {
@@ -275,11 +269,9 @@ class PickupHeartStep : TutorialStep("Mine through the stone block to reach the 
         ctx.player.maxHealth > snapshotMaxHealth
 }
 
-class PickupInfoStep : ContinueOnEnterStep(
-    "That pickup increased your max health! Different pickups have different effects.",
-)
+class PickupInfoStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class ChargeShrineStep : TutorialStep("Stand on the shrine for 3 seconds to charge it") {
+class ChargeShrineStep(prompt: String) : TutorialStep(prompt) {
     private var shrine: Shrine? = null
 
     override fun setup(ctx: StepContext) {
@@ -290,7 +282,7 @@ class ChargeShrineStep : TutorialStep("Stand on the shrine for 3 seconds to char
     override fun isComplete(ctx: StepContext): Boolean = shrine?.isActivated == true
 }
 
-class PickUpgradeStep : TutorialStep("Now you can see an upgrade. Walk into the orb to unlock it") {
+class PickUpgradeStep(prompt: String) : TutorialStep(prompt) {
     private var snapshotUnlockedCount = 0
 
     override fun setup(ctx: StepContext) {
@@ -301,22 +293,14 @@ class PickUpgradeStep : TutorialStep("Now you can see an upgrade. Walk into the 
         ctx.upgradeRepository.unlockedCount() > snapshotUnlockedCount
 }
 
-class UpgradeInfoStep : ContinueOnEnterStep(
-    "You unlocked your first upgrade! Red upgrades unlock new weapons, blue upgrades unlock movement options, and green upgrades unlock build options.",
-)
+class UpgradeInfoStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class WeaponSwitchInfoStep : ContinueOnEnterStep(
-    "You can change your weapon by clicking the button on the right side of the screen under WEAPON. The same works for new BLOCKS once you unlock them.",
-)
+class WeaponSwitchInfoStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class UpgradeCombinationInfoStep : ContinueOnEnterStep(
-    "Combining different kinds of upgrades can have unexpected and fun results!",
-)
+class UpgradeCombinationInfoStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class PortalGoalStep : ContinueOnEnterStep(
-    "Your goal is to help Kodee reach the top of the world and pass through the portal there.",
-)
+class PortalGoalStep(prompt: String) : ContinueOnEnterStep(prompt)
 
-class CompleteTutorialStep : TutorialStep("Press ESC to complete the tutorial") {
+class CompleteTutorialStep(prompt: String) : TutorialStep(prompt) {
     override fun isComplete(ctx: StepContext): Boolean = false
 }

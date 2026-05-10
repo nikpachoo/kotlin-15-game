@@ -3,41 +3,13 @@ package com.glycin.koita.gameplay.tutorial
 class TutorialDirector(
     private val context: StepContext,
     private val state: TutorialState,
+    flow: TutorialFlow,
 ) {
-    private val steps: List<TutorialStep> = listOf(
-        MoveStep(),
-        JumpStep(),
-        DroneIntroStep(),
-        EquipPickaxeStep(),
-        MineBlockStep(),
-        ShowResourcesStep(),
-        EquipWeaponStep(),
-        ShootWeaponStep(),
-        EquipHammerStep(),
-        PlaceBlockStep(),
-        LavaJumpStep(),
-        ShowHealthStep(),
-        KillSlimeStep(),
-        MineGoldStep(),
-        HealStep(),
-        PickupHeartStep(),
-        PickupInfoStep(),
-        ChargeShrineStep(),
-        PickUpgradeStep(),
-        UpgradeInfoStep(),
-        WeaponSwitchInfoStep(),
-        UpgradeCombinationInfoStep(),
-        PortalGoalStep(),
-        DigUpStep(),
-        CompleteTutorialStep(),
-    )
+    private val steps: List<TutorialStep> = flow.tutorialSteps
 
     private var activeStep: TutorialStep? = null
 
     init {
-        check(steps.size == state.totalSteps) {
-            "TutorialState.totalSteps (${state.totalSteps}) must match steps.size (${steps.size})"
-        }
         loadCurrentStep()
     }
 
@@ -71,9 +43,5 @@ class TutorialDirector(
         state.awaitingContinue = step.awaitsContinue
         state.continueRequested = false
         step.setup(context)
-    }
-
-    companion object {
-        const val STEP_COUNT = 25
     }
 }
