@@ -18,6 +18,7 @@ enum class Screen {
     TUTORIAL,
     OPTIONS,
     HIGHSCORES,
+    ATLAS,
     GAME_OVER,
     GAME_WON,
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.glycin.koita.composables.AtlasScreen
 import com.glycin.koita.composables.GameOverScreen
 import com.glycin.koita.composables.GameScreen
 import com.glycin.koita.composables.GameWonScreen
@@ -30,6 +31,7 @@ fun App() {
                 Screen.TUTORIAL -> TutorialScreen(gameState)
                 Screen.OPTIONS -> OptionsScreen(gameState)
                 Screen.HIGHSCORES -> HighscoresScreen(gameState)
+                Screen.ATLAS -> AtlasScreen(gameState)
                 Screen.GAME -> GameScreen(gameState)
                 Screen.GAME_OVER -> GameOverScreen(gameState)
                 Screen.GAME_WON -> GameWonScreen(gameState)

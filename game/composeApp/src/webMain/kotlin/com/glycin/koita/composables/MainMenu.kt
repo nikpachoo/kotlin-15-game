@@ -86,6 +86,7 @@ private fun MainMenuPanel(gameState: GameState) {
         }
         MenuItem("Settings") { gameState.currentScreen = Screen.OPTIONS }
         MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
+        MenuItem("Atlas") { gameState.currentScreen = Screen.ATLAS }
 
         Spacer(modifier = Modifier.size(compactOr(16.dp, 32.dp)))
     }

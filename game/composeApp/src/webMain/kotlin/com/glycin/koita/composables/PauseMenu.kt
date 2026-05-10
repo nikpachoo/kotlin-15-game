@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.audio.SoundManager
-import com.glycin.koita.core.SpriteFrame
-import com.glycin.koita.core.drawSpriteFrame
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.gameplay.pickups.PickupCatalog
@@ -279,7 +277,7 @@ private fun UnlockCard(unlock: Unlock) {
         verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        UpgradeIcon(unlock.icon)
+        SpriteFrameIcon(unlock.icon, size = if (compact) 24.dp else 36.dp)
         Text(
             text = unlock.name,
             fontFamily = pixelFont(),
@@ -291,19 +289,6 @@ private fun UnlockCard(unlock: Unlock) {
             fontFamily = pixelFont(),
             fontSize = if (compact) 7.sp else 10.sp,
             color = Color.LightGray,
-        )
-    }
-}
-
-@Composable
-private fun UpgradeIcon(icon: SpriteFrame) {
-    val image = imageResource(icon.sheet.sprite)
-    Canvas(modifier = Modifier.size(if (isCompact()) 24.dp else 36.dp)) {
-        drawSpriteFrame(
-            image = image,
-            frame = icon,
-            dstOffset = IntOffset.Zero,
-            dstSize = IntSize(size.width.toInt(), size.height.toInt()),
         )
     }
 }

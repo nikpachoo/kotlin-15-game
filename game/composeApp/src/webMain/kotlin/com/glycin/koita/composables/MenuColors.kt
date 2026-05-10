@@ -40,6 +40,7 @@ internal object MenuColors {
     val CARD_MOVEMENT_BORDER = Color(0xFF8C83FF)
     val CARD_BUILD_BORDER = Color(0xFF8CFF83)
     val CARD_WEAPON_BORDER = Color(0xFFFF8C63)
+    val ATLAS_TAB_INACTIVE = Color.White.copy(alpha = 0.5f)
 
     fun cardBorder(group: UnlockGroup): Color = when (group) {
         UnlockGroup.MOVEMENT -> CARD_MOVEMENT_BORDER
