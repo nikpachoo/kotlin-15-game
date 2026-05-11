@@ -34,6 +34,12 @@ private fun sanitizeName(input: String): String =
         .take(NAME_MAX_LENGTH)
 
 @Composable
+private fun fieldWidth() = compactOr(240.dp, 320.dp)
+
+@Composable
+private fun fieldFontSize() = compactOr(12.sp, 16.sp)
+
+@Composable
 fun HighscoreSubmission(
     score: Int,
     onSubmitted: (HighscoresResponse) -> Unit,
@@ -44,10 +50,6 @@ fun HighscoreSubmission(
     var hasError by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    val compact = isCompact()
-    val fieldFontSize = if (compact) 12.sp else 16.sp
-    val fieldWidth = if (compact) 240.dp else 320.dp
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -55,8 +57,8 @@ fun HighscoreSubmission(
         Text(
             text = "FINAL SCORE",
             fontFamily = pixelFont(),
-            fontSize = if (compact) 12.sp else 18.sp,
-            color = MenuColors.SECTION_TITLE,
+            fontSize = compactOr(12.sp, 18.sp),
+            color = Color.White,
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -64,11 +66,11 @@ fun HighscoreSubmission(
         Text(
             text = score.formatScore(),
             fontFamily = pixelFont(),
-            fontSize = if (compact) 22.sp else 40.sp,
+            fontSize = compactOr(22.sp, 40.sp),
             color = Color.White,
         )
 
-        Spacer(modifier = Modifier.height(if (compact) 8.dp else 20.dp))
+        Spacer(modifier = Modifier.height(compactOr(8.dp, 20.dp)))
 
         SubmissionField(
             value = name,
@@ -77,7 +79,7 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(if (compact) 4.dp else 8.dp))
+        Spacer(modifier = Modifier.height(compactOr(4.dp, 8.dp)))
 
         SubmissionField(
             value = email,
@@ -88,25 +90,25 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(if (compact) 8.dp else 16.dp))
+        Spacer(modifier = Modifier.height(compactOr(8.dp, 16.dp)))
 
         when {
             hasError -> Text(
                 text = "Could not submit score",
                 fontFamily = pixelFont(),
-                fontSize = fieldFontSize,
-                color = MenuColors.ERROR_TEXT,
+                fontSize = fieldFontSize(),
+                color = Color.White,
             )
             submitting -> Text(
                 text = "Submitting...",
                 fontFamily = pixelFont(),
-                fontSize = fieldFontSize,
-                color = Color.LightGray,
+                fontSize = fieldFontSize(),
+                color = Color.White,
             )
-            else -> Spacer(modifier = Modifier.height(if (compact) 12.dp else 20.dp))
+            else -> Spacer(modifier = Modifier.height(compactOr(12.dp, 20.dp)))
         }
 
-        Spacer(modifier = Modifier.height(if (compact) 6.dp else 12.dp))
+        Spacer(modifier = Modifier.height(compactOr(6.dp, 12.dp)))
 
         MenuOutlinedButton(
             text = "Submit",
@@ -131,7 +133,7 @@ fun HighscoreSubmission(
                 }
             },
             enabled = name.trim().isNotEmpty() && !submitting,
-            width = fieldWidth,
+            width = fieldWidth(),
         )
     }
 }
@@ -143,9 +145,7 @@ private fun SubmissionField(
     placeholder: String,
     enabled: Boolean,
 ) {
-    val compact = isCompact()
-    val fontSize = if (compact) 12.sp else 16.sp
-    val width = if (compact) 240.dp else 320.dp
+    val fontSize = fieldFontSize()
 
     OutlinedTextField(
         value = value,
@@ -165,17 +165,17 @@ private fun SubmissionField(
                 color = Color.LightGray,
             )
         },
-        modifier = Modifier.width(width),
+        modifier = Modifier.width(fieldWidth()),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MenuColors.INPUT_BACKGROUND,
-            unfocusedContainerColor = MenuColors.INPUT_BACKGROUND,
-            disabledContainerColor = MenuColors.INPUT_BACKGROUND,
+            focusedContainerColor = MenuColors.INPUT_FIELD_FILL,
+            unfocusedContainerColor = MenuColors.INPUT_FIELD_FILL,
+            disabledContainerColor = MenuColors.INPUT_FIELD_FILL,
             focusedBorderColor = Color.White,
-            unfocusedBorderColor = Color.Gray,
-            disabledBorderColor = Color.DarkGray,
+            unfocusedBorderColor = Color.White,
+            disabledBorderColor = Color.White,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
-            disabledTextColor = Color.LightGray,
+            disabledTextColor = Color.White,
             cursorColor = Color.White,
         ),
     )

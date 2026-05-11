@@ -634,6 +634,7 @@ class Boss(
         updateBossNameKeywords()
     }
 
+    // This will overflow the screen, which looks weird, but is very funny
     private fun updateBossNameKeywords() {
         val missing = (maxHealth - health).coerceAtLeast(0f)
         val target = (missing / (maxHealth * 0.1f)).toInt().coerceAtMost(shuffledKeywords.size)

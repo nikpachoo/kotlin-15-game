@@ -10,10 +10,8 @@ import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,24 +55,10 @@ private fun MainMenuPanel(gameState: GameState) {
             .width(compactOr(320.dp, 480.dp))
             .background(MenuColors.SIDEBAR),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = compactOr(24.dp, 48.dp),
-                    vertical = compactOr(20.dp, 36.dp),
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            KotlinLogo(boxSize = compactOr(32.dp, 64.dp))
-            Text(
-                text = "Game",
-                fontFamily = pixelFont(),
-                fontSize = compactOr(28.sp, 56.sp),
-                color = Color.White,
-            )
-        }
+        MenuHeader(
+            title = "Game",
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         MenuItem("Start") {
             if (compact) requestBrowserFullscreen()

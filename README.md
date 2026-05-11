@@ -17,7 +17,7 @@ cd game
 ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
 ```
 
-See [`game/README.md`](./game/README.md) for more build targets and [`game/CLAUDE.md`](./game/CLAUDE.md) for architecture details.
+See [`game/README.md`](./game/README.md) for more build targets.
 
 ### [`highscore-server/`](./highscore-server) — KGame Server
 
@@ -31,7 +31,7 @@ cd highscore-server
 ./gradlew test
 ```
 
-See [`highscore-server/CLAUDE.md`](./highscore-server/CLAUDE.md) for API and architecture details. A `Dockerfile` and `docker-compose.yml` are also provided.
+A `Dockerfile` and `docker-compose.yml` are also provided.
 
 ## How To Play
 
