@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.glycin.koita.composables.MenuColors
-import com.glycin.koita.composables.isCompact
+import com.glycin.koita.ui_composables.MenuColors
+import com.glycin.koita.ui_composables.isCompact
 import com.glycin.koita.core.Input
-import com.glycin.koita.ui.ArrowChip
-import com.glycin.koita.ui.HudColors
-import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.ui_composables.input.ArrowChip
+import com.glycin.koita.ui_composables.HudColors
+import com.glycin.koita.ui_composables.pixelFont
 
 private val BAR_CORNER_RADIUS = 2.dp
 private val BAR_BORDER = 2.dp

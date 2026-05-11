@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
-import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.ui_composables.pixelFont
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player

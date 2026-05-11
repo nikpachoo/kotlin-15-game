@@ -41,7 +41,10 @@ import com.glycin.koita.gameplay.Screen
 import com.glycin.koita.gameplay.pickups.PickupCatalog
 import com.glycin.koita.gameplay.upgrades.Unlock
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
-import com.glycin.koita.ui.pixelFont
+import com.glycin.koita.ui_composables.MenuColors
+import com.glycin.koita.ui_composables.SpriteFrameIcon
+import com.glycin.koita.ui_composables.isCompact
+import com.glycin.koita.ui_composables.pixelFont
 import org.jetbrains.compose.resources.imageResource
 
 internal val sliderColors

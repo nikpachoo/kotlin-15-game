@@ -24,9 +24,9 @@ import androidx.compose.ui.layout.onSizeChanged
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.composables.GameLoop
-import com.glycin.koita.composables.UiRenderer
+import com.glycin.koita.ui_composables.UiRenderer
 import com.glycin.koita.composables.WorldRenderer
-import com.glycin.koita.composables.isCompact
+import com.glycin.koita.ui_composables.isCompact
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player

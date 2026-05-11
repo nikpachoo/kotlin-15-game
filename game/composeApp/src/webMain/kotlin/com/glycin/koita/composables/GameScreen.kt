@@ -37,6 +37,8 @@ import com.glycin.koita.physics.CollectibleSystem
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.FluidSimulator
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.ui_composables.UiRenderer
+import com.glycin.koita.ui_composables.isCompact
 import com.glycin.koita.world.ParallaxBackground
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
