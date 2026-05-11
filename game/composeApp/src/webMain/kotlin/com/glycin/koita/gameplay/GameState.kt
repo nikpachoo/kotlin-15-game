@@ -19,6 +19,7 @@ enum class Screen {
     OPTIONS,
     HIGHSCORES,
     ATLAS,
+    MODIFIERS,
     GAME_OVER,
     GAME_WON,
 }
@@ -59,7 +60,7 @@ class GameState {
     var scoreMultiplier by mutableStateOf(1)
 
     fun addScore(base: Int) {
-        score += base * scoreMultiplier
+        score += (base * scoreMultiplier * ModifierConfiguration.scoreMultiplier).toInt()
     }
 
     var pickupNotification by mutableStateOf<String?>(null)

@@ -69,6 +69,7 @@ private fun MainMenuPanel(gameState: GameState) {
             if (compact) requestBrowserFullscreen()
             gameState.currentScreen = Screen.GAME
         }
+        MenuItem("Modifiers") { gameState.currentScreen = Screen.MODIFIERS }
         MenuItem("How to Play") {
             if (compact) requestBrowserFullscreen()
             gameState.currentScreen = Screen.TUTORIAL

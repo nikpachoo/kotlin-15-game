@@ -12,6 +12,7 @@ import com.glycin.koita.audio.Sounds
 import com.glycin.koita.gameplay.weapon.Weapon
 import com.glycin.koita.gameplay.Drone
 import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.ModifierConfiguration
 import com.glycin.koita.gameplay.ResourceShield
 import com.glycin.koita.gameplay.modes.BuildMode
 import com.glycin.koita.gameplay.modes.MiningMode
@@ -107,6 +108,7 @@ class Player(
     }
 
     fun applyDigBoost(impactPoint: Vec2) {
+        if (ModifierConfiguration.noMiningBoost) return
         if (isAnchorLocked || isGrounded || isDashing || isGroundPounding) return
         if (impactPoint.y >= center.y) return
 
@@ -269,13 +271,18 @@ class Player(
     }
 
     val canHeal: Boolean by derivedStateOf {
-        healCooldownTimer <= 0f &&
+        !ModifierConfiguration.noHeal &&
+            healCooldownTimer <= 0f &&
             gameState.collectedRich >= gameState.nextHealCost &&
             health < maxHealth
     }
 
     fun heal() {
         when {
+            ModifierConfiguration.noHeal -> {
+                gameState.pickupNotification = "Na-uh"
+                return
+            }
             health >= maxHealth -> {
                 gameState.pickupNotification = "Already at full health"
                 return

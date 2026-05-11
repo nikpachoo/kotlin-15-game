@@ -13,6 +13,7 @@ import com.glycin.koita.ui_composables.main_menu.GameWonScreen
 import com.glycin.koita.ui_composables.main_menu.HighscoresScreen
 import com.glycin.koita.ui_composables.LocalLayoutMode
 import com.glycin.koita.ui_composables.main_menu.MainMenu
+import com.glycin.koita.ui_composables.main_menu.ModifierScreen
 import com.glycin.koita.ui_composables.main_menu.OptionsScreen
 import com.glycin.koita.ui_composables.layoutModeFor
 import com.glycin.koita.gameplay.GameState
@@ -32,6 +33,7 @@ fun App() {
                 Screen.OPTIONS -> OptionsScreen(gameState)
                 Screen.HIGHSCORES -> HighscoresScreen(gameState)
                 Screen.ATLAS -> AtlasScreen(gameState)
+                Screen.MODIFIERS -> ModifierScreen(gameState)
                 Screen.GAME -> GameScreen(gameState)
                 Screen.GAME_OVER -> GameOverScreen(gameState)
                 Screen.GAME_WON -> GameWonScreen(gameState)

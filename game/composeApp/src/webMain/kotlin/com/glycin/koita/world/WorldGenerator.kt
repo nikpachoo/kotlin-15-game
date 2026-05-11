@@ -11,6 +11,7 @@ import com.glycin.koita.gameplay.enemies.Slime
 import com.glycin.koita.gameplay.enemies.Spider
 import com.glycin.koita.gameplay.enemies.DashingPhantom
 import com.glycin.koita.gameplay.enemies.StoneGolem
+import com.glycin.koita.gameplay.ModifierConfiguration
 import com.glycin.koita.physics.FluidSimulator
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.gameplay.upgrades.Shrine
@@ -67,6 +68,7 @@ class WorldGenerator(
         val allLocations = mutableListOf<Vec2>()
         val airCheck: (Tile) -> Boolean = { !it.isSolid }
         val solidCheck: (Tile) -> Boolean = { it.isSolid && !it.isIndestructible }
+        val countMultiplier = if (ModifierConfiguration.doubleEnemies) 2 else 1
 
         for (zone in SpawnSettings.ALL_ZONES) {
             fun findAir(count: Int, width: Float, height: Float) = findSpawnLocations(
@@ -84,32 +86,32 @@ class WorldGenerator(
                 allLocations.addAll(locations)
             }
 
-            spawn(findAir(zone.wraith.random(), 64f, 64f)) { pos ->
+            spawn(findAir(zone.wraith.random() * countMultiplier, 64f, 64f)) { pos ->
                 enemyManager.add(Wraith(pos, collisionDetector, world, particleSystem))
             }
 
-            spawn(findAir(zone.hydra.random(), 32f, 32f)) { pos ->
+            spawn(findAir(zone.hydra.random() * countMultiplier, 32f, 32f)) { pos ->
                 val target = findPatrolTarget(pos, collisionDetector, 500f, 24f, 24f) ?: pos
                 enemyManager.add(Hydra(pos, collisionDetector, world, particleSystem, targetPosition = target))
             }
 
-            spawn(findAir(zone.slime.random(), 32f, 32f)) { pos ->
+            spawn(findAir(zone.slime.random() * countMultiplier, 32f, 32f)) { pos ->
                 enemyManager.add(Slime(pos, collisionDetector, world, particleSystem = particleSystem))
             }
 
-            spawn(findSolid(zone.stoneGolem.random(), 24f, 24f)) { pos ->
+            spawn(findSolid(zone.stoneGolem.random() * countMultiplier, 24f, 24f)) { pos ->
                 enemyManager.add(StoneGolem(pos, collisionDetector, world, player = player))
             }
 
-            spawn(findSolid(zone.spider.random(), 24f, 24f)) { pos ->
+            spawn(findSolid(zone.spider.random() * countMultiplier, 24f, 24f)) { pos ->
                 enemyManager.add(Spider(pos, collisionDetector, world))
             }
 
-            spawn(findAir(zone.phantom.random(), 32f, 32f)) { pos ->
+            spawn(findAir(zone.phantom.random() * countMultiplier, 32f, 32f)) { pos ->
                 enemyManager.add(DashingPhantom(pos, collisionDetector, world, player, particleSystem))
             }
 
-            spawn(findAir(zone.confuser.random(), 48f, 48f)) { pos ->
+            spawn(findAir(zone.confuser.random() * countMultiplier, 48f, 48f)) { pos ->
                 enemyManager.add(Confuser(pos, collisionDetector, world, player, fluidSimulator))
             }
         }
@@ -150,6 +152,8 @@ class WorldGenerator(
         minDistanceFromSpawn: Float = 500f,
         minDistanceBetweenShrines: Float = 800f,
     ) {
+        if (ModifierConfiguration.noShrines) return
+
         val shrineWidth = 32f
         val shrineHeight = 48f
         val carvePadding = 4
@@ -233,6 +237,8 @@ class WorldGenerator(
         minDistanceFromSpawn: Float = 300f,
         minDistanceBetweenPickups: Float = 200f,
     ) {
+        if (ModifierConfiguration.noPickups) return
+
         val pickupTiles = 32 / WorldConstants.TILE_SIZE
         val border = 1
         val minDistanceFromSpawnSq = minDistanceFromSpawn * minDistanceFromSpawn

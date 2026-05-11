@@ -20,6 +20,15 @@ fun Int.formatTime(): String {
     return "$minutes:$seconds"
 }
 
+fun Float.formatTwoDecimals(): String {
+    val cents = (this * 100f + if (this >= 0f) 0.5f else -0.5f).toInt()
+    val whole = cents / 100
+    val rawFrac = cents % 100
+    val absFrac = if (rawFrac < 0) -rawFrac else rawFrac
+    val frac = absFrac.toString().padStart(2, '0')
+    return "$whole.$frac"
+}
+
 private fun String.formatScoreDigits(): String {
     val negative = startsWith("-")
     val digits = if (negative) substring(1) else this

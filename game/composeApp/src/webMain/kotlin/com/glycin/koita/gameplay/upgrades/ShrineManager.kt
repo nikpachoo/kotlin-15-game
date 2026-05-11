@@ -5,6 +5,7 @@ import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Player
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.ModifierConfiguration
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.SpriteSet
@@ -92,6 +93,8 @@ class ShrineManager(
     }
 
     fun spawnFirstOrbs(origin: Vec2) {
+        if (ModifierConfiguration.noShrines) return
+
         val choices = upgradeRepository.getRandomAvailable(3)
         if (choices.isEmpty()) return
 
