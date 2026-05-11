@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Screen
-import com.glycin.koita.ui_composables.main_menu.HighscoreSubmission
 import com.glycin.koita.ui_composables.MenuColors
 import com.glycin.koita.ui_composables.MenuHeader
 import com.glycin.koita.ui_composables.MenuOutlinedButton
@@ -65,7 +64,7 @@ private fun EndScreen(
         MenuHeader(
             title = title,
             titleColor = titleColor,
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .width(compactOr(360.dp, 640.dp))
                 .background(MenuColors.SIDEBAR),
             horizontalArrangement = Arrangement.spacedBy(
@@ -74,7 +73,7 @@ private fun EndScreen(
             ),
         )
 
-        Spacer(modifier = Modifier.Companion.height(compactOr(16.dp, 28.dp)))
+        Spacer(modifier = Modifier.height(compactOr(16.dp, 28.dp)))
 
         EndScreenCard(
             gameState = gameState,
@@ -110,7 +109,7 @@ private fun EndScreenCard(
             CardSubtitle(text = extraNote)
         }
 
-        Spacer(modifier = Modifier.Companion.height(compactOr(12.dp, 24.dp)))
+        Spacer(modifier = Modifier.height(compactOr(12.dp, 24.dp)))
 
         HighscoreSubmission(
             score = gameState.score,
@@ -120,7 +119,7 @@ private fun EndScreenCard(
             },
         )
 
-        Spacer(modifier = Modifier.Companion.height(compactOr(10.dp, 20.dp)))
+        Spacer(modifier = Modifier.height(compactOr(10.dp, 20.dp)))
 
         MenuOutlinedButton(
             text = "Main Menu",

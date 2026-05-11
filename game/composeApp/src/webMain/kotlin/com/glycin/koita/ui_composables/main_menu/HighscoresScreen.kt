@@ -272,7 +272,7 @@ private fun YouPill() {
         fontFamily = pixelFont(),
         fontSize = compactOr(10.sp, 14.sp),
         color = Color.White,
-        modifier = Modifier.Companion
+        modifier = Modifier
             .background(MenuColors.YOU_ACCENT)
             .padding(horizontal = compactOr(6.dp, 8.dp), vertical = compactOr(2.dp, 4.dp)),
     )

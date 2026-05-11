@@ -29,14 +29,6 @@ class DroneAnimator {
         totalSprites = 31,
         frameDuration = 0.5f,
     )
-
-    companion object {
-        const val FRAME_SIZE = 64
-        const val MINING_ICON_FRAME = 21
-        const val ATTACK_ICON_FRAME = 6
-        const val BUILD_ICON_FRAME = 18
-    }
-
     val sprite get() = spriteAnimator.sprite
     val srcX get() = spriteAnimator.srcX
     val srcY get() = spriteAnimator.srcY

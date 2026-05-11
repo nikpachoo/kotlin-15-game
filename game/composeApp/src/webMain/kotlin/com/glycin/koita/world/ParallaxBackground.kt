@@ -87,7 +87,7 @@ class ParallaxBackground(
                 if (chunkY < -1 || chunkY > worldMaxChunkY + 1) continue
 
                 for (chunkX in startChunkX..endChunkX) {
-                    if (chunkX < 0 || chunkX >= worldMaxChunkX) continue
+                    if (chunkX !in 0..<worldMaxChunkX) continue
 
                     val chunkBitmap = generateChunk(chunkX, chunkY)
 

@@ -12,7 +12,6 @@ import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.null_phantom_sheet
-import koita.composeapp.generated.resources.wraith_sheet
 import kotlin.random.Random
 
 class DashingPhantom(

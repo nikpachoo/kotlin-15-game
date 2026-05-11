@@ -158,7 +158,7 @@ private fun AtlasTabButton(tab: AtlasTab, active: Boolean, onClick: () -> Unit) 
             color = if (active) Color.White else MenuColors.ATLAS_TAB_INACTIVE,
         )
         Box(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .width(compactOr(48.dp, 72.dp))
                 .height(2.dp)
                 .background(if (active) Color.White else Color.Transparent),

@@ -6,16 +6,12 @@ import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.enemies.boss.Boss
 import com.glycin.koita.gameplay.pickups.PickupManager
 import com.glycin.koita.physics.CollisionDetector
-import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.SpriteSet
-import com.glycin.koita.world.World
 import org.jetbrains.compose.resources.DrawableResource
 import kotlin.math.abs
 
 class EnemyManager(
     private val collisionDetector: CollisionDetector,
-    private val world: World,
-    private val particleSystem: ParticleSystem,
     private val pickupManager: PickupManager,
 ) {
     private val enemies = mutableListOf<Enemy>()

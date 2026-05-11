@@ -9,7 +9,6 @@ import koita.composeapp.generated.resources.upgrade_icons_sheet
 
 class UpgradeRepository(
     private val unlocks: List<Unlock>,
-    private val gameState: GameState,
 ) {
     var onUpgradeCallback: (() -> Unit)? = null
     private val unlocked = mutableSetOf<UnlockId>()
@@ -188,7 +187,6 @@ class UpgradeRepository(
                         onUnlock = { gameState.resourceShield = true }
                     ),
                 ),
-                gameState
             )
         }
     }

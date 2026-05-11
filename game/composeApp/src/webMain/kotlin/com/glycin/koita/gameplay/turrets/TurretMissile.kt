@@ -5,7 +5,6 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.util.isOutOfWorldBounds
-import com.glycin.koita.world.isOutOfWorldBounds
 
 class TurretMissile(
     position: Vec2,

@@ -82,7 +82,7 @@ fun TutorialScreen(appState: GameState) {
 
     val pickupManager = remember { PickupManager(gameState, collisionDetector) }
     val enemyManager = remember {
-        EnemyManager(collisionDetector, world, particleSystem, pickupManager)
+        EnemyManager(collisionDetector, pickupManager)
     }
     val turretManager = remember { TurretManager(enemyManager, collisionDetector, gameState) }
 

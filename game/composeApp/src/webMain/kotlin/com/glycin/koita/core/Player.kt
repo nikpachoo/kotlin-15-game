@@ -25,7 +25,6 @@ import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
-import koita.composeapp.generated.resources.Res
 
 private const val SURFACE_MUSIC_TRIGGER_Y = WorldConstants.WORLD_HEIGHT_PIXELS * 0.35f
 
@@ -42,7 +41,7 @@ class Player(
     private val particleSystem: ParticleSystem,
     private val enemyManager: EnemyManager,
     private val world: World,
-    private val input: Input,
+    input: Input,
 ) {
     private val keyMap = input.keyMap
     private val mouse = input.mouse

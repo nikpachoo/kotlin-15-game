@@ -22,6 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.rest.ApiClient
 import com.glycin.koita.rest.HighscoresResponse
+import com.glycin.koita.ui_composables.MenuColors
+import com.glycin.koita.ui_composables.MenuOutlinedButton
+import com.glycin.koita.ui_composables.compactOr
+import com.glycin.koita.ui_composables.pixelFont
 import com.glycin.koita.util.formatScore
 import kotlinx.coroutines.launch
 
@@ -33,10 +37,10 @@ private fun sanitizeName(input: String): String =
         .take(NAME_MAX_LENGTH)
 
 @Composable
-private fun fieldWidth() = _root_ide_package_.com.glycin.koita.ui_composables.compactOr(240.dp, 320.dp)
+private fun fieldWidth() = compactOr(240.dp, 320.dp)
 
 @Composable
-private fun fieldFontSize() = _root_ide_package_.com.glycin.koita.ui_composables.compactOr(12.sp, 16.sp)
+private fun fieldFontSize() = compactOr(12.sp, 16.sp)
 
 @Composable
 fun HighscoreSubmission(
@@ -55,8 +59,8 @@ fun HighscoreSubmission(
     ) {
         Text(
             text = "FINAL SCORE",
-            fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
-            fontSize = _root_ide_package_.com.glycin.koita.ui_composables.compactOr(12.sp, 18.sp),
+            fontFamily = pixelFont(),
+            fontSize = compactOr(12.sp, 18.sp),
             color = Color.White,
         )
 
@@ -64,13 +68,13 @@ fun HighscoreSubmission(
 
         Text(
             text = score.formatScore(),
-            fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
-            fontSize = _root_ide_package_.com.glycin.koita.ui_composables.compactOr(22.sp, 40.sp),
+            fontFamily = pixelFont(),
+            fontSize = compactOr(22.sp, 40.sp),
             color = Color.White,
         )
 
-        Spacer(modifier = Modifier.Companion.height(
-            _root_ide_package_.com.glycin.koita.ui_composables.compactOr(
+        Spacer(modifier = Modifier.height(
+            compactOr(
                 8.dp,
                 20.dp
             )
@@ -83,8 +87,8 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.Companion.height(
-            _root_ide_package_.com.glycin.koita.ui_composables.compactOr(
+        Spacer(modifier = Modifier.height(
+            compactOr(
                 4.dp,
                 8.dp
             )
@@ -99,8 +103,8 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.Companion.height(
-            _root_ide_package_.com.glycin.koita.ui_composables.compactOr(
+        Spacer(modifier = Modifier.height(
+            compactOr(
                 8.dp,
                 16.dp
             )
@@ -109,32 +113,32 @@ fun HighscoreSubmission(
         when {
             hasError -> Text(
                 text = "Could not submit score",
-                fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
+                fontFamily = pixelFont(),
                 fontSize = fieldFontSize(),
                 color = Color.White,
             )
             submitting -> Text(
                 text = "Submitting...",
-                fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
+                fontFamily = pixelFont(),
                 fontSize = fieldFontSize(),
                 color = Color.White,
             )
-            else -> Spacer(modifier = Modifier.Companion.height(
-                _root_ide_package_.com.glycin.koita.ui_composables.compactOr(
+            else -> Spacer(modifier = Modifier.height(
+                compactOr(
                     12.dp,
                     20.dp
                 )
             ))
         }
 
-        Spacer(modifier = Modifier.Companion.height(
-            _root_ide_package_.com.glycin.koita.ui_composables.compactOr(
+        Spacer(modifier = Modifier.height(
+            compactOr(
                 6.dp,
                 12.dp
             )
         ))
 
-        _root_ide_package_.com.glycin.koita.ui_composables.MenuOutlinedButton(
+        MenuOutlinedButton(
             text = "Submit",
             onClick = {
                 val trimmedName = name.trim()
@@ -177,23 +181,23 @@ private fun SubmissionField(
         enabled = enabled,
         singleLine = true,
         textStyle = TextStyle(
-            fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
+            fontFamily = pixelFont(),
             fontSize = fontSize,
             color = Color.White,
         ),
         placeholder = {
             Text(
                 text = placeholder,
-                fontFamily = _root_ide_package_.com.glycin.koita.ui_composables.pixelFont(),
+                fontFamily = pixelFont(),
                 fontSize = fontSize,
                 color = Color.LightGray,
             )
         },
         modifier = Modifier.width(fieldWidth()),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = _root_ide_package_.com.glycin.koita.ui_composables.MenuColors.INPUT_FIELD_FILL,
-            unfocusedContainerColor = _root_ide_package_.com.glycin.koita.ui_composables.MenuColors.INPUT_FIELD_FILL,
-            disabledContainerColor = _root_ide_package_.com.glycin.koita.ui_composables.MenuColors.INPUT_FIELD_FILL,
+            focusedContainerColor = MenuColors.INPUT_FIELD_FILL,
+            unfocusedContainerColor = MenuColors.INPUT_FIELD_FILL,
+            disabledContainerColor = MenuColors.INPUT_FIELD_FILL,
             focusedBorderColor = Color.White,
             unfocusedBorderColor = Color.White,
             disabledBorderColor = Color.White,

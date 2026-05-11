@@ -7,7 +7,6 @@ import com.glycin.koita.util.activate
 import com.glycin.koita.util.isOutOfWorldBounds
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
-import com.glycin.koita.world.isOutOfWorldBounds
 
 class EnemyMissile(
     var position: Vec2,

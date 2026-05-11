@@ -12,7 +12,6 @@ import com.glycin.koita.util.isOutOfWorldBounds
 import com.glycin.koita.util.steerToward
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
-import com.glycin.koita.world.isOutOfWorldBounds
 
 class MagicMissile(
     var position: Vec2,

@@ -6,7 +6,6 @@ import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.degreesToRadians
 import com.glycin.koita.world.World
-import org.jetbrains.compose.resources.DrawableResource
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.time.Clock

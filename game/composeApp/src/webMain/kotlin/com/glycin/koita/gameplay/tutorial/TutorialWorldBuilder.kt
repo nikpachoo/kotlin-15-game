@@ -84,7 +84,6 @@ object TutorialWorldBuilder {
     fun placeLavaPool(world: World, player: Player): LavaPoolLayout {
         val structureWidth = LAVA_POOL_WIDTH_TILES + 2
         val structureLeft = structureLeftTile(player, LAVA_POOL_GAP_TILES, structureWidth)
-        val leftWallX = structureLeft
         val lavaLeft = structureLeft + 1
         val lavaRight = lavaLeft + LAVA_POOL_WIDTH_TILES - 1
         val rightWallX = lavaRight + 1
@@ -93,7 +92,7 @@ object TutorialWorldBuilder {
         val wallTop = lavaTop - LAVA_POOL_WALL_LIP_TILES
 
         for (y in wallTop..poolBottom) {
-            setIfDestructible(world, leftWallX, y, Tile.KOTLINIUM)
+            setIfDestructible(world, structureLeft, y, Tile.KOTLINIUM)
             setIfDestructible(world, rightWallX, y, Tile.KOTLINIUM)
         }
         for (y in lavaTop..poolBottom) {
@@ -102,7 +101,7 @@ object TutorialWorldBuilder {
             }
         }
 
-        return LavaPoolLayout(leftWallX, rightWallX, wallTop, poolBottom)
+        return LavaPoolLayout(structureLeft, rightWallX, wallTop, poolBottom)
     }
 
     fun fillWorldSolid(world: World, player: Player) {

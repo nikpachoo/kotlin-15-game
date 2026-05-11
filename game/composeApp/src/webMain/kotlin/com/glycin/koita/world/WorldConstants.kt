@@ -22,7 +22,7 @@ object WorldConstants {
 
     val STANDARD_SIZE = Size(TILE_SIZE.toFloat(), TILE_SIZE.toFloat())
 
-    val SURFACE_Y = (WORLD_HEIGHT_TILES * 0.025f).toInt()
+    const val SURFACE_Y = (WORLD_HEIGHT_TILES * 0.025f).toInt()
 
     const val PORTAL_WIDTH = 16
     const val PORTAL_HEIGHT = 24

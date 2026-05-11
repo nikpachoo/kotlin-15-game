@@ -56,7 +56,7 @@ private fun ResourceRow(
             horizontalArrangement = Arrangement.spacedBy(compactOr(4.dp, 6.dp)),
         ) {
             Box(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .size(compactOr(8.dp, 10.dp))
                     .background(dotColor, CircleShape)
                     .border(1.dp, HudColors.PANEL_BORDER, CircleShape),

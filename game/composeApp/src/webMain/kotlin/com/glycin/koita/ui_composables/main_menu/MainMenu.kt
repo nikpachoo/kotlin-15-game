@@ -56,7 +56,7 @@ fun MainMenu(gameState: GameState) {
 private fun MainMenuPanel(gameState: GameState) {
     val compact = isCompact()
     Column(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .width(compactOr(320.dp, 480.dp))
             .background(MenuColors.SIDEBAR),
     ) {
@@ -77,7 +77,7 @@ private fun MainMenuPanel(gameState: GameState) {
         MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
         MenuItem("Atlas") { gameState.currentScreen = Screen.ATLAS }
 
-        Spacer(modifier = Modifier.Companion.size(compactOr(16.dp, 32.dp)))
+        Spacer(modifier = Modifier.size(compactOr(16.dp, 32.dp)))
     }
 }
 

@@ -13,7 +13,6 @@ import com.glycin.koita.util.lerp
 import com.glycin.koita.util.steerToward
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
-import com.glycin.koita.world.isOutOfWorldBounds
 
 class Rocket(
     var position: Vec2,

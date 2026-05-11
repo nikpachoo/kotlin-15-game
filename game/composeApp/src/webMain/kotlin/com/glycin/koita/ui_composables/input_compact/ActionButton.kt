@@ -71,7 +71,6 @@ fun ActionButton(
             fillWidth = fillWidth,
             onPressChange = if (enabled) {
                 { down ->
-                    localPressed = down
                     if (onTap == null && key != null) input.keyMap[key] = down
                 }
             } else null,
