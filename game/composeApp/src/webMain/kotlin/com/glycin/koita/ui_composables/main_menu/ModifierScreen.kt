@@ -83,7 +83,7 @@ private fun ModifiersPanel(width: Dp) {
 
         ModifierRow(
             label = "Git-less",
-            description = "Kodee can't heal. Healing does nothing. Good luck",
+            description = "Kodee can't heal. Healing does nothing. Good luck.",
             weight = ModifierConfiguration.WEIGHT_NO_HEAL,
             checked = ModifierConfiguration.noHeal,
             onToggle = { ModifierConfiguration.noHeal = !ModifierConfiguration.noHeal },
@@ -97,21 +97,21 @@ private fun ModifiersPanel(width: Dp) {
         )
         ModifierRow(
             label = "Caffeinated",
-            description = "No damage / health / vision pickups in the world. Not for the faint hearted.",
+            description = "No damage / health / vision pickups in the world. Not for the faint-hearted.",
             weight = ModifierConfiguration.WEIGHT_NO_PICKUPS,
             checked = ModifierConfiguration.noPickups,
             onToggle = { ModifierConfiguration.noPickups = !ModifierConfiguration.noPickups },
         )
         ModifierRow(
-            label = "Good ol' waterfall",
-            description = "Digging upwards no longer pulls Kodee up. It just felt weird didn't it?",
+            label = "Good Ol' Waterfall",
+            description = "Digging upwards no longer pulls Kodee up. It just felt weird, didn't it?",
             weight = ModifierConfiguration.WEIGHT_NO_MINING_BOOST,
             checked = ModifierConfiguration.noMiningBoost,
             onToggle = { ModifierConfiguration.noMiningBoost = !ModifierConfiguration.noMiningBoost },
         )
         ModifierRow(
             label = "10X Developer",
-            description = "Double the amount of enemies spawning. The more the better!",
+            description = "Double the number of enemies spawning. The more the better!",
             weight = ModifierConfiguration.WEIGHT_DOUBLE_ENEMIES,
             checked = ModifierConfiguration.doubleEnemies,
             onToggle = { ModifierConfiguration.doubleEnemies = !ModifierConfiguration.doubleEnemies },

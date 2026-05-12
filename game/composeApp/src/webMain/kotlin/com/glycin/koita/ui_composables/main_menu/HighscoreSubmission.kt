@@ -112,7 +112,7 @@ fun HighscoreSubmission(
 
         when {
             hasError -> Text(
-                text = "Could not submit score",
+                text = "Could not submit score.",
                 fontFamily = pixelFont(),
                 fontSize = fieldFontSize(),
                 color = Color.White,

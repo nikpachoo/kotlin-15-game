@@ -42,7 +42,7 @@ fun GameWonScreen(gameState: GameState) {
         title = "VICTORY",
         titleColor = MenuColors.VICTORY_TITLE,
         subtitle = "The void has been silenced.",
-        extraNote = "Congratulations, your score has been doubled!",
+        extraNote = "Congratulations! Your score has doubled.",
     )
 }
 

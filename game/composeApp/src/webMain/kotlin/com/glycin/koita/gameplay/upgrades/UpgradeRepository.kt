@@ -57,7 +57,7 @@ class UpgradeRepository(
                         id = UnlockId.DOUBLE_JUMP,
                         group = UnlockGroup.MOVEMENT,
                         name = "Elvis Operator",
-                        description = "Unlocks a double jump.",
+                        description = "Unlocks double jump.",
                         icon = UPGRADE_ICONS.frame(3),
                         onUnlock = { gameState.canDoubleJump = true }
                     ),
@@ -73,7 +73,7 @@ class UpgradeRepository(
                         id = UnlockId.EXPLODING_BLOCKS,
                         group = UnlockGroup.BUILD,
                         name = "Data Classes",
-                        description = "The blocks you place now explode when you shoot them.",
+                        description = "Blocks you place now explode when you shoot them.",
                         icon = UPGRADE_ICONS.frame(1),
                         onUnlock = {
                             gameState.explosiveBlocks = true
@@ -84,7 +84,7 @@ class UpgradeRepository(
                         id = UnlockId.LASER,
                         group = UnlockGroup.WEAPON,
                         name = "Coroutines",
-                        description = "Your weapon turns into a continuous laser instead.",
+                        description = "Your weapon shoots a continuous laser beam.",
                         icon = UPGRADE_ICONS.frame(0),
                         onUnlock = {
                             gameState.laserWeapon = true
@@ -103,7 +103,7 @@ class UpgradeRepository(
                         id = UnlockId.JETPACK,
                         group = UnlockGroup.MOVEMENT,
                         name = "Extension Functions",
-                        description = "Unlocks a jetpack you can use to float briefly.",
+                        description = "Unlocks a jetpack that lets you float briefly.",
                         icon = UPGRADE_ICONS.frame(4),
                         onUnlock = { gameState.canJetpack = true }
                     ),
@@ -111,7 +111,7 @@ class UpgradeRepository(
                         id = UnlockId.BOUNCY_BLOCKS,
                         group = UnlockGroup.BUILD,
                         name = "Sealed Classes",
-                        description = "The blocks you place become trampolines.",
+                        description = "Blocks you place become trampolines.",
                         icon = UPGRADE_ICONS.frame(11),
                         onUnlock = {
                             gameState.bouncyBlocks = true
@@ -141,7 +141,7 @@ class UpgradeRepository(
                         id = UnlockId.ROCKET_LAUNCHER,
                         group = UnlockGroup.WEAPON,
                         name = "Higher-Order Functions",
-                        description = "Your weapon fires slow rockets that accelerate into a massive explosion.",
+                        description = "Your weapon fires slow rockets that accelerate and cause a massive explosion.",
                         icon = UPGRADE_ICONS.frame(5),
                         onUnlock = {
                             gameState.rocketLauncher = true
@@ -163,7 +163,7 @@ class UpgradeRepository(
                         id = UnlockId.INVULNERABLE,
                         group = UnlockGroup.BUILD,
                         name = "Immutability",
-                        description = "Press S on the ground to become immovable and invulnerable.",
+                        description = "Press S while on the ground to become immovable and invulnerable.",
                         icon = UPGRADE_ICONS.frame(6),
                         onUnlock = { gameState.canAnchor = true }
                     ),
@@ -171,7 +171,7 @@ class UpgradeRepository(
                         id = UnlockId.SNIPER,
                         group = UnlockGroup.WEAPON,
                         name = "Scope Functions",
-                        description = "Hold to aim, release to fire a piercing shot.",
+                        description = "Hold fire to aim, then release to fire a piercing shot.",
                         icon = UPGRADE_ICONS.frame(10),
                         onUnlock = {
                             gameState.sniperWeapon = true
@@ -182,7 +182,7 @@ class UpgradeRepository(
                         id = UnlockId.RESOURCE_SHIELD,
                         group = UnlockGroup.BUILD,
                         name = "Companion Blocks",
-                        description = "Automatically use resources to create a shield around you.",
+                        description = "Automatically use minerals to create a shield around you.",
                         icon = UPGRADE_ICONS.frame(14),
                         onUnlock = { gameState.resourceShield = true }
                     ),

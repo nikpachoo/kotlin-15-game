@@ -134,7 +134,7 @@ fun UiRenderer(
         )
 
         Notification(
-            text = if (gameState.passedPortal) "Are you ready to face the final void?" else null,
+            text = if (gameState.passedPortal) "Are you ready to face the Final Void?" else null,
             offsetY = 100.dp,
             modifier = Modifier.align(Alignment.TopCenter),
             fadeInMs = 500,

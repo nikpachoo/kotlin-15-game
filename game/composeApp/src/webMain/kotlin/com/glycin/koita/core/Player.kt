@@ -334,7 +334,7 @@ class Player(
         if (slimed) {
             val tryingToMove = keyMap[Key.A] == true || keyMap[Key.D] == true
             if (tryingToMove && !slimedNotificationShown) {
-                gameState.pickupNotification = "You are stuck on slime!"
+                gameState.pickupNotification = "You are stuck in the slime!"
                 slimedNotificationShown = true
             }
         } else {

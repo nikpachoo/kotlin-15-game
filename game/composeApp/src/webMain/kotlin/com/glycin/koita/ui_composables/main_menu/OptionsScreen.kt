@@ -78,7 +78,7 @@ private fun SettingsPanel(width: Dp, gameState: GameState) {
         ) {
             KotlinLogo(boxSize = compactOr(32.dp, 64.dp))
             Text(
-                text = "SETTINGS",
+                text = "OPTIONS",
                 fontFamily = pixelFont(),
                 fontSize = compactOr(20.sp, 36.sp),
                 color = Color.White,

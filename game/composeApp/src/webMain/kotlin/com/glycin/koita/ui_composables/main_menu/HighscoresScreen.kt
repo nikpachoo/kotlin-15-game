@@ -94,7 +94,7 @@ fun HighscoresScreen(gameState: GameState) {
                     when (val state = uiState) {
                         HighscoresUiState.Loading -> CenteredMessage("Loading...", color = Color.White)
                         HighscoresUiState.Error -> CenteredMessage(
-                            text = "Could not load highscores",
+                            text = "Could not load highscores.",
                             color = MenuColors.ERROR_TEXT,
                         )
                         is HighscoresUiState.Loaded -> HighscoreList(state.response)

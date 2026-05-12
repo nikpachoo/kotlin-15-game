@@ -74,7 +74,7 @@ private fun MainMenuPanel(gameState: GameState) {
             if (compact) requestBrowserFullscreen()
             gameState.currentScreen = Screen.TUTORIAL
         }
-        MenuItem("Settings") { gameState.currentScreen = Screen.OPTIONS }
+        MenuItem("Options") { gameState.currentScreen = Screen.OPTIONS }
         MenuItem("Highscores") { gameState.currentScreen = Screen.HIGHSCORES }
         MenuItem("Atlas") { gameState.currentScreen = Screen.ATLAS }
 
