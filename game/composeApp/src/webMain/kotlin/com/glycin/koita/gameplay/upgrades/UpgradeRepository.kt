@@ -35,7 +35,7 @@ class UpgradeRepository(
     }
 
     companion object {
-        private val UPGRADE_ICONS = SpriteSheet(
+        val UPGRADE_ICONS = SpriteSheet(
             sprite = Res.drawable.upgrade_icons_sheet,
             frameWidth = 32,
             frameHeight = 32,

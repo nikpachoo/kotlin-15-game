@@ -53,7 +53,8 @@ class Player(
     private var fallingTimer = 0f
 
     private var jetpackFuel = PlayerSettings.JETPACK_MAX_FUEL
-    private var jetpackEngaged = false
+    var jetpackEngaged = false
+        private set
 
     private var dashTimer = 0f
     private var dashCooldownTimer = 0f

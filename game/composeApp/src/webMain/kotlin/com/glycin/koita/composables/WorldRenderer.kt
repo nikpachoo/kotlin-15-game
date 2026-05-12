@@ -52,7 +52,11 @@ import com.glycin.koita.world.ParallaxBackground
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
+import com.glycin.koita.core.PlayerSettings
+import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import org.jetbrains.compose.resources.imageResource
+
+private val JETPACK_ICON_FRAME = UpgradeRepository.UPGRADE_ICONS.frame(4)
 
 //TODO: Probably need to remove all the "devMode" checks in the rendering hot path
 @Composable
@@ -77,6 +81,7 @@ fun WorldRenderer(
 
     val playerSheet = imageResource(player.animator.spriteAnimator.sprite)
     val droneSheet = imageResource(player.droneAnimator.sprite)
+    val jetpackSheet = imageResource(JETPACK_ICON_FRAME.sheet.sprite)
     val enemySheets = enemyManager.getDistinctSprites().associateWith { imageResource(it) }
     val shrineSheets = shrineManager.getDistinctSprites().associateWith { imageResource(it) }
     val orbIconSheets = shrineManager.getDistinctOrbIconSprites().associateWith { imageResource(it) }
@@ -177,6 +182,17 @@ fun WorldRenderer(
                 scaleY = 1f,
                 pivot = if(facing == PlayerFacing.RIGHT) Offset(0f,0f) else Offset(pScreenPos.x + scaledDrawWidth / 2f, pScreenPos.y + scaledDrawHeight / 2f),
             ) {
+                if (jetpackEngaged) {
+                    val jetpackSize = (PlayerSettings.JETPACK_DRAW_SIZE * giantScale).toInt()
+                    val jetpackX = pScreenPos.x + (scaledDrawWidth - jetpackSize) / 2f - PlayerSettings.JETPACK_BACK_OFFSET_X * giantScale
+                    val jetpackY = pScreenPos.y + scaledDrawHeight * PlayerSettings.JETPACK_PIVOT_Y_RATIO - jetpackSize / 2f
+                    drawSpriteFrame(
+                        image = jetpackSheet,
+                        frame = JETPACK_ICON_FRAME,
+                        dstOffset = IntOffset(jetpackX.toInt(), jetpackY.toInt()),
+                        dstSize = IntSize(jetpackSize, jetpackSize),
+                    )
+                }
                 drawImage(
                     image = playerSheet,
                     srcOffset = IntOffset(srcOffsetX, srcOffsetY),

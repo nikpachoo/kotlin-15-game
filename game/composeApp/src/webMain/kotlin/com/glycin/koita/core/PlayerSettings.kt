@@ -9,6 +9,9 @@ object PlayerSettings {
     // Jetpack
     const val JETPACK_MAX_FUEL = 1f
     const val JETPACK_FORCE = 600f
+    const val JETPACK_DRAW_SIZE = 40f
+    const val JETPACK_BACK_OFFSET_X = 14f
+    const val JETPACK_PIVOT_Y_RATIO = 0.42f
 
     // Dash
     const val DASH_SPEED = 800f
