@@ -13,6 +13,7 @@ fun Application.configureCors() {
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowHost("pages.github.io", subDomains = listOf("improved-broccoli-v31e8gl"), schemes = listOf("https"))
+        allowHost("game.kotlinlang.org", schemes = listOf("https"))
         allowHost("localhost:8080", schemes = listOf("http"))
     }
 }
