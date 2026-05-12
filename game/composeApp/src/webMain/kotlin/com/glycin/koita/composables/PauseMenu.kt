@@ -1,6 +1,5 @@
 package com.glycin.koita.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,15 +7,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
@@ -31,8 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.audio.SoundManager
@@ -42,202 +44,181 @@ import com.glycin.koita.gameplay.pickups.PickupCatalog
 import com.glycin.koita.gameplay.upgrades.Unlock
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
 import com.glycin.koita.ui_composables.MenuColors
+import com.glycin.koita.ui_composables.MenuHeader
+import com.glycin.koita.ui_composables.SidebarMenuItem
 import com.glycin.koita.ui_composables.SpriteFrameIcon
-import com.glycin.koita.ui_composables.isCompact
+import com.glycin.koita.ui_composables.compactOr
 import com.glycin.koita.ui_composables.pixelFont
 import org.jetbrains.compose.resources.imageResource
 
-internal val sliderColors
+private const val UNLOCK_CAROUSEL_VISIBLE = 3
+private const val SHOW_DEV_TOGGLE = false
+
+private val sliderColors
     @Composable get() = SliderDefaults.colors(
         thumbColor = Color.White,
         activeTrackColor = Color.White,
-        inactiveTrackColor = Color.Gray,
+        inactiveTrackColor = MenuColors.SLIDER_TRACK,
     )
 
 @Composable
 fun PauseMenu(gameState: GameState, upgradeRepository: UpgradeRepository) {
-    val compact = isCompact()
+    val unlocks = remember { upgradeRepository.getUnlocked() }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MenuColors.PAUSE_OVERLAY),
         contentAlignment = Alignment.Center,
     ) {
-        if (compact) {
-            CompactPauseMenu(gameState, upgradeRepository)
-        } else {
-            NormalPauseMenu(gameState, upgradeRepository)
+        Row(modifier = Modifier.height(IntrinsicSize.Max)) {
+            LeftPanel(gameState)
+            RightPanel(unlocks, gameState.pickupCounts)
         }
-
-        ReturnToMainMenuButton(
-            onClick = { gameState.endRunAndGoTo(Screen.MAIN_MENU) },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = if (compact) 12.dp else 24.dp),
-        )
     }
 }
 
 @Composable
-private fun ReturnToMainMenuButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val compact = isCompact()
-    OutlinedButton(
-        onClick = onClick,
-        modifier = modifier
-            .width(if (compact) 160.dp else 200.dp)
-            .height(if (compact) 36.dp else 44.dp),
-        border = BorderStroke(2.dp, Color.White),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = MenuColors.MAIN_BACKGROUND_LIGHT,
-            contentColor = Color.White,
-        ),
-    ) {
-        Text(
-            text = "Main Menu",
-            fontFamily = pixelFont(),
-            fontSize = if (compact) 12.sp else 16.sp,
-        )
-    }
-}
-
-@Composable
-private fun NormalPauseMenu(gameState: GameState, upgradeRepository: UpgradeRepository) {
+private fun LeftPanel(gameState: GameState) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .width(compactOr(260.dp, 420.dp))
+            .background(MenuColors.SIDEBAR)
+            .padding(bottom = compactOr(16.dp, 24.dp)),
     ) {
-        Text(
-            text = "PAUSED",
-            fontFamily = pixelFont(),
-            fontSize = 48.sp,
-            color = Color.White,
+        MenuHeader(
+            title = "Game",
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        PauseMenuItem("Resume") { gameState.isPaused = false }
+        PauseMenuItem("Quit") { gameState.endRunAndGoTo(Screen.MAIN_MENU) }
 
-        Text(
-            text = "Press ESC to resume",
-            fontFamily = pixelFont(),
-            fontSize = 16.sp,
-            color = Color.LightGray,
-        )
+        Spacer(modifier = Modifier.height(compactOr(16.dp, 28.dp)))
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        AudioAndDevControls(gameState)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        UnlockedUpgradesPanel(unlocks = upgradeRepository.getUnlocked())
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        CollectedPickupsPanel(pickupCounts = gameState.pickupCounts)
-    }
-}
-
-@Composable
-private fun CompactPauseMenu(gameState: GameState, upgradeRepository: UpgradeRepository) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    ) {
-        Text(
-            text = "PAUSED",
-            fontFamily = pixelFont(),
-            fontSize = 22.sp,
-            color = Color.White,
-        )
-
-        Spacer(modifier = Modifier.height(2.dp))
-
-        Text(
-            text = "Press ESC to resume",
-            fontFamily = pixelFont(),
-            fontSize = 10.sp,
-            color = Color.LightGray,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
+        Column(
+            modifier = Modifier.padding(horizontal = compactOr(24.dp, 48.dp)),
+            verticalArrangement = Arrangement.spacedBy(compactOr(6.dp, 12.dp)),
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                AudioAndDevControls(gameState)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                UnlockedUpgradesPanel(unlocks = upgradeRepository.getUnlocked())
-                Spacer(modifier = Modifier.height(4.dp))
-                CollectedPickupsPanel(pickupCounts = gameState.pickupCounts)
+            VolumeSlider(
+                label = "Music",
+                value = gameState.musicVolume,
+                onValueChange = { newVolume ->
+                    gameState.musicVolume = newVolume
+                    SoundManager.musicVolume = newVolume
+                },
+            )
+            VolumeSlider(
+                label = "SFX",
+                value = gameState.sfxVolume,
+                onValueChange = { newVolume ->
+                    gameState.sfxVolume = newVolume
+                    SoundManager.sfxVolume = newVolume
+                },
+            )
+            if (SHOW_DEV_TOGGLE) {
+                DevModeToggle(
+                    value = gameState.devMode,
+                    onValueChange = { gameState.devMode = it },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun AudioAndDevControls(gameState: GameState) {
-    val rowGap = if (isCompact()) 4.dp else 12.dp
+private fun DevModeToggle(value: Boolean, onValueChange: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Dev",
+            fontFamily = pixelFont(),
+            fontSize = compactOr(10.sp, 14.sp),
+            color = Color.White,
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier.width(compactOr(56.dp, 80.dp)),
+        )
+        Spacer(modifier = Modifier.width(compactOr(6.dp, 12.dp)))
+        Switch(
+            checked = value,
+            onCheckedChange = onValueChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = MenuColors.MAIN_BACKGROUND_LIGHT,
+                checkedBorderColor = Color.White,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = MenuColors.SECTION_TITLE,
+                uncheckedBorderColor = Color.White,
+            ),
+        )
+    }
+}
 
-    VolumeSlider(
-        label = "Music",
-        value = gameState.musicVolume,
-        onValueChange = { newVolume ->
-            gameState.musicVolume = newVolume
-            SoundManager.musicVolume = newVolume
-        },
-    )
-
-    Spacer(modifier = Modifier.height(rowGap))
-
-    VolumeSlider(
-        label = "SFX",
-        value = gameState.sfxVolume,
-        onValueChange = { newVolume ->
-            gameState.sfxVolume = newVolume
-            SoundManager.sfxVolume = newVolume
-        },
-    )
-
-    Spacer(modifier = Modifier.height(rowGap))
-
-    DevModeToggle(
-        value = gameState.devMode,
-        onValueChange = { gameState.devMode = it },
+@Composable
+private fun PauseMenuItem(text: String, onClick: () -> Unit) {
+    SidebarMenuItem(
+        text = text,
+        fontSize = compactOr(18.sp, 28.sp),
+        verticalPadding = compactOr(6.dp, 10.dp),
+        onClick = onClick,
     )
 }
 
-private const val UNLOCK_CAROUSEL_VISIBLE = 3
+@Composable
+private fun RightPanel(unlocks: List<Unlock>, pickupCounts: Map<String, Int>) {
+    Column(
+        modifier = Modifier
+            .width(compactOr(440.dp, 680.dp))
+            .fillMaxHeight()
+            .background(MenuColors.PAUSE_RIGHT_BG)
+            .padding(compactOr(16.dp, 24.dp)),
+        verticalArrangement = Arrangement.spacedBy(compactOr(12.dp, 20.dp)),
+    ) {
+        SectionHeader(label = "Upgrades", count = unlocks.size)
+        Box(
+            modifier = Modifier.height(compactOr(96.dp, 156.dp)),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            if (unlocks.isEmpty()) {
+                Text(
+                    text = "None yet",
+                    fontFamily = pixelFont(),
+                    fontSize = compactOr(10.sp, 14.sp),
+                    color = MenuColors.PAUSE_RIGHT_MUTED,
+                )
+            } else {
+                UnlockCarousel(unlocks)
+            }
+        }
+
+        SectionHeader(label = "Pickups")
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(compactOr(12.dp, 20.dp)),
+            verticalAlignment = Alignment.Top,
+        ) {
+            PickupCatalog.all.forEach { entry ->
+                PickupTile(entry, count = pickupCounts[entry.name] ?: 0)
+            }
+        }
+    }
+}
 
 @Composable
-private fun UnlockedUpgradesPanel(unlocks: List<Unlock>) {
-    val compact = isCompact()
-    Column(
-        modifier = Modifier.padding(if (compact) 4.dp else 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 6.dp),
-    ) {
+private fun SectionHeader(label: String, count: Int? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "UPGRADES",
+            text = label,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 11.sp else 16.sp,
-            color = Color.White,
+            fontSize = compactOr(14.sp, 20.sp),
+            color = MenuColors.PAUSE_RIGHT_TEXT,
         )
-        Spacer(modifier = Modifier.height(if (compact) 2.dp else 4.dp))
-
-        if (unlocks.isEmpty()) {
+        if (count != null) {
+            Spacer(modifier = Modifier.width(compactOr(6.dp, 10.dp)))
             Text(
-                text = "None yet",
+                text = count.toString(),
                 fontFamily = pixelFont(),
-                fontSize = if (compact) 9.sp else 12.sp,
-                color = Color.LightGray,
+                fontSize = compactOr(14.sp, 20.sp),
+                color = MenuColors.PAUSE_ACCENT,
             )
-        } else {
-            UnlockCarousel(unlocks)
         }
     }
 }
@@ -248,11 +229,10 @@ private fun UnlockCarousel(unlocks: List<Unlock>) {
     val size = unlocks.size
     val visibleCount = minOf(UNLOCK_CAROUSEL_VISIBLE, size)
     val showArrows = size > UNLOCK_CAROUSEL_VISIBLE
-    val compact = isCompact()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(compactOr(4.dp, 8.dp)),
     ) {
         if (showArrows) {
             ArrowButton("<") { startIndex = (startIndex - 1 + size) % size }
@@ -268,91 +248,57 @@ private fun UnlockCarousel(unlocks: List<Unlock>) {
 
 @Composable
 private fun UnlockCard(unlock: Unlock) {
-    val compact = isCompact()
-    val card = if (compact) 84.dp else 140.dp
     Column(
         modifier = Modifier
-            .width(card)
-            .height(card)
-            .background(MenuColors.BACKGROUND)
-            .border(2.dp, MenuColors.cardBorder(unlock.group))
-            .padding(if (compact) 4.dp else 8.dp),
-        verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
+            .width(compactOr(112.dp, 176.dp))
+            .height(compactOr(96.dp, 156.dp))
+            .border(2.dp, MenuColors.PAUSE_ACCENT)
+            .padding(compactOr(4.dp, 8.dp)),
+        verticalArrangement = Arrangement.spacedBy(compactOr(2.dp, 4.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        SpriteFrameIcon(unlock.icon, size = if (compact) 24.dp else 36.dp)
+        SpriteFrameIcon(unlock.icon, size = compactOr(24.dp, 36.dp))
         Text(
             text = unlock.name,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 8.sp else 12.sp,
-            color = Color.White,
+            fontSize = compactOr(10.sp, 14.sp),
+            color = MenuColors.PAUSE_RIGHT_TEXT,
         )
         Text(
             text = unlock.description,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 7.sp else 10.sp,
-            color = Color.LightGray,
+            fontSize = compactOr(9.sp, 12.sp),
+            color = MenuColors.PAUSE_RIGHT_TEXT,
         )
     }
 }
 
 @Composable
 private fun ArrowButton(label: String, onClick: () -> Unit) {
-    val compact = isCompact()
     Box(
         modifier = Modifier
-            .size(if (compact) 24.dp else 36.dp)
-            .border(1.dp, Color.White)
+            .size(compactOr(24.dp, 36.dp))
+            .border(1.dp, MenuColors.PAUSE_RIGHT_TEXT)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = label,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 14.sp else 20.sp,
-            color = Color.White,
+            fontSize = compactOr(14.sp, 20.sp),
+            color = MenuColors.PAUSE_RIGHT_TEXT,
         )
-    }
-}
-
-@Composable
-private fun CollectedPickupsPanel(pickupCounts: Map<String, Int>) {
-    val compact = isCompact()
-    Column(
-        modifier = Modifier
-            .width(if (compact) 200.dp else 260.dp)
-            .padding(if (compact) 4.dp else 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 6.dp),
-    ) {
-        Text(
-            text = "PICKUPS",
-            fontFamily = pixelFont(),
-            fontSize = if (compact) 11.sp else 16.sp,
-            color = Color.White,
-        )
-        Spacer(modifier = Modifier.height(if (compact) 2.dp else 4.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 16.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            PickupCatalog.all.forEach { entry ->
-                PickupTile(entry, count = pickupCounts[entry.name] ?: 0)
-            }
-        }
     }
 }
 
 @Composable
 private fun PickupTile(pickupEntry: PickupCatalog.PickupEntry, count: Int) {
-    val compact = isCompact()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp),
+        verticalArrangement = Arrangement.spacedBy(compactOr(2.dp, 4.dp)),
     ) {
         val image = imageResource(pickupEntry.sprite)
-        Canvas(modifier = Modifier.size(if (compact) 32.dp else 56.dp)) {
+        Canvas(modifier = Modifier.size(compactOr(32.dp, 56.dp))) {
             if (image.width <= 0 || image.height <= 0) return@Canvas
             drawImage(
                 image = image,
@@ -366,38 +312,27 @@ private fun PickupTile(pickupEntry: PickupCatalog.PickupEntry, count: Int) {
         Text(
             text = "x$count",
             fontFamily = pixelFont(),
-            fontSize = if (compact) 11.sp else 16.sp,
-            color = Color.White,
+            fontSize = compactOr(11.sp, 16.sp),
+            color = MenuColors.PAUSE_RIGHT_TEXT,
         )
     }
 }
 
 @Composable
-internal fun VolumeSlider(
+private fun VolumeSlider(
     label: String,
     value: Float,
     onValueChange: (Float) -> Unit,
 ) {
-    val compact = isCompact()
-    val labelWidth = if (compact) 40.dp else 60.dp
-    val sliderWidth = if (compact) 130.dp else 200.dp
-    val percentWidth = if (compact) 36.dp else 48.dp
-    val gap = if (compact) 6.dp else 12.dp
-    val fontSize = if (compact) 10.sp else 14.sp
+    val labelWidth = compactOr(56.dp, 80.dp)
+    val sliderWidth = compactOr(100.dp, 160.dp)
+    val percentWidth = compactOr(36.dp, 48.dp)
+    val gap = compactOr(6.dp, 12.dp)
+    val fontSize = compactOr(10.sp, 14.sp)
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            fontFamily = pixelFont(),
-            fontSize = fontSize,
-            color = Color.White,
-            modifier = Modifier.width(labelWidth),
-        )
-
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        VolumeText(label, fontSize, labelWidth)
         Spacer(modifier = Modifier.width(gap))
-
         Slider(
             value = value,
             onValueChange = onValueChange,
@@ -405,66 +340,20 @@ internal fun VolumeSlider(
             modifier = Modifier.width(sliderWidth),
             colors = sliderColors,
         )
-
         Spacer(modifier = Modifier.width(gap))
-
-        Text(
-            text = "${(value * 100).toInt()}%",
-            fontFamily = pixelFont(),
-            fontSize = fontSize,
-            color = Color.White,
-            modifier = Modifier.width(percentWidth),
-        )
+        VolumeText("${(value * 100).toInt()}%", fontSize, percentWidth)
     }
 }
 
 @Composable
-internal fun DevModeToggle(
-    value: Boolean,
-    onValueChange: (Boolean) -> Unit,
-) {
-    val compact = isCompact()
-    val rowWidth = if (compact) 220.dp else 320.dp
-    val labelWidth = if (compact) 80.dp else 120.dp
-    val statusWidth = if (compact) 36.dp else 48.dp
-    val gap = if (compact) 6.dp else 12.dp
-    val fontSize = if (compact) 10.sp else 14.sp
-
-    Row(
-        modifier = Modifier.width(rowWidth),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Dev Mode",
-            fontFamily = pixelFont(),
-            fontSize = fontSize,
-            color = Color.White,
-            modifier = Modifier.width(labelWidth),
-        )
-
-        Spacer(modifier = Modifier.width(gap))
-
-        Switch(
-            checked = value,
-            onCheckedChange = onValueChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = MenuColors.MAIN_BACKGROUND_LIGHT,
-                checkedBorderColor = Color.White,
-                uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = MenuColors.SECTION_TITLE,
-                uncheckedBorderColor = Color.White,
-            ),
-        )
-
-        Spacer(modifier = Modifier.width(gap))
-
-        Text(
-            text = if (value) "ON" else "OFF",
-            fontFamily = pixelFont(),
-            fontSize = fontSize,
-            color = Color.White,
-            modifier = Modifier.width(statusWidth),
-        )
-    }
+private fun VolumeText(text: String, fontSize: TextUnit, width: Dp) {
+    Text(
+        text = text,
+        fontFamily = pixelFont(),
+        fontSize = fontSize,
+        color = Color.White,
+        maxLines = 1,
+        softWrap = false,
+        modifier = Modifier.width(width),
+    )
 }

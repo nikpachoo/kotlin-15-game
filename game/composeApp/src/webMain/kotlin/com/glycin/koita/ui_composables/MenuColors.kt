@@ -30,6 +30,10 @@ internal object MenuColors {
 
     val SIDEBAR = Color(0xFFFF5530)
     val SLIDER_TRACK = Color.White.copy(alpha = 0.35f)
+    val PAUSE_RIGHT_BG = Color.White
+    val PAUSE_RIGHT_TEXT = Color(0xFF1A1A1A)
+    val PAUSE_RIGHT_MUTED = Color(0xFF666666)
+    val PAUSE_ACCENT = SIDEBAR
     val MAIN_BACKGROUND_DARK = Color(0xFF1A0A2E)
     val MAIN_BACKGROUND_MID = Color(0xFF4B0AC9)
     val MAIN_BACKGROUND_LIGHT = Color(0xFF6B30F9)
