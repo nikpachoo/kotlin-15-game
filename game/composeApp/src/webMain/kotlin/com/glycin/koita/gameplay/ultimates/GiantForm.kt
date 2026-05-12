@@ -23,6 +23,7 @@ class GiantForm(
     requiredUnlockIds = setOf(UnlockId.SLOW_FALL, UnlockId.SUPER_SOAKER, UnlockId.RESOURCE_SHIELD),
 ) {
     override val bossShieldDamage: Int = 1
+    override val allowsWeaponUse: Boolean = true
 
     private var timer = 0f
     private var currentScale = 1f

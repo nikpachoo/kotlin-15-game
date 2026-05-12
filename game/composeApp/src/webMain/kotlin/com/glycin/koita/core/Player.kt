@@ -228,7 +228,7 @@ class Player(
     fun useWeapon() {
         if (state == PlayerState.DEAD || state == PlayerState.VICTORY) return
         if (isAnchorLocked) return
-        if (gameState.ultimateActive) return
+        if (gameState.ultimateActive && !gameState.ultimateAllowsWeaponUse) return
         currentWeapon.use()
         state = PlayerState.ATTACKING
         attackTimer = attackDuration

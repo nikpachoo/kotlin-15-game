@@ -60,6 +60,7 @@ class UltimateManager(
         lastActivated = ultimate
         ultimate.activate(player)
         gameState.ultimateActive = true
+        gameState.ultimateAllowsWeaponUse = ultimate.allowsWeaponUse
         if (ultimate.usesBoostAnimation) player.enterBoostState()
         SoundManager.playOneShot(Sounds.ULTIMATE_USE)
     }
@@ -74,6 +75,7 @@ class UltimateManager(
             activeUltimate = null
             availableUltimate = null
             gameState.ultimateActive = false
+            gameState.ultimateAllowsWeaponUse = false
             gameState.ultimateAvailable = null
             gameState.ultimateCooldownRemaining = ULTIMATE_RECHARGE_DURATION
         }

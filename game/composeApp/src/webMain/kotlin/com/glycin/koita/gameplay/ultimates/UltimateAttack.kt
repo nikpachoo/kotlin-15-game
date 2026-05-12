@@ -16,6 +16,7 @@ abstract class UltimateAttack(
     abstract val bossShieldDamage: Int
 
     open val usesBoostAnimation: Boolean = false
+    open val allowsWeaponUse: Boolean = false
 
     abstract fun activate(player: Player)
     abstract fun update(deltaTime: Float, player: Player)

@@ -79,6 +79,7 @@ class GameState {
     // Ultimates
     var ultimateAvailable by mutableStateOf<String?>(null)
     var ultimateActive by mutableStateOf(false)
+    var ultimateAllowsWeaponUse = false
     var ultimateTriggered = false
     var ultimateCooldownRemaining by mutableStateOf(0f)
     var ultimateBannerName by mutableStateOf<String?>(null)
@@ -139,6 +140,7 @@ class GameState {
 
         ultimateAvailable = null
         ultimateActive = false
+        ultimateAllowsWeaponUse = false
         ultimateTriggered = false
         ultimateCooldownRemaining = 0f
         ultimateBannerName = null
