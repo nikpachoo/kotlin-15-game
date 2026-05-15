@@ -15,7 +15,7 @@ class StoneGolem(
     position: Vec2,
     collisionDetector: CollisionDetector,
     world: World,
-    health: Float = 5f,
+    health: Float = 10f,
     private val moveSpeed: Float = 25f,
     private val player: Player,
 ) : Enemy(
@@ -31,7 +31,7 @@ class StoneGolem(
 ) {
     override val canAttack = false
     override val contactDamage = 2
-    override val dropChance = 0.03f
+    override val dropChance = 0.08f
     override val spriteOffsetY = -32f
     override val scoreReward = 300
 

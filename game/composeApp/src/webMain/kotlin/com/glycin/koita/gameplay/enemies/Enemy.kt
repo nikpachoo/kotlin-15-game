@@ -29,7 +29,7 @@ abstract class Enemy(
     open val canAttack: Boolean = true
     open val contactDamage: Int = 0
     open val contactDamageCooldown: Float = 1.0f
-    open val dropChance: Float = 0.02f
+    open val dropChance: Float = 0.07f
     open val spriteOffsetY: Float = 0f
     open val scoreReward: Int = 0
 

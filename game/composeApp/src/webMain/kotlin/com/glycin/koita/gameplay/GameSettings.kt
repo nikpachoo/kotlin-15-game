@@ -10,7 +10,7 @@ object GameSettings {
     const val DYNAMITE_COST = BLOCK_COST * 10
 
     // Relative spawn weights for pickups (higher = more common)
-    const val PICKUP_WEIGHT_DAMAGE = 1
+    const val PICKUP_WEIGHT_DAMAGE = 2
     const val PICKUP_WEIGHT_VISION = 3
-    const val PICKUP_WEIGHT_HEALTH = 6
+    const val PICKUP_WEIGHT_HEALTH = 5
 }

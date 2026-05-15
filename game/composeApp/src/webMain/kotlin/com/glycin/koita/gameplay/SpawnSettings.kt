@@ -17,7 +17,7 @@ object SpawnSettings {
         phantom = 0..0,
         confuser = 0..0,
         shrines = 2..3,
-        pickups = 2..4,
+        pickups = 1..2,
         scoreMultiplier = 1,
     )
 
@@ -32,7 +32,7 @@ object SpawnSettings {
         phantom = 0..0,
         confuser = 0..0,
         shrines = 2..3,
-        pickups = 5..8,
+        pickups = 2..3,
         scoreMultiplier = 2,
     )
 
@@ -47,7 +47,7 @@ object SpawnSettings {
         phantom = 2..4,
         confuser = 0..1,
         shrines = 1..3,
-        pickups = 8..12,
+        pickups = 3..5,
         scoreMultiplier = 3,
     )
 
@@ -62,7 +62,7 @@ object SpawnSettings {
         phantom = 5..8,
         confuser = 5..8,
         shrines = 1..2,
-        pickups = 5..8,
+        pickups = 2..3,
         scoreMultiplier = 4,
     )
 
@@ -77,7 +77,7 @@ object SpawnSettings {
         phantom = 8..12,
         confuser = 9..13,
         shrines = 0..1,
-        pickups = 2..4,
+        pickups = 1..2,
         scoreMultiplier = 5,
     )
 

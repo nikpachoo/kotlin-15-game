@@ -31,7 +31,7 @@ class Slime(
 ) {
     override val canAttack = false
     override val contactDamage = 1
-    override val dropChance = 0.01f
+    override val dropChance = 0.06f
     override val spriteOffsetY = -8f
     override val scoreReward = 100
 

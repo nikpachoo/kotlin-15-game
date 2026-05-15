@@ -13,7 +13,7 @@ class Hydra( //TODO: Find some different behaviour for the hydra
     collisionDetector: CollisionDetector,
     world: World,
     particleSystem: ParticleSystem,
-    health: Float = 3f,
+    health: Float = 12f,
     private val patrolSpeed: Float = 60f,
     private val targetPosition: Vec2,
 ) : ShootingEnemy(
@@ -28,7 +28,7 @@ class Hydra( //TODO: Find some different behaviour for the hydra
     particleSystem = particleSystem,
 ) {
     override val contactDamage = 1
-    override val dropChance = 0.02f
+    override val dropChance = 0.07f
     override val spriteOffsetY = -20f
     override val scoreReward = 400
 

@@ -20,7 +20,7 @@ class DashingPhantom(
     world: World,
     private val player: Player,
     private val particleSystem: ParticleSystem,
-    health: Float = 4f,
+    health: Float = 8f,
 ) : Enemy(
     position = position,
     width = 32f,
@@ -34,7 +34,7 @@ class DashingPhantom(
 ) {
     override val canAttack = false
     override val contactDamage = 2
-    override val dropChance = 0.07f
+    override val dropChance = 0.12f
     override val spriteOffsetY = -24f
     override val scoreReward = 700
 

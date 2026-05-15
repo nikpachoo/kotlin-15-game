@@ -37,7 +37,7 @@ class Confuser(
 ) {
     override val canAttack = false
     override val contactDamage = 3
-    override val dropChance = 0.1f
+    override val dropChance = 0.15f
     override val spriteOffsetY = -32f
     override val scoreReward = 1000
 

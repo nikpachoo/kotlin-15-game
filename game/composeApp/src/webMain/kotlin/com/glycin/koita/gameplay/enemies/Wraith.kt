@@ -13,7 +13,7 @@ class Wraith(
     collisionDetector: CollisionDetector,
     world: World,
     particleSystem: ParticleSystem,
-    health: Float = 5f,
+    health: Float = 15f,
 ) : ShootingEnemy(
     position = position,
     width = 64f,
@@ -26,7 +26,7 @@ class Wraith(
     particleSystem = particleSystem,
 ) {
     override val contactDamage = 2
-    override val dropChance = 0.05f
+    override val dropChance = 0.10f
     override val spriteOffsetY = 0f
     override val scoreReward = 400
 

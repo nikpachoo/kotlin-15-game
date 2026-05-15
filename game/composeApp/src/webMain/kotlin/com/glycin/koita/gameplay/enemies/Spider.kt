@@ -18,7 +18,7 @@ class Spider(
     position: Vec2,
     collisionDetector: CollisionDetector,
     world: World,
-    health: Float = 4f,
+    health: Float = 15f,
 ) : Enemy(
     position = position,
     width = 64f,
@@ -32,7 +32,7 @@ class Spider(
 ) {
     override val canAttack = false
     override val contactDamage = 1
-    override val dropChance = 0.02f
+    override val dropChance = 0.07f
     override val spriteOffsetY = 0f
     override val scoreReward = 200
 
