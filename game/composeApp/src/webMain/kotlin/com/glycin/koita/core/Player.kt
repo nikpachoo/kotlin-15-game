@@ -185,13 +185,11 @@ class Player(
     }
 
     private fun updateScoreMultiplier() {
-        val newMult = SpawnSettings.scoreMultiplierForY(center.y)
-        val oldMult = gameState.scoreMultiplier
-        if (newMult == oldMult) return
-        gameState.scoreMultiplier = newMult
-        if (newMult > oldMult) {
-            gameState.pickupNotification = "Score multiplier ×$newMult!"
-        }
+        val zoneMult = SpawnSettings.scoreMultiplierForY(center.y)
+        val peak = gameState.scoreMultiplier
+        if (zoneMult <= peak) return
+        gameState.scoreMultiplier = zoneMult
+        gameState.pickupNotification = "You reached new height! Score ×$zoneMult"
     }
 
     fun enterBoostState() {
