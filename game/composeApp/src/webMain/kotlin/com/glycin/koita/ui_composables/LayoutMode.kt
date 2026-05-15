@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -67,10 +68,9 @@ internal fun BoxWithConstraintsScope.menuPanelLayout(
 
 @Composable
 internal fun MenuHeader(
-    title: String,
     modifier: Modifier = Modifier,
-    titleColor: Color = Color.White,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
+    titleContent: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier = modifier.padding(
@@ -81,6 +81,18 @@ internal fun MenuHeader(
         horizontalArrangement = horizontalArrangement,
     ) {
         KotlinLogo(boxSize = compactOr(32.dp, 64.dp))
+        titleContent()
+    }
+}
+
+@Composable
+internal fun MenuHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    titleColor: Color = Color.White,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
+) {
+    MenuHeader(modifier = modifier, horizontalArrangement = horizontalArrangement) {
         Text(
             text = title,
             fontFamily = pixelFont(),

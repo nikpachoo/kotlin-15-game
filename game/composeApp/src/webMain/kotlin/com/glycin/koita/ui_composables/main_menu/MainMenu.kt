@@ -43,10 +43,9 @@ private fun MainMenuPanel(gameState: GameState) {
             .width(compactOr(320.dp, 480.dp))
             .background(MenuColors.SIDEBAR),
     ) {
-        MenuHeader(
-            title = "Game",
-            modifier = Modifier.fillMaxWidth(),
-        )
+        MenuHeader(modifier = Modifier.fillMaxWidth()) {
+            KodeeVsFrictionBanner()
+        }
 
         MainMenuItem("Start") {
             if (compact) requestBrowserFullscreen()

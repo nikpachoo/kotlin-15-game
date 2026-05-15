@@ -36,7 +36,7 @@ class GameState {
     var selectedBlock by mutableStateOf(BuildBlock.STONE)
     var selectedWeapon by mutableStateOf(AttackWeapon.MISSILE)
     var isPaused by mutableStateOf(false)
-    var musicVolume by mutableStateOf(0.25f)
+    var musicVolume by mutableStateOf(0.05f)
     var sfxVolume by mutableStateOf(0.5f)
     var devMode by mutableStateOf(false)
     var pendingHighscoresResponse by mutableStateOf<HighscoresResponse?>(null)

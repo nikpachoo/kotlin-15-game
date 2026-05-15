@@ -48,6 +48,7 @@ import com.glycin.koita.ui_composables.MenuHeader
 import com.glycin.koita.ui_composables.SidebarMenuItem
 import com.glycin.koita.ui_composables.SpriteFrameIcon
 import com.glycin.koita.ui_composables.compactOr
+import com.glycin.koita.ui_composables.main_menu.KodeeVsFrictionBanner
 import com.glycin.koita.ui_composables.pixelFont
 import org.jetbrains.compose.resources.imageResource
 
@@ -85,10 +86,9 @@ private fun LeftPanel(gameState: GameState) {
             .background(MenuColors.SIDEBAR)
             .padding(bottom = compactOr(16.dp, 24.dp)),
     ) {
-        MenuHeader(
-            title = "Game",
-            modifier = Modifier.fillMaxWidth(),
-        )
+        MenuHeader(modifier = Modifier.fillMaxWidth()) {
+            KodeeVsFrictionBanner()
+        }
 
         PauseMenuItem("Resume") { gameState.isPaused = false }
         PauseMenuItem("Quit") { gameState.endRunAndGoTo(Screen.MAIN_MENU) }

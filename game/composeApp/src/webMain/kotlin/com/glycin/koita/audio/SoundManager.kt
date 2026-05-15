@@ -11,7 +11,7 @@ object SoundManager {
     private val music = mutableMapOf<Music, HTMLAudioElement>()
     private var currentMusic: Music? = null
 
-    var musicVolume: Float = 0.25f
+    var musicVolume: Float = 0.05f
         set(value) {
             field = value.coerceIn(0f, 1f)
             updateMusicVolumes()
