@@ -34,7 +34,7 @@ internal object HudColors {
 
     val MATERIALS_COLOR = Tile.STONE.color
     val MINERALS_COLOR = Tile.IRON_ORE.color
-    val ORE_COLOR = PANEL_ACCENT
+    val ORE_COLOR = Color(0xFFFFD977)
 
     /**
      * Picks the chip border color for the standard idle / hover / active triple.
