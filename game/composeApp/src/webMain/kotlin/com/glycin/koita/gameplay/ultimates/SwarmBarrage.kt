@@ -31,7 +31,7 @@ class SwarmBarrage(
     name = "Swarm Barrage",
     requiredUnlockIds = setOf(UnlockId.DOUBLE_JUMP, UnlockId.HOMING_MISSILES, UnlockId.INVULNERABLE),
 ) {
-    override val bossShieldDamage: Int = 2
+    override val bossShieldDamage: Int = 5
     override val usesBoostAnimation: Boolean = true
 
     private val missilePositions = FloatArray(MISSILE_POOL_SIZE * 2)
