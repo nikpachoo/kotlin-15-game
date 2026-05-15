@@ -89,7 +89,7 @@ private fun ModifiersPanel(width: Dp) {
             onToggle = { ModifierConfiguration.noHeal = !ModifierConfiguration.noHeal },
         )
         ModifierRow(
-            label = "VIM Developer",
+            label = "VIM developer",
             description = "No starting orbs, no shrines spawn. Just a missile. Hardcore.",
             weight = ModifierConfiguration.WEIGHT_NO_SHRINES,
             checked = ModifierConfiguration.noShrines,
@@ -97,21 +97,21 @@ private fun ModifiersPanel(width: Dp) {
         )
         ModifierRow(
             label = "Caffeinated",
-            description = "No damage / health / vision pickups in the world. Not for the faint-hearted.",
+            description = "No damage, health, or vision pickups in the world. Not for the faint-hearted.",
             weight = ModifierConfiguration.WEIGHT_NO_PICKUPS,
             checked = ModifierConfiguration.noPickups,
             onToggle = { ModifierConfiguration.noPickups = !ModifierConfiguration.noPickups },
         )
         ModifierRow(
-            label = "Good Ol' Waterfall",
-            description = "Digging upwards no longer pulls Kodee up. It just felt weird, didn't it?",
+            label = "Good ol' waterfall",
+            description = "Digging upward no longer pulls Kodee up. It just felt weird, didn't it?",
             weight = ModifierConfiguration.WEIGHT_NO_MINING_BOOST,
             checked = ModifierConfiguration.noMiningBoost,
             onToggle = { ModifierConfiguration.noMiningBoost = !ModifierConfiguration.noMiningBoost },
         )
         ModifierRow(
-            label = "10X Developer",
-            description = "Double the number of enemies spawning. The more the better!",
+            label = "10X developer",
+            description = "Double the number of enemies spawning. The more, the merrier!",
             weight = ModifierConfiguration.WEIGHT_DOUBLE_ENEMIES,
             checked = ModifierConfiguration.doubleEnemies,
             onToggle = { ModifierConfiguration.doubleEnemies = !ModifierConfiguration.doubleEnemies },

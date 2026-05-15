@@ -22,12 +22,12 @@ object AtlasEnemyObjects {
     private val BOSS = SpriteSheet(Res.drawable.boss_sheet, 64, 64, 16)
 
     val all: List<AtlasEntry> = listOf(
-        AtlasEntry(SLIME, 0..2, 100, "Legacy Slime", "Bouncy ground enemy that leaves a sticky slime trail to immobilize Kodee."),
-        AtlasEntry(SPIDER, 0..2, 100, "Dependency Spider", "Spins long web strands across terrain to block passage."),
-        AtlasEntry(STONE_GOLEM, 30..32, 150, "Boilerplate Golem", "Heavy ground brawler that chases Kodee and digs through terrain."),
-        AtlasEntry(HYDRA, 21..23, 200, "Callback Hydra", "Flying patroller that fires missiles towards Kodee."),
-        AtlasEntry(WRAITH, 28..30, 100, "Race Condition Wraith", "Stationary spectre that fires missiles at Kodee."),
-        AtlasEntry(NULL_PHANTOM, 22..24, 100, "Null Phantom", "Hovers and dashes through terrain in a straight line towards Kodee."),
+        AtlasEntry(SLIME, 0..2, 100, "Legacy Slime", "A bouncy ground enemy that leaves a sticky slime trail to immobilize Kodee."),
+        AtlasEntry(SPIDER, 0..2, 100, "Dependency Spider", "Spins long web strands across terrain that block passage."),
+        AtlasEntry(STONE_GOLEM, 30..32, 150, "Boilerplate Golem", "A heavy ground brawler that chases Kodee and digs through terrain."),
+        AtlasEntry(HYDRA, 21..23, 200, "Callback Hydra", "A flying patroller that fires missiles toward Kodee."),
+        AtlasEntry(WRAITH, 28..30, 100, "Race Condition Wraith", "A stationary specter that fires missiles at Kodee."),
+        AtlasEntry(NULL_PHANTOM, 22..24, 100, "Null Phantom", "Hovers and dashes through terrain in a straight line toward Kodee."),
         AtlasEntry(CONFUSER, 31..40, 100, "Type Confuser", "Pulls tiles into orbit and unleashes them as a volley of lava projectiles."),
         AtlasEntry(BOSS, 0..9, 100, "The Final Void", "The void at the world's edge. Kodee's final test."),
     )
