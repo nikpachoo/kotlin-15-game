@@ -19,6 +19,7 @@ import com.glycin.koita.physics.ParticleSystem
 import com.glycin.koita.util.angleTo
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.util.pulse
+import com.glycin.koita.util.steerToward
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import kotlin.math.cos
@@ -79,7 +80,7 @@ class RocketRide(
             return
         }
 
-        currentDirection = (mouse.worldPosition - player.center).normalized()
+        steerToward(currentDirection, player.center, mouse.worldPosition, TURN_STRENGTH, deltaTime)
 
         val center = player.center
         val affectedTiles = collisionDetector.getTilesInRadius(center, DESTRUCTION_RADIUS)
@@ -221,6 +222,7 @@ class RocketRide(
         private const val DAMAGE_PER_TICK = 40f
         private const val FINAL_EXPLOSION_RADIUS = 400f
         private const val FINAL_EXPLOSION_DAMAGE = 500f
+        private const val TURN_STRENGTH = 3f
         private const val EPSILON = 0.001f
     }
 }
