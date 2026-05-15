@@ -24,7 +24,7 @@ internal object MenuColors {
     val ERROR_TEXT = Color(0xFFFF6666)
     val VICTORY_TITLE = Color(0xFFFFD700)
     val INPUT_FIELD_FILL = Color.LightGray.copy(alpha = 0.35f)
-    val RANK_GOLD = Color(0xFFFFD700)
+    val RANK_GOLD = VICTORY_TITLE
     val RANK_SILVER = Color(0xFFC0C0C0)
     val RANK_BRONZE = Color(0xFFCD7F32)
 

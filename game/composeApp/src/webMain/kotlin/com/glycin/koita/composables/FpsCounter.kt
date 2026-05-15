@@ -19,9 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glycin.koita.ui_composables.HudColors
 import kotlinx.coroutines.isActive
 
-private val FPS_TEXT_COLOR = Color(0xFF00FF00)
+private val FPS_TEXT_COLOR = HudColors.BRIGHT_GREEN
 
 @Composable
 fun BoxScope.FpsCounter(modifier: Modifier = Modifier) {

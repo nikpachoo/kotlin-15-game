@@ -13,9 +13,10 @@ import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameSettings
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
+import com.glycin.koita.ui_composables.HudColors
 
 private val BAR_BACKGROUND_COLOR = Color(0xFF440000)
-private val BAR_FILL_COLOR = Color(0xFF00FF00)
+private val BAR_FILL_COLOR = HudColors.BRIGHT_GREEN
 
 @Composable
 fun EnemyHealthBars(

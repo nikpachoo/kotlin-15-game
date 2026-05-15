@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
+import com.glycin.koita.composables.WorldRendererColors
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Mouse
 import com.glycin.koita.core.Player
@@ -16,6 +17,7 @@ import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.upgrades.UnlockId
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
+import com.glycin.koita.ui_composables.HudColors
 import com.glycin.koita.util.angleTo
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.util.pulse
@@ -27,8 +29,8 @@ private val AURA_FILL_COLOR = Color(0x22FF4400)
 private val AURA_RING_COLOR = Color(0x33FF4400)
 private val ROCKET_BODY_COLOR = Color(0xFFCC2200)
 private val ROCKET_FIN_COLOR = Color(0xFF991100)
-private val NOSE_COLOR = Color(0xFFFFEE44)
-private val NOSE_CORE_COLOR = Color(0xFFFFFFCC)
+private val NOSE_COLOR = HudColors.BANNER_LABEL
+private val NOSE_CORE_COLOR = WorldRendererColors.SNIPER_BULLET_CORE
 
 class RocketRide(
     private val world: World,

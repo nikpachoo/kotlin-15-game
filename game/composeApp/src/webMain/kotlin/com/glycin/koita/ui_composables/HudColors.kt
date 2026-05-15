@@ -1,6 +1,7 @@
 package com.glycin.koita.ui_composables
 
 import androidx.compose.ui.graphics.Color
+import com.glycin.koita.world.Tile
 
 internal object HudColors {
     val BUTTON_IDLE = Color(0xFF2A2A3E)
@@ -29,9 +30,11 @@ internal object HudColors {
 
     val ULTIMATE_BAR_BACKGROUND = Color(0xFF1A0033)
 
-    val MATERIALS_COLOR = Color(0xFF5D564E)
-    val MINERALS_COLOR = Color(0xFF7B4D41)
-    val ORE_COLOR = Color(0xFFFFD977)
+    val BRIGHT_GREEN = Color(0xFF00FF00)
+
+    val MATERIALS_COLOR = Tile.STONE.color
+    val MINERALS_COLOR = Tile.IRON_ORE.color
+    val ORE_COLOR = PANEL_ACCENT
 
     /**
      * Picks the chip border color for the standard idle / hover / active triple.
