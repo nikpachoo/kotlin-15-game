@@ -227,6 +227,6 @@ class Kamehameha(
         private const val BEAM_WIDTH = 48f
         private const val EXPLOSION_RADIUS = 30f
         private const val EXPLOSION_SPACING = 40f
-        private const val BEAM_DAMAGE_PER_SECOND = 30f
+        private const val BEAM_DAMAGE_PER_SECOND = 10f
     }
 }
