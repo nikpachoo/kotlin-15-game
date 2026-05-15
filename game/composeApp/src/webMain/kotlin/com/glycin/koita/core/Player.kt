@@ -27,7 +27,7 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 
-private const val SURFACE_MUSIC_TRIGGER_Y = WorldConstants.WORLD_HEIGHT_PIXELS * 0.35f
+private const val SURFACE_MUSIC_TRIGGER_Y = WorldConstants.WORLD_HEIGHT_PIXELS * 0.575f
 
 class Player(
     var position: Vec2,
@@ -179,17 +179,17 @@ class Player(
         updateTimers(deltaTime)
         updateDrone(center)
         resourceShield.update(deltaTime)
-        updateScoreMultiplier()
+        updateScoreBonus()
         animator.update(deltaTime, state, onHurtComplete, onDeathComplete, onVictoryComplete)
         droneAnimator.update(deltaTime, droneState)
     }
 
-    private fun updateScoreMultiplier() {
-        val zoneMult = SpawnSettings.scoreMultiplierForY(center.y)
-        val peak = gameState.scoreMultiplier
-        if (zoneMult <= peak) return
-        gameState.scoreMultiplier = zoneMult
-        gameState.pickupNotification = "You reached new height! Score ×$zoneMult"
+    private fun updateScoreBonus() {
+        val zoneBonus = SpawnSettings.scoreBonusForY(center.y)
+        val peak = gameState.scoreBonus
+        if (zoneBonus <= peak) return
+        gameState.scoreBonus = zoneBonus
+        gameState.pickupNotification = "You reached new heights! Score mod +$zoneBonus"
     }
 
     fun enterBoostState() {

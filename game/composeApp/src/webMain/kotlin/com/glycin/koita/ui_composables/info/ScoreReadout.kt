@@ -22,11 +22,11 @@ import com.glycin.koita.util.formatTwoDecimals
 fun ScoreReadout(
     score: Int,
     elapsedSeconds: Int?,
-    heightMultiplier: Int,
+    heightBonus: Int,
     modifier: Modifier = Modifier,
 ) {
     val font = pixelFont()
-    val combinedMultiplier = heightMultiplier * ModifierConfiguration.scoreMultiplier
+    val combinedMultiplier = heightBonus + ModifierConfiguration.scoreMultiplier
     val multiplierLabel = remember(combinedMultiplier) { "×${combinedMultiplier.formatTwoDecimals()}" }
     Column(
         modifier = modifier,

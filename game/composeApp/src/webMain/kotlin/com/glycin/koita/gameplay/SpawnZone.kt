@@ -14,7 +14,7 @@ data class SpawnZone(
     val confuser: IntRange,
     val shrines: IntRange,
     val pickups: IntRange,
-    val scoreMultiplier: Int,
+    val scoreBonus: Int,
 ) {
     val minTileY: Int get() = ((1.0f - depthMax) * WorldConstants.WORLD_HEIGHT_TILES).toInt()
     val maxTileY: Int get() = ((1.0f - depthMin) * WorldConstants.WORLD_HEIGHT_TILES).toInt()

@@ -4,7 +4,7 @@ import com.glycin.koita.world.WorldConstants
 
 object SpawnSettings {
 
-    const val ABOVE_SURFACE_MULTIPLIER = 5
+    const val ABOVE_SURFACE_BONUS = 4
 
     val ZONE_1 = SpawnZone(
         depthMin = 0.00f,
@@ -18,7 +18,7 @@ object SpawnSettings {
         confuser = 0..0,
         shrines = 2..3,
         pickups = 1..2,
-        scoreMultiplier = 1,
+        scoreBonus = 0,
     )
 
     val ZONE_2 = SpawnZone(
@@ -33,7 +33,7 @@ object SpawnSettings {
         confuser = 0..0,
         shrines = 2..3,
         pickups = 2..3,
-        scoreMultiplier = 2,
+        scoreBonus = 1,
     )
 
     val ZONE_3 = SpawnZone(
@@ -48,7 +48,7 @@ object SpawnSettings {
         confuser = 0..1,
         shrines = 1..3,
         pickups = 3..5,
-        scoreMultiplier = 3,
+        scoreBonus = 2,
     )
 
     val ZONE_4 = SpawnZone(
@@ -63,7 +63,7 @@ object SpawnSettings {
         confuser = 5..8,
         shrines = 1..2,
         pickups = 2..3,
-        scoreMultiplier = 4,
+        scoreBonus = 3,
     )
 
     val ZONE_5 = SpawnZone(
@@ -78,18 +78,18 @@ object SpawnSettings {
         confuser = 9..13,
         shrines = 0..1,
         pickups = 1..2,
-        scoreMultiplier = 5,
+        scoreBonus = 4,
     )
 
     val ALL_ZONES = listOf(ZONE_1, ZONE_2, ZONE_3, ZONE_4, ZONE_5)
 
-    fun scoreMultiplierForY(y: Float): Int {
+    fun scoreBonusForY(y: Float): Int {
         val depth = 1f - y / WorldConstants.WORLD_HEIGHT_PIXELS
-        if (depth >= ALL_ZONES.last().depthMax) return ABOVE_SURFACE_MULTIPLIER
+        if (depth >= ALL_ZONES.last().depthMax) return ABOVE_SURFACE_BONUS
         for (i in ALL_ZONES.indices) {
             val zone = ALL_ZONES[i]
-            if (depth >= zone.depthMin && depth < zone.depthMax) return zone.scoreMultiplier
+            if (depth >= zone.depthMin && depth < zone.depthMax) return zone.scoreBonus
         }
-        return 1
+        return 0
     }
 }

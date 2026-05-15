@@ -47,7 +47,7 @@ fun BoxScope.RightPillarRegular(
         ScoreReadout(
             score = gameState.score,
             elapsedSeconds = gameState.elapsedTimeSeconds,
-            heightMultiplier = gameState.scoreMultiplier,
+            heightBonus = gameState.scoreBonus,
         )
 
         ResourceList(

@@ -57,10 +57,10 @@ class GameState {
     var miningRadiusMultiplier = 1.0f
     var visionMultiplier = 1.0f
     var visionFallOfMultiplier = 1.0f
-    var scoreMultiplier by mutableStateOf(1)
+    var scoreBonus by mutableStateOf(0)
 
     fun addScore(base: Int) {
-        score += (base * scoreMultiplier * ModifierConfiguration.scoreMultiplier).toInt()
+        score += (base * (scoreBonus + ModifierConfiguration.scoreMultiplier)).toInt()
     }
 
     var pickupNotification by mutableStateOf<String?>(null)
@@ -127,7 +127,7 @@ class GameState {
         miningRadiusMultiplier = 1.0f
         visionMultiplier = 1.0f
         visionFallOfMultiplier = 1.0f
-        scoreMultiplier = 1
+        scoreBonus = 0
 
         pickupNotification = null
         pickupCounts.clear()

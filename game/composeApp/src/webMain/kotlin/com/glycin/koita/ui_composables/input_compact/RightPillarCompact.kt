@@ -60,7 +60,7 @@ fun BoxScope.RightPillarCompact(
         ScoreReadout(
             score = gameState.score,
             elapsedSeconds = gameState.elapsedTimeSeconds,
-            heightMultiplier = gameState.scoreMultiplier,
+            heightBonus = gameState.scoreBonus,
             modifier = Modifier.align(Alignment.End),
         )
 
