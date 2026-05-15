@@ -11,23 +11,33 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.glycin.koita.core.Camera
 import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.ui_composables.HOTKEY_MODES
-import com.glycin.koita.ui_composables.input.HudButton
 import com.glycin.koita.ui_composables.info.ResourceList
 import com.glycin.koita.ui_composables.info.ScoreReadout
-import com.glycin.koita.ui_composables.pixelFont
+import kotlin.math.PI
+import kotlin.math.cos
+
+private val ARC_GAP = 8.dp
+private val ARC_RADIUS = COMPACT_THUMBSTICK_SIZE / 2 + COMPACT_SIDE_CHIP_SIZE / 2 + ARC_GAP
+private val ARC_BOX_HEIGHT = COMPACT_THUMBSTICK_SIZE / 2 + ARC_RADIUS + COMPACT_SIDE_CHIP_SIZE / 2
+private val ANCHOR_OFFSET = COMPACT_SIDE_CHIP_SIZE / 2 - COMPACT_THUMBSTICK_SIZE / 2
+private val ARC_DIAGONAL = ARC_RADIUS * cos(PI / 4).toFloat()
+
+private val CHIP_ARC_OFFSETS = listOf(
+    DpOffset(ANCHOR_OFFSET, ANCHOR_OFFSET - ARC_RADIUS),
+    DpOffset(ANCHOR_OFFSET - ARC_DIAGONAL, ANCHOR_OFFSET - ARC_DIAGONAL),
+    DpOffset(ANCHOR_OFFSET - ARC_RADIUS, ANCHOR_OFFSET),
+)
 
 @Composable
 fun BoxScope.RightPillarCompact(
@@ -44,7 +54,7 @@ fun BoxScope.RightPillarCompact(
             .fillMaxHeight()
             .align(Alignment.TopEnd)
             .padding(panelPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         ScoreReadout(
@@ -62,54 +72,30 @@ fun BoxScope.RightPillarCompact(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(modifier = Modifier.fillMaxWidth().height(COMPACT_ACTION_BOX_HEIGHT)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ARC_BOX_HEIGHT),
+        ) {
             AimThumbstick(
                 player = player,
                 camera = camera,
                 input = input,
-                modifier = Modifier.align(Alignment.CenterStart),
+                modifier = Modifier.align(Alignment.BottomEnd),
                 size = COMPACT_THUMBSTICK_SIZE,
             )
             HOTKEY_MODES.forEachIndexed { index, mode ->
-                val isEdge = index == 0 || index == HOTKEY_MODES.lastIndex
-                val alignment = when (index) {
-                    0 -> Alignment.TopEnd
-                    HOTKEY_MODES.lastIndex -> Alignment.BottomEnd
-                    else -> Alignment.CenterEnd
-                }
-                val offsetX = if (isEdge) -COMPACT_CHIP_INSET else 0.dp
-                ModeChip(
+                val offset = CHIP_ARC_OFFSETS[index]
+                CompactChip(
                     label = mode.label,
-                    selected = gameState.selectedHotkeyIndex == index,
                     input = input,
-                    modifier = Modifier.align(alignment).offset(x = offsetX),
                     onTap = { player.equip(index) },
+                    selected = gameState.selectedHotkeyIndex == index,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = offset.x, y = offset.y),
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ModeChip(
-    label: String,
-    selected: Boolean,
-    input: Input,
-    onTap: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    HudButton(
-        size = COMPACT_SIDE_CHIP_SIZE,
-        active = selected,
-        input = input,
-        modifier = modifier,
-        onTap = onTap,
-    ) {
-        Text(
-            text = label,
-            fontFamily = pixelFont(),
-            fontSize = 11.sp,
-            color = Color.White,
-        )
     }
 }

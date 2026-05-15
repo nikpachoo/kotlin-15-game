@@ -1,14 +1,11 @@
 package com.glycin.koita.ui_composables.input_compact
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -43,7 +40,6 @@ fun LeftPillarCompact(
             .width(panelWidth)
             .fillMaxHeight()
             .padding(panelPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(
@@ -69,53 +65,58 @@ fun LeftPillarCompact(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(modifier = Modifier.fillMaxWidth().height(COMPACT_ACTION_BOX_HEIGHT)) {
-            MovementThumbstick(
-                input = input,
-                modifier = Modifier.align(Alignment.CenterEnd),
-                size = COMPACT_THUMBSTICK_SIZE,
-            )
-            ActionButton(
-                label = "Heal",
-                keyHint = "E",
-                key = Key.E,
-                input = input,
-                modifier = Modifier.align(Alignment.TopStart).offset(x = COMPACT_CHIP_INSET),
-                enabled = player.canHeal,
-                size = COMPACT_SIDE_CHIP_SIZE,
-                onTap = { player.heal() },
-            )
-            ActionButton(
-                label = "Ult",
-                keyHint = "R",
-                key = Key.R,
-                input = input,
-                modifier = Modifier.align(Alignment.BottomStart).offset(x = COMPACT_CHIP_INSET),
-                enabled = gameState.ultimateAvailable != null,
-                size = COMPACT_SIDE_CHIP_SIZE,
-                onTap = { gameState.ultimateTriggered = true },
-            )
-        }
+        CompactChip(
+            label = gameState.selectedWeapon.displayName,
+            input = input,
+            onTap = {
+                gameState.selectedWeapon = AttackWeapon.availableFor(gameState).nextAfter(gameState.selectedWeapon)
+            },
+            fontSize = 10.sp,
+            fillWidth = true,
+            trailing = ">",
+        )
+        CompactChip(
+            label = gameState.selectedBlock.displayName,
+            input = input,
+            onTap = {
+                gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
+            },
+            fontSize = 10.sp,
+            fillWidth = true,
+            trailing = ">",
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CycleSelectorButton(
-                currentLabel = gameState.selectedWeapon.displayName,
+            MovementThumbstick(
                 input = input,
-                onTap = {
-                    gameState.selectedWeapon = AttackWeapon.availableFor(gameState).nextAfter(gameState.selectedWeapon)
-                },
+                size = COMPACT_THUMBSTICK_SIZE,
             )
-            CycleSelectorButton(
-                currentLabel = gameState.selectedBlock.displayName,
-                input = input,
-                onTap = {
-                    gameState.selectedBlock = BuildBlock.availableFor(gameState).nextAfter(gameState.selectedBlock)
-                },
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                ActionButton(
+                    label = "Heal",
+                    keyHint = "E",
+                    key = Key.E,
+                    input = input,
+                    enabled = player.canHeal,
+                    size = COMPACT_SIDE_CHIP_SIZE,
+                    onTap = { player.heal() },
+                )
+                ActionButton(
+                    label = "Ult",
+                    keyHint = "R",
+                    key = Key.R,
+                    input = input,
+                    enabled = gameState.ultimateAvailable != null,
+                    size = COMPACT_SIDE_CHIP_SIZE,
+                    onTap = { gameState.ultimateTriggered = true },
+                )
+            }
         }
     }
 }
