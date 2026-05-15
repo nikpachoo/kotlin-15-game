@@ -20,6 +20,7 @@ import com.glycin.koita.util.angleTo
 import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.util.pulse
 import com.glycin.koita.world.World
+import com.glycin.koita.world.WorldConstants
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -78,22 +79,41 @@ class RocketRide(
             return
         }
 
-        val mouseWorld = mouse.worldPosition
-        currentDirection = (mouseWorld - player.center).normalized()
-        player.applyUltimateVelocity(currentDirection * FLY_SPEED)
+        currentDirection = (mouse.worldPosition - player.center).normalized()
 
         val center = player.center
-
         val affectedTiles = collisionDetector.getTilesInRadius(center, DESTRUCTION_RADIUS)
-        val hitIndestructible = explodeTerrain(affectedTiles, center, DESTRUCTION_RADIUS, world, particleSystem)
+        val wallNormal = computeIndestructibleNormal(affectedTiles, center)
+        val motion = if (wallNormal != null) projectAlongWall(currentDirection, wallNormal) else currentDirection
+        player.applyUltimateVelocity(motion * FLY_SPEED)
 
-        if (hitIndestructible) {
-            performFinalExplosion(player)
-            deactivate(player)
-            return
-        }
-
+        explodeTerrain(affectedTiles, center, DESTRUCTION_RADIUS, world, particleSystem)
         enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime, bossShieldDamage)
+    }
+
+    private fun computeIndestructibleNormal(tiles: List<Pair<Int, Int>>, center: Vec2): Vec2? {
+        val tileSize = WorldConstants.TILE_SIZE
+        val halfTile = tileSize * 0.5f
+        var sumX = 0f
+        var sumY = 0f
+        var count = 0
+        for (i in 0..<tiles.size) {
+            val pair = tiles[i]
+            if (!world[pair.first, pair.second].isIndestructible) continue
+            sumX += pair.first * tileSize + halfTile
+            sumY += pair.second * tileSize + halfTile
+            count++
+        }
+        if (count == 0) return null
+        val away = Vec2(center.x - sumX / count, center.y - sumY / count)
+        return if (away.magnitude() < EPSILON) null else away.normalized()
+    }
+
+    private fun projectAlongWall(desired: Vec2, normal: Vec2): Vec2 {
+        val into = desired.dot(normal)
+        if (into >= 0f) return desired
+        val projected = Vec2(desired.x - into * normal.x, desired.y - into * normal.y)
+        return if (projected.magnitude() < EPSILON) Vec2.zero() else projected.normalized()
     }
 
     private fun performFinalExplosion(player: Player) {
@@ -201,5 +221,6 @@ class RocketRide(
         private const val DAMAGE_PER_TICK = 40f
         private const val FINAL_EXPLOSION_RADIUS = 400f
         private const val FINAL_EXPLOSION_DAMAGE = 500f
+        private const val EPSILON = 0.001f
     }
 }

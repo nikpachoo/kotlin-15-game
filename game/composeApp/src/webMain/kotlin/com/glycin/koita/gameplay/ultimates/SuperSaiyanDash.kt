@@ -42,10 +42,12 @@ class SuperSaiyanDash(
     override val usesBoostAnimation: Boolean = true
 
     private var timer = 0f
+    private var pinTimer = NOT_PINNED
 
     override fun activate(player: Player) {
         isActive = true
         timer = DURATION
+        pinTimer = NOT_PINNED
         player.applyUltimateVelocity(Vec2(0f, -FLY_SPEED))
     }
 
@@ -60,12 +62,19 @@ class SuperSaiyanDash(
 
         val center = player.center
 
-        val affectedTiles = collisionDetector.getTilesInRadius(center, DESTRUCTION_RADIUS)
-        val hitIndestructible = explodeTerrain(affectedTiles, center, DESTRUCTION_RADIUS, world, particleSystem)
-
-        if (hitIndestructible) {
-            deactivate(player)
-            return
+        if (pinTimer >= 0f) {
+            pinTimer += deltaTime
+            if (pinTimer >= PIN_DURATION) {
+                deactivate(player)
+                return
+            }
+        } else {
+            val affectedTiles = collisionDetector.getTilesInRadius(center, DESTRUCTION_RADIUS)
+            val hitIndestructible = explodeTerrain(affectedTiles, center, DESTRUCTION_RADIUS, world, particleSystem)
+            if (hitIndestructible) {
+                pinTimer = 0f
+                player.applyUltimateVelocity(Vec2.zero())
+            }
         }
 
         enemyManager.damageInRange(center, DESTRUCTION_RADIUS, DAMAGE_PER_TICK * deltaTime, bossShieldDamage)
@@ -74,6 +83,7 @@ class SuperSaiyanDash(
     override fun deactivate(player: Player) {
         isActive = false
         timer = 0f
+        pinTimer = NOT_PINNED
         player.clearUltimateVelocity()
     }
 
@@ -212,6 +222,8 @@ class SuperSaiyanDash(
         private const val DAMAGE_PER_TICK = 50f
         private const val FLY_SPEED = 1200f
         private const val SHOCKWAVE_DURATION = 0.45f
+        private const val PIN_DURATION = 1.5f
+        private const val NOT_PINNED = -1f
 
         private const val SPIKE_COUNT = 18
         private const val AURA_OUTER_HALF_X = 60f
