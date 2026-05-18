@@ -195,7 +195,7 @@ fun TutorialScreen(appState: GameState) {
                     keysPressed[event.key] = true
                     when (event.key) {
                         Key.Escape -> {
-                            appState.currentScreen = Screen.MAIN_MENU
+                            gameState.isPaused = !gameState.isPaused
                         }
                         Key.One -> player.equip(0)
                         Key.Two -> player.equip(1)
@@ -264,7 +264,18 @@ fun TutorialScreen(appState: GameState) {
             null,
         )
 
-        UiRenderer(gameState, player, camera, enemyManager, input, upgradeRepository)
+        UiRenderer(
+            gameState,
+            player,
+            camera,
+            enemyManager,
+            input,
+            upgradeRepository,
+            onQuit = {
+                SoundManager.stopCurrentLoop()
+                appState.currentScreen = Screen.MAIN_MENU
+            },
+        )
 
         TutorialPrompt(tutorialState, input)
 

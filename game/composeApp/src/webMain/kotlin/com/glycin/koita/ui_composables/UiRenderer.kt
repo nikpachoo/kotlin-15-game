@@ -78,6 +78,7 @@ fun UiRenderer(
     enemyManager: EnemyManager,
     input: Input,
     upgradeRepository: UpgradeRepository,
+    onQuit: (() -> Unit)? = null,
 ) {
     val compact = isCompact()
     val panelWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
@@ -172,7 +173,7 @@ fun UiRenderer(
         }
 
         if (gameState.isPaused) {
-            PauseMenu(gameState, upgradeRepository)
+            PauseMenu(gameState, upgradeRepository, onQuit)
         }
     }
 }

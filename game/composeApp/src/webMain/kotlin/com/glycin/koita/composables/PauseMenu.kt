@@ -63,7 +63,11 @@ private val sliderColors
     )
 
 @Composable
-fun PauseMenu(gameState: GameState, upgradeRepository: UpgradeRepository) {
+fun PauseMenu(
+    gameState: GameState,
+    upgradeRepository: UpgradeRepository,
+    onQuit: (() -> Unit)? = null,
+) {
     val unlocks = remember { upgradeRepository.getUnlocked() }
     Box(
         modifier = Modifier
@@ -72,14 +76,14 @@ fun PauseMenu(gameState: GameState, upgradeRepository: UpgradeRepository) {
         contentAlignment = Alignment.Center,
     ) {
         Row(modifier = Modifier.height(IntrinsicSize.Max)) {
-            LeftPanel(gameState)
+            LeftPanel(gameState, onQuit)
             RightPanel(unlocks, gameState.pickupCounts)
         }
     }
 }
 
 @Composable
-private fun LeftPanel(gameState: GameState) {
+private fun LeftPanel(gameState: GameState, onQuit: (() -> Unit)?) {
     Column(
         modifier = Modifier
             .width(compactOr(260.dp, 420.dp))
@@ -91,7 +95,7 @@ private fun LeftPanel(gameState: GameState) {
         }
 
         PauseMenuItem("Resume") { gameState.isPaused = false }
-        PauseMenuItem("Quit") { gameState.endRunAndGoTo(Screen.MAIN_MENU) }
+        PauseMenuItem("Quit") { onQuit?.invoke() ?: gameState.endRunAndGoTo(Screen.MAIN_MENU) }
 
         Spacer(modifier = Modifier.height(compactOr(16.dp, 28.dp)))
 
