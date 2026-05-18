@@ -64,6 +64,80 @@ cp scripts/gcp.env.example scripts/gcp.env
 
 `scripts/gcp.env` is gitignored — don't commit it once it has real values.
 
+### Database roles
+
+Cloud SQL is configured with two PostgreSQL roles:
+
+- **`postgres`**: Cloud SQL admin. Used only for schema migrations, break-glass debugging, and provisioning other roles. Its password is **not** kept in Secret Manager.
+- **`highscore_server_app`**: the role the Cloud Run service connects as (`DB_USER` in `scripts/gcp.env`). Has only the minimum privileges the app needs: `CONNECT` on the `highscore` database, `USAGE` on schema `public`, `SELECT/INSERT/UPDATE/DELETE` on `public.users`, and `USAGE/SELECT` on `public.users_id_seq`. Cannot create tables, alter schema, manage roles, or touch any other database. Its password lives in Secret Manager (`db-password` by default, see gcp.env.example).
+
+#### One-time provisioning of the app role
+
+`setup.sh` provisions the instance, database, and secrets, but the restricted app role has to be created manually, `gcloud sql users create` would grant `cloudsqlsuperuser`, defeating the lockdown.
+
+After `setup.sh` has run, generate the app password and stage it in Secret Manager:
+
+```bash
+APP_DB_PASSWORD="$(openssl rand -base64 36 | tr -d '/+=' | head -c 40)"
+printf '%s' "$APP_DB_PASSWORD" \
+  | gcloud secrets versions add db-password \
+      --project=<PROJECT> --data-file=-
+```
+
+Then open a psql shell as the admin and run the SQL block below (substituting `<APP_DB_PASSWORD>`):
+
+```bash
+gcloud sql connect <INSTANCE> \
+  --project=<PROJECT> --user=postgres --database=highscore
+```
+
+```sql
+CREATE ROLE highscore_server_app WITH LOGIN PASSWORD '<APP_DB_PASSWORD>' NOINHERIT;
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+
+REVOKE ALL ON DATABASE highscore FROM highscore_server_app;
+GRANT  CONNECT ON DATABASE highscore TO highscore_server_app;
+
+GRANT USAGE ON SCHEMA public TO highscore_server_app;
+
+-- Bootstrap the schema. Either by connecting the server through the `postgres` user first, and letting Exposed set up the tables,
+-- or doing this manually (WARNING: might become outdated!)
+CREATE TABLE IF NOT EXISTS public.users (
+  id    serial       PRIMARY KEY,
+  name  varchar(50)  NOT NULL,
+  score integer      NOT NULL,
+  email varchar(255) NULL
+);
+ALTER TABLE    public.users        OWNER TO postgres;
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE    public.users        TO highscore_server_app;
+GRANT USAGE, SELECT                  ON SEQUENCE public.users_id_seq TO highscore_server_app;
+```
+
+Then deploy. `scripts/gcp.env` should have `DB_USER=highscore_server_app`.
+
+#### Rotating the app password
+
+```bash
+NEW_APP_PASSWORD="$(openssl rand -base64 36 | tr -d '/+=' | head -c 40)"
+printf '%s' "$NEW_APP_PASSWORD" \
+  | gcloud secrets versions add db-password \
+      --project=<PROJECT> --data-file=-
+
+gcloud sql connect <INSTANCE> --project=<PROJECT> --user=postgres --database=highscore
+# inside psql:
+#   ALTER ROLE highscore_server_app WITH PASSWORD '<NEW_APP_PASSWORD>';
+
+./scripts/deploy.sh
+# After verifying the new revision works, disable the previous secret version:
+#   gcloud secrets versions list  db-password --project=<PROJECT>
+#   gcloud secrets versions disable <OLD_VERSION> --secret=db-password --project=<PROJECT>
+```
+
+Schema changes (new columns, new tables) must also be applied as `postgres`, since `highscore_server_app` has no DDL privileges. The app's `SchemaUtils.create` will skip any table that already exists, so additive changes applied through psql are picked up automatically on next deploy.
+
 ### Deploying
 
 ```bash
