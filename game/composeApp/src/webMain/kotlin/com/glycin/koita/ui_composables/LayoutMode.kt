@@ -65,7 +65,7 @@ internal fun BoxWithConstraintsScope.menuPanelLayout(
     val backTabSize = compactOr(40.dp, 56.dp)
     val panelGap = compactOr(8.dp, 12.dp)
     val panelWidth = if (isCompact()) {
-        maxWidth * compactWidthRatio - backTabSize - panelGap
+        (maxWidth * compactWidthRatio - backTabSize - panelGap).coerceAtMost(normalPanelWidth)
     } else {
         normalPanelWidth
     }

@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,16 +48,33 @@ fun MainMenu(gameState: GameState) {
 
 @Composable
 private fun PortraitWarningBanner(modifier: Modifier = Modifier) {
-    Text(
-        text = "Kodee vs Friction is best played in landscape mode.",
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        color = MenuColors.ERROR_TEXT,
-        fontFamily = pixelFont(),
-        fontSize = compactOr(48.sp, 64.sp),
-        textAlign = TextAlign.Center,
-    )
+    val text = "Kodee vs Friction is best played in landscape mode."
+    val fontSize = compactOr(36.sp, 48.sp)
+    val font = pixelFont()
+    val outlineStyle = remember(fontSize) {
+        TextStyle(
+            fontFamily = font,
+            fontSize = fontSize,
+            color = Color.Black,
+            drawStyle = Stroke(width = 6f),
+            textAlign = TextAlign.Center,
+        )
+    }
+    val fillStyle = remember(fontSize) {
+        TextStyle(
+            fontFamily = font,
+            fontSize = fontSize,
+            color = MenuColors.ERROR_TEXT,
+            textAlign = TextAlign.Center,
+        )
+    }
+    val textModifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)
+    Box(modifier = modifier) {
+        Text(text = text, style = outlineStyle, modifier = textModifier)
+        Text(text = text, style = fillStyle, modifier = textModifier)
+    }
 }
 
 @Composable
