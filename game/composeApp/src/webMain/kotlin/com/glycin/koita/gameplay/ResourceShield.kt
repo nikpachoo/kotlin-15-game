@@ -65,7 +65,7 @@ class ResourceShield(
         shieldTiles.removeAll(toRemove.toSet())
 
         if (destroyedByEnemy > 0) {
-            pendingRepairCost += destroyedByEnemy * 100
+            pendingRepairCost += destroyedByEnemy * 20
             repairTimer = repairDelay
         }
 
@@ -75,10 +75,8 @@ class ResourceShield(
         }
 
         if (pendingRepairCost > 0) {
-            if (gameState.collectedMinerals + gameState.collectedRich < pendingRepairCost) return
-            val fromMinerals = minOf(gameState.collectedMinerals, pendingRepairCost)
-            gameState.collectedMinerals -= fromMinerals
-            gameState.collectedRich -= (pendingRepairCost - fromMinerals)
+            if (gameState.collectedMinerals < pendingRepairCost) return
+            gameState.collectedMinerals -= pendingRepairCost
             pendingRepairCost = 0
         }
 

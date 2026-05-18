@@ -153,11 +153,12 @@ class EnemyManager(
         return nearest
     }
 
-    fun damageInRange(pos: Vec2, range: Float, damage: Float, shieldDamage: Int = 1) {
+    fun damageInRange(pos: Vec2, range: Float, damage: Float, shieldDamage: Int = 1, exclude: Collection<Enemy>? = null) {
         val rangeSq = range * range
         for (i in 0..<enemies.size) {
             val e = enemies[i]
             if (!e.isAlive) continue
+            if (exclude != null && e in exclude) continue
             if (Vec2.fastDistance(e.center, pos) <= rangeSq) {
                 e.takeDamage(damage)
             }

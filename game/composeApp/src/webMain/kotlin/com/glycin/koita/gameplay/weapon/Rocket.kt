@@ -4,6 +4,7 @@ import com.glycin.koita.audio.SoundManager
 import com.glycin.koita.audio.Sounds
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.gameplay.GameState
+import com.glycin.koita.gameplay.enemies.Enemy
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
@@ -34,8 +35,8 @@ class Rocket(
         private const val INITIAL_SPEED = 10f
         private const val MAX_SPEED = 1200f
         private const val ACCELERATION_TIME = 1f
-        private const val BASE_DAMAGE = 4
-        private const val EXPLOSION_DAMAGE = 8f
+        private const val BASE_DAMAGE = 8
+        private const val EXPLOSION_DAMAGE = 4f
         private const val BASE_IMPACT_RADIUS = 140f
         const val BASE_SIZE = 12f
         private const val HOMING_RANGE = 400f
@@ -64,7 +65,7 @@ class Rocket(
             hitEnemies.forEach { enemy ->
                 enemy.takeDamage(BASE_DAMAGE * gameState.damageMultiplier)
             }
-            deactivate(explode = true)
+            deactivate(explode = true, excludeFromSplash = hitEnemies)
             return
         }
 
@@ -86,13 +87,13 @@ class Rocket(
         deactivate(explode = true)
     }
 
-    private fun deactivate(explode: Boolean) {
-        if (explode) explode()
+    private fun deactivate(explode: Boolean, excludeFromSplash: Collection<Enemy>? = null) {
+        if (explode) explode(excludeFromSplash)
         isAlive = false
         onEnd()
     }
 
-    private fun explode() {
+    private fun explode(excludeFromSplash: Collection<Enemy>? = null) {
         val dynamiteCount = if (gameState.explosiveBlocks) {
             collisionDetector.getTilesInRadius(position, BASE_IMPACT_RADIUS).count { (tileX, tileY) ->
                 world[tileX, tileY] == Tile.DYNAMITE
@@ -108,6 +109,6 @@ class Rocket(
         SoundManager.playOneShot(Sounds.EXPLODE)
         explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
         enemyManager.destroyShieldsInRadius(position, impactRadius, bossShieldDamage)
-        enemyManager.damageInRange(position, impactRadius, EXPLOSION_DAMAGE * gameState.damageMultiplier, bossShieldDamage)
+        enemyManager.damageInRange(position, impactRadius, EXPLOSION_DAMAGE * gameState.damageMultiplier, bossShieldDamage, excludeFromSplash)
     }
 }
