@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +21,8 @@ import com.glycin.koita.gameplay.modes.AttackWeapon
 import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui_composables.info.Health
 import com.glycin.koita.ui_composables.input.HudButton
+import com.glycin.koita.ui_composables.input.PillarSide
+import com.glycin.koita.ui_composables.input.pillarContainer
 import com.glycin.koita.ui_composables.pixelFont
 import com.glycin.koita.util.nextAfter
 
@@ -36,10 +35,7 @@ fun LeftPillarCompact(
     panelPadding: Dp,
 ) {
     Column(
-        modifier = Modifier
-            .width(panelWidth)
-            .fillMaxHeight()
-            .padding(panelPadding),
+        modifier = Modifier.pillarContainer(input, PillarSide.LEFT, panelWidth, panelPadding),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(

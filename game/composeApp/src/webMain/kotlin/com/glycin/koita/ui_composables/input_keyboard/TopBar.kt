@@ -2,7 +2,6 @@ package com.glycin.koita.ui_composables.input_keyboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +12,7 @@ import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.ui_composables.info.Health
+import com.glycin.koita.ui_composables.input.uiHoverCapture
 
 private val MENU_BUTTON_SIZE = 56.dp
 
@@ -26,7 +26,7 @@ fun TopBar(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
+            .uiHoverCapture(input)
             .padding(panelPadding),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp),

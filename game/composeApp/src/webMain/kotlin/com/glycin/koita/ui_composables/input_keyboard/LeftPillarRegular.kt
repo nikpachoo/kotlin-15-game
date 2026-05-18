@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +14,11 @@ import com.glycin.koita.core.Input
 import com.glycin.koita.core.Player
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.ui_composables.ModeRow
+import com.glycin.koita.ui_composables.input.PillarSide
+import com.glycin.koita.ui_composables.input.pillarContainer
 
-private val CHIP_SIZE = 56.dp
-private val GAP = 4.dp
+private val CHIP_SIZE = REGULAR_CHIP_SIZE
+private val GAP = REGULAR_CHIP_GAP
 private val GROUP_GAP = 12.dp
 
 @Composable
@@ -31,10 +30,7 @@ fun LeftPillarRegular(
     panelPadding: Dp,
 ) {
     Column(
-        modifier = Modifier
-            .width(panelWidth)
-            .fillMaxHeight()
-            .padding(panelPadding),
+        modifier = Modifier.pillarContainer(input, PillarSide.LEFT, panelWidth, panelPadding),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(GROUP_GAP),
     ) {

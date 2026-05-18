@@ -12,6 +12,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import com.glycin.koita.composables.BossHealthBar
 import com.glycin.koita.composables.EnemyHealthBars
 import com.glycin.koita.composables.Notification
@@ -27,10 +28,14 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.enemies.EnemyManager
 import com.glycin.koita.gameplay.ultimates.UltimateManager
 import com.glycin.koita.gameplay.upgrades.UpgradeRepository
+import com.glycin.koita.ui_composables.input_compact.COMPACT_NATURAL_PILLAR_WIDTH
+import com.glycin.koita.ui_composables.input_compact.COMPACT_PILLAR_PADDING
 import com.glycin.koita.ui_composables.input_compact.LeftPillarCompact
 import com.glycin.koita.ui_composables.input_compact.RightPillarCompact
 import com.glycin.koita.ui_composables.input_keyboard.KeyChipButton
 import com.glycin.koita.ui_composables.input_keyboard.LeftPillarRegular
+import com.glycin.koita.ui_composables.input_keyboard.REGULAR_NATURAL_PILLAR_WIDTH
+import com.glycin.koita.ui_composables.input_keyboard.REGULAR_PILLAR_PADDING
 import com.glycin.koita.ui_composables.input_keyboard.RightPillarRegular
 import com.glycin.koita.ui_composables.input_keyboard.TopBar
 
@@ -81,8 +86,10 @@ fun UiRenderer(
     onQuit: (() -> Unit)? = null,
 ) {
     val compact = isCompact()
-    val panelWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
-    val panelPadding = if (compact) 6.dp else 16.dp
+    val letterboxWidth = with(LocalDensity.current) { camera.offsetX.toDp() }
+    val naturalPillarWidth = if (compact) COMPACT_NATURAL_PILLAR_WIDTH else REGULAR_NATURAL_PILLAR_WIDTH
+    val panelWidth = max(naturalPillarWidth, letterboxWidth)
+    val panelPadding = if (compact) COMPACT_PILLAR_PADDING else REGULAR_PILLAR_PADDING
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (compact) {
@@ -146,6 +153,7 @@ fun UiRenderer(
         PlacementGhost(
             player = player,
             camera = camera,
+            input = input,
         )
 
         EnemyHealthBars(

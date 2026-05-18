@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +19,10 @@ import com.glycin.koita.gameplay.modes.BuildBlock
 import com.glycin.koita.ui_composables.HudColors
 import com.glycin.koita.ui_composables.info.ResourceList
 import com.glycin.koita.ui_composables.info.ScoreReadout
+import com.glycin.koita.ui_composables.input.PillarSide
+import com.glycin.koita.ui_composables.input.pillarContainer
 
-private val CHIP_SIZE = 56.dp
+private val CHIP_SIZE = REGULAR_CHIP_SIZE
 private val GROUP_GAP = 16.dp
 private val ACTION_GAP = 8.dp
 
@@ -37,10 +36,8 @@ fun BoxScope.RightPillarRegular(
 ) {
     Column(
         modifier = Modifier
-            .width(panelWidth)
-            .fillMaxHeight()
             .align(Alignment.TopEnd)
-            .padding(panelPadding),
+            .pillarContainer(input, PillarSide.RIGHT, panelWidth, panelPadding),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(GROUP_GAP),
     ) {

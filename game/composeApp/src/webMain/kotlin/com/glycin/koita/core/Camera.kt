@@ -8,7 +8,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import com.glycin.koita.world.WorldConstants
-import kotlin.math.max
 import kotlin.math.min
 
 class Camera(
@@ -29,34 +28,22 @@ class Camera(
 
     private var halfWidth: Float = 0f
     private var halfHeight: Float = 0f
-    private var lastCompact: Boolean = false
-    private var lastPillarPx: Float = -1f
 
     val screenPosition get() = Offset(halfWidth, halfHeight)
 
     fun updateViewport(
         newActualWidth: Float,
         newActualHeight: Float,
-        compact: Boolean = false,
-        pillarReservationPx: Float = 0f,
     ) {
-        if (newActualWidth == actualWidth &&
-            newActualHeight == actualHeight &&
-            compact == lastCompact &&
-            pillarReservationPx == lastPillarPx
-        ) return
+        if (newActualWidth == actualWidth && newActualHeight == actualHeight) return
 
         actualWidth = newActualWidth
         actualHeight = newActualHeight
-        lastCompact = compact
-        lastPillarPx = pillarReservationPx
 
-        val virtualWidth = if (compact) WorldConstants.COMPACT_VIRTUAL_WIDTH else WorldConstants.VIRTUAL_WIDTH
-        val virtualHeight = if (compact) WorldConstants.COMPACT_VIRTUAL_HEIGHT else WorldConstants.VIRTUAL_HEIGHT
-        val pillar = if (compact) pillarReservationPx else 0f
-        val gameAreaW = max(newActualWidth - 2f * pillar, 1f)
-        scale = min(gameAreaW / virtualWidth, newActualHeight / virtualHeight)
-        offsetX = pillar + (gameAreaW - virtualWidth * scale) / 2f
+        val virtualWidth = WorldConstants.VIRTUAL_WIDTH
+        val virtualHeight = WorldConstants.VIRTUAL_HEIGHT
+        scale = min(newActualWidth / virtualWidth, newActualHeight / virtualHeight)
+        offsetX = (newActualWidth - virtualWidth * scale) / 2f
         offsetY = (newActualHeight - virtualHeight * scale) / 2f
         canvasWidth = virtualWidth
         canvasHeight = virtualHeight

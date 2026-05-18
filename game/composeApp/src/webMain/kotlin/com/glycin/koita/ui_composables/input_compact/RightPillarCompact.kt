@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +21,8 @@ import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.ui_composables.HOTKEY_MODES
 import com.glycin.koita.ui_composables.info.ResourceList
 import com.glycin.koita.ui_composables.info.ScoreReadout
+import com.glycin.koita.ui_composables.input.PillarSide
+import com.glycin.koita.ui_composables.input.pillarContainer
 import kotlin.math.PI
 import kotlin.math.cos
 
@@ -50,10 +49,8 @@ fun BoxScope.RightPillarCompact(
 ) {
     Column(
         modifier = Modifier
-            .width(panelWidth)
-            .fillMaxHeight()
             .align(Alignment.TopEnd)
-            .padding(panelPadding),
+            .pillarContainer(input, PillarSide.RIGHT, panelWidth, panelPadding),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {

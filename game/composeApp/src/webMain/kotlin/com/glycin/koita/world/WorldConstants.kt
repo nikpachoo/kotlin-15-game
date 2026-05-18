@@ -5,8 +5,6 @@ import androidx.compose.ui.geometry.Size
 object WorldConstants {
     const val VIRTUAL_WIDTH = 1024f
     const val VIRTUAL_HEIGHT = 768f
-    const val COMPACT_VIRTUAL_WIDTH = 1024f
-    const val COMPACT_VIRTUAL_HEIGHT = 768f
 
     const val TILE_SIZE = 4
     const val CHUNK_SIZE = 32
