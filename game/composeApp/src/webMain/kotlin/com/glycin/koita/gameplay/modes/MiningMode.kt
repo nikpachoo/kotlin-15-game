@@ -41,7 +41,6 @@ class MiningMode(
         used()
     }
 
-    //TODO: Remove the swing logic and replace with animation timings when i have the drone animations
     override fun update(deltaTime: Float) {
         val baseRotation = position.angleTo(mouse.worldPosition) + 90f
         val isMouseOnRight = mouse.worldPosition.x >= position.x

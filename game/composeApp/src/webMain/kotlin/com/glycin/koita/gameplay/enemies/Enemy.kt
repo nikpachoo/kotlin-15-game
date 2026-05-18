@@ -111,7 +111,7 @@ abstract class Enemy(
 
 enum class EnemyState {
     FALLING,
-    FLYING,  //TODO: Dont seperate FLYING and WALKING, make them one state MOVING
+    FLYING,
     ATTACK,
     HURT,
     DEATH,

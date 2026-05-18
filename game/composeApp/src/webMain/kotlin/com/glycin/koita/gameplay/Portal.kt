@@ -36,7 +36,7 @@ class Portal(
         if (!portalCleared) {
             portalCleared = true
             enemyManager.clearAll()
-            val visibleChunks = world.getVisibleChunks(camera, camera.canvasWidth, camera.canvasHeight)
+            val visibleChunks = world.getVisibleChunks(camera)
             visibleChunks.forEach { it.fillWith(Tile.AIR) }
         }
 

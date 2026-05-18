@@ -232,7 +232,6 @@ fun GameScreen(gameState: GameState) {
                                 player.position = Vec2(player.position.x, collisionDetector.portalY + collisionDetector.portalHeight + 16f)
                             }
                         }
-                        Key.Q -> gameState.devMode = !gameState.devMode // TODO: remove before release
                     }
                 }
                 KeyEventType.KeyUp -> keysPressed[event.key] = false

@@ -37,13 +37,12 @@ class FluidSimulator(
         updateCount++
         if (updateCount % 2 == 0L) return
 
-        val bufferChunks = 10
+        val bufferTiles = 10 * WorldConstants.CHUNK_SIZE
 
-        //TODO: Maybe make a Camera.getFrustum function
-        val minTileX = ((camera.position.x - camera.canvasWidth / 2) / WorldConstants.TILE_SIZE).toInt() - (bufferChunks * WorldConstants.CHUNK_SIZE)
-        val maxTileX = ((camera.position.x + camera.canvasWidth / 2) / WorldConstants.TILE_SIZE).toInt() + (bufferChunks * WorldConstants.CHUNK_SIZE)
-        val minTileY = ((camera.position.y - camera.canvasHeight / 2) / WorldConstants.TILE_SIZE).toInt() - (bufferChunks * WorldConstants.CHUNK_SIZE)
-        val maxTileY = ((camera.position.y + camera.canvasHeight / 2) / WorldConstants.TILE_SIZE).toInt() + (bufferChunks * WorldConstants.CHUNK_SIZE)
+        val minTileX = ((camera.position.x - camera.canvasWidth / 2) / WorldConstants.TILE_SIZE).toInt() - bufferTiles
+        val maxTileX = ((camera.position.x + camera.canvasWidth / 2) / WorldConstants.TILE_SIZE).toInt() + bufferTiles
+        val minTileY = ((camera.position.y - camera.canvasHeight / 2) / WorldConstants.TILE_SIZE).toInt() - bufferTiles
+        val maxTileY = ((camera.position.y + camera.canvasHeight / 2) / WorldConstants.TILE_SIZE).toInt() + bufferTiles
 
         val startX = minTileX.coerceIn(0, WorldConstants.WORLD_WIDTH_TILES - 1)
         val endX = maxTileX.coerceIn(0, WorldConstants.WORLD_WIDTH_TILES - 1)

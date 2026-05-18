@@ -99,8 +99,6 @@ fun WorldRenderer(
 
     Canvas(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         val _tick = frameCount // Hack to trigger recomposition, so it needs to remain here even if unused
-        val canvasWidth = camera.canvasWidth
-        val canvasHeight = camera.canvasHeight
 
         with(camera) { withVirtualViewport {
 
@@ -108,7 +106,7 @@ fun WorldRenderer(
             parallaxBackground.render(this)
         }
 
-        val visibleChunks = world.getVisibleChunks(camera, canvasWidth, canvasHeight)
+        val visibleChunks = world.getVisibleChunks(camera)
         visibleChunks.forEach { chunk ->
             val chunkBitmap = chunk.generateBitmap()
 

@@ -57,7 +57,6 @@ class BuildMode(
         placeBlock()
     }
 
-    //TODO: Remove the swing logic and replace with animation timings when i have the drone animations
     override fun update(deltaTime: Float) {
         if (waitForRelease && !mouse.isLeftPressed) {
             waitForRelease = false

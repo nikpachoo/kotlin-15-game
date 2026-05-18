@@ -19,14 +19,14 @@ class World(
         }
     }
 
-    fun getVisibleChunks(camera: Camera, canvasWidth: Float, canvasHeight: Float): List<Chunk> {
+    fun getVisibleChunks(camera: Camera): List<Chunk> {
         val chunkPixelSize = WorldConstants.CHUNK_SIZE * WorldConstants.TILE_SIZE
 
         // Super basic Frustum Culling
-        val viewLeft = camera.position.x - canvasWidth / 2f
-        val viewRight = camera.position.x + canvasWidth / 2f
-        val viewTop = camera.position.y - canvasHeight / 2f
-        val viewBottom = camera.position.y + canvasHeight / 2f
+        val viewLeft = camera.position.x - camera.canvasWidth / 2f
+        val viewRight = camera.position.x + camera.canvasWidth / 2f
+        val viewTop = camera.position.y - camera.canvasHeight / 2f
+        val viewBottom = camera.position.y + camera.canvasHeight / 2f
 
         val startChunkX = (viewLeft / chunkPixelSize).toInt().coerceIn(0, chunksWide - 1)
         val endChunkX = (viewRight / chunkPixelSize).toInt().coerceIn(0, chunksWide - 1)

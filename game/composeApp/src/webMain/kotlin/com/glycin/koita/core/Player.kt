@@ -147,7 +147,6 @@ class Player(
     val droneAnimator = DroneAnimator()
     var droneState = DroneState.MINING_IDLE
 
-    //TODO: Keep attacks here or inject the weapons in the renderer?
     val weapons = mutableStateListOf<Weapon>()
     var center = Vec2(position.x + width / 2f, position.y + height / 2f)
 
