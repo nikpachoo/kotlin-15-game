@@ -11,6 +11,7 @@ private val NAME_REGEX = Regex("^[A-Za-z0-9 _]{1,16}$")
 
 private val ALLOWED_ORIGINS = listOf(
     "https://improved-broccoli-v31e8gl.pages.github.io",
+    "https://game.kotlinlang.org",
     "http://localhost:8080",
 )
 
