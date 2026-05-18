@@ -30,6 +30,7 @@ private const val COMPACT_HEIGHT_DP = 480
 private const val COMPACT_WIDTH_DP = 700
 
 val LocalLayoutMode = staticCompositionLocalOf { LayoutMode.NORMAL }
+val LocalIsPortrait = staticCompositionLocalOf { false }
 
 fun layoutModeFor(maxWidth: Dp, maxHeight: Dp): LayoutMode {
     return if (maxHeight.value < COMPACT_HEIGHT_DP || maxWidth.value < COMPACT_WIDTH_DP) {
@@ -39,8 +40,13 @@ fun layoutModeFor(maxWidth: Dp, maxHeight: Dp): LayoutMode {
     }
 }
 
+fun isPortraitFor(maxWidth: Dp, maxHeight: Dp): Boolean = maxHeight > maxWidth
+
 @Composable
 fun isCompact(): Boolean = LocalLayoutMode.current == LayoutMode.COMPACT
+
+@Composable
+fun isPortrait(): Boolean = LocalIsPortrait.current
 
 @Composable
 fun <T> compactOr(compact: T, normal: T): T = if (isCompact()) compact else normal

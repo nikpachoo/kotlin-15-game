@@ -11,10 +11,12 @@ import com.glycin.koita.ui_composables.main_menu.GameOverScreen
 import com.glycin.koita.composables.GameScreen
 import com.glycin.koita.ui_composables.main_menu.GameWonScreen
 import com.glycin.koita.ui_composables.main_menu.HighscoresScreen
+import com.glycin.koita.ui_composables.LocalIsPortrait
 import com.glycin.koita.ui_composables.LocalLayoutMode
 import com.glycin.koita.ui_composables.main_menu.MainMenu
 import com.glycin.koita.ui_composables.main_menu.ModifierScreen
 import com.glycin.koita.ui_composables.main_menu.OptionsScreen
+import com.glycin.koita.ui_composables.isPortraitFor
 import com.glycin.koita.ui_composables.layoutModeFor
 import com.glycin.koita.gameplay.GameState
 import com.glycin.koita.gameplay.Screen
@@ -26,7 +28,11 @@ fun App() {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val mode = layoutModeFor(maxWidth, maxHeight)
-        CompositionLocalProvider(LocalLayoutMode provides mode) {
+        val portrait = isPortraitFor(maxWidth, maxHeight)
+        CompositionLocalProvider(
+            LocalLayoutMode provides mode,
+            LocalIsPortrait provides portrait,
+        ) {
             when (gameState.currentScreen) {
                 Screen.MAIN_MENU -> MainMenu(gameState)
                 Screen.TUTORIAL -> TutorialScreen(gameState)

@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.gameplay.GameState
@@ -20,6 +23,8 @@ import com.glycin.koita.ui_composables.MenuHeader
 import com.glycin.koita.ui_composables.SidebarMenuItem
 import com.glycin.koita.ui_composables.compactOr
 import com.glycin.koita.ui_composables.isCompact
+import com.glycin.koita.ui_composables.isPortrait
+import com.glycin.koita.ui_composables.pixelFont
 import com.glycin.koita.ui_composables.rememberMenuBackgroundBrush
 import com.glycin.koita.util.requestBrowserFullscreen
 
@@ -29,17 +34,33 @@ fun MainMenu(gameState: GameState) {
         modifier = Modifier
             .fillMaxSize()
             .background(rememberMenuBackgroundBrush()),
-        contentAlignment = Alignment.Center,
     ) {
-        MainMenuPanel(gameState)
+        MainMenuPanel(gameState, modifier = Modifier.align(Alignment.Center))
+        if (isPortrait()) {
+            PortraitWarningBanner(modifier = Modifier.align(Alignment.TopCenter))
+        }
     }
 }
 
 @Composable
-private fun MainMenuPanel(gameState: GameState) {
+private fun PortraitWarningBanner(modifier: Modifier = Modifier) {
+    Text(
+        text = "Kodee vs Friction is best played in landscape mode.",
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        color = MenuColors.ERROR_TEXT,
+        fontFamily = pixelFont(),
+        fontSize = compactOr(48.sp, 64.sp),
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun MainMenuPanel(gameState: GameState, modifier: Modifier = Modifier) {
     val compact = isCompact()
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(compactOr(320.dp, 480.dp))
             .background(MenuColors.SIDEBAR),
     ) {
