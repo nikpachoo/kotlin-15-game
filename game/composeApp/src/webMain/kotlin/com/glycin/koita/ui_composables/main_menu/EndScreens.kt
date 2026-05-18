@@ -2,12 +2,17 @@ package com.glycin.koita.ui_composables.main_menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -54,33 +59,40 @@ private fun EndScreen(
     subtitle: String,
     extraNote: String? = null,
 ) {
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(rememberMenuBackgroundBrush()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
-        MenuHeader(
-            title = title,
-            titleColor = titleColor,
+        Column(
             modifier = Modifier
-                .width(compactOr(360.dp, 640.dp))
-                .background(MenuColors.SIDEBAR),
-            horizontalArrangement = Arrangement.spacedBy(
-                space = compactOr(16.dp, 24.dp),
-                alignment = Alignment.CenterHorizontally,
-            ),
-        )
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            MenuHeader(
+                title = title,
+                titleColor = titleColor,
+                modifier = Modifier
+                    .width(compactOr(360.dp, 640.dp))
+                    .background(MenuColors.SIDEBAR),
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = compactOr(16.dp, 24.dp),
+                    alignment = Alignment.CenterHorizontally,
+                ),
+            )
 
-        Spacer(modifier = Modifier.height(compactOr(16.dp, 28.dp)))
+            Spacer(modifier = Modifier.height(compactOr(16.dp, 28.dp)))
 
-        EndScreenCard(
-            gameState = gameState,
-            subtitle = subtitle,
-            extraNote = extraNote,
-            width = compactOr(320.dp, 480.dp),
-        )
+            EndScreenCard(
+                gameState = gameState,
+                subtitle = subtitle,
+                extraNote = extraNote,
+                width = compactOr(320.dp, 480.dp),
+            )
+        }
     }
 }
 
