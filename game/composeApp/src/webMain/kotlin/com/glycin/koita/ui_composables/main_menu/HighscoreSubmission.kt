@@ -22,6 +22,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -183,7 +184,7 @@ fun HighscoreSubmission(
 private fun HelperText(text: String) {
     Text(
         text = text,
-        fontFamily = pixelFont(),
+        fontFamily = FontFamily.SansSerif,
         fontSize = helperFontSize(),
         color = Color.White,
         textAlign = TextAlign.Start,
@@ -210,7 +211,7 @@ private fun SubmissionDisclaimer() {
 
     Text(
         text = annotated,
-        fontFamily = pixelFont(),
+        fontFamily = FontFamily.SansSerif,
         fontSize = helperFontSize(),
         color = Color.White,
         textAlign = TextAlign.Center,
