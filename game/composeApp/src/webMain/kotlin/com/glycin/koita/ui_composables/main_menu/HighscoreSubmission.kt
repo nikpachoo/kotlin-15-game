@@ -17,7 +17,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glycin.koita.rest.ApiClient
@@ -31,6 +39,15 @@ import kotlinx.coroutines.launch
 
 private const val NAME_MAX_LENGTH = 16
 private const val EMAIL_MAX_LENGTH = 255
+private const val PRIVACY_NOTICE_URL = "https://www.jetbrains.com/legal/docs/privacy/privacy/"
+
+private val PRIVACY_LINK_STYLES = TextLinkStyles(
+    style = SpanStyle(
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+        textDecoration = TextDecoration.Underline,
+    ),
+)
 
 private fun sanitizeName(input: String): String =
     input.filter { it in 'A'..'Z' || it in 'a'..'z' || it in '0'..'9' || it == ' ' || it == '_' }
@@ -41,6 +58,9 @@ private fun fieldWidth() = compactOr(240.dp, 320.dp)
 
 @Composable
 private fun fieldFontSize() = compactOr(12.sp, 16.sp)
+
+@Composable
+private fun helperFontSize() = compactOr(9.sp, 11.sp)
 
 @Composable
 fun HighscoreSubmission(
@@ -73,12 +93,7 @@ fun HighscoreSubmission(
             color = Color.White,
         )
 
-        Spacer(modifier = Modifier.height(
-            compactOr(
-                8.dp,
-                20.dp
-            )
-        ))
+        Spacer(modifier = Modifier.height(compactOr(8.dp, 20.dp)))
 
         SubmissionField(
             value = name,
@@ -87,12 +102,14 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(
-            compactOr(
-                4.dp,
-                8.dp
-            )
-        ))
+        Spacer(modifier = Modifier.height(compactOr(2.dp, 4.dp)))
+
+        HelperText(
+            text = "Your nickname will be shown publicly on the leaderboard. " +
+                "Please don't use your real name if you don't want it to appear publicly.",
+        )
+
+        Spacer(modifier = Modifier.height(compactOr(8.dp, 12.dp)))
 
         SubmissionField(
             value = email,
@@ -103,12 +120,14 @@ fun HighscoreSubmission(
             enabled = !submitting,
         )
 
-        Spacer(modifier = Modifier.height(
-            compactOr(
-                8.dp,
-                16.dp
-            )
-        ))
+        Spacer(modifier = Modifier.height(compactOr(2.dp, 4.dp)))
+
+        HelperText(
+            text = "Your email won't be displayed publicly. We'll only use it to " +
+                "contact you if you qualify for a prize or to verify your submission.",
+        )
+
+        Spacer(modifier = Modifier.height(compactOr(8.dp, 16.dp)))
 
         when {
             hasError -> Text(
@@ -123,20 +142,14 @@ fun HighscoreSubmission(
                 fontSize = fieldFontSize(),
                 color = Color.White,
             )
-            else -> Spacer(modifier = Modifier.height(
-                compactOr(
-                    12.dp,
-                    20.dp
-                )
-            ))
+            else -> Spacer(modifier = Modifier.height(compactOr(12.dp, 20.dp)))
         }
 
-        Spacer(modifier = Modifier.height(
-            compactOr(
-                6.dp,
-                12.dp
-            )
-        ))
+        Spacer(modifier = Modifier.height(compactOr(6.dp, 12.dp)))
+
+        SubmissionDisclaimer()
+
+        Spacer(modifier = Modifier.height(compactOr(6.dp, 12.dp)))
 
         MenuOutlinedButton(
             text = "Submit",
@@ -164,6 +177,45 @@ fun HighscoreSubmission(
             width = fieldWidth(),
         )
     }
+}
+
+@Composable
+private fun HelperText(text: String) {
+    Text(
+        text = text,
+        fontFamily = pixelFont(),
+        fontSize = helperFontSize(),
+        color = Color.White,
+        textAlign = TextAlign.Start,
+        modifier = Modifier.width(fieldWidth()),
+    )
+}
+
+@Composable
+private fun SubmissionDisclaimer() {
+    val annotated = remember {
+        buildAnnotatedString {
+            append(
+                "By submitting your nickname and email, you agree to participate in " +
+                    "the Kotlin Turns 15 leaderboard. Your nickname and score may " +
+                    "appear publicly on the leaderboard. We'll only use your email " +
+                    "for prize-related contact and submission verification. See the ",
+            )
+            withLink(LinkAnnotation.Url(url = PRIVACY_NOTICE_URL, styles = PRIVACY_LINK_STYLES)) {
+                append("Privacy Notice")
+            }
+            append(" for details.")
+        }
+    }
+
+    Text(
+        text = annotated,
+        fontFamily = pixelFont(),
+        fontSize = helperFontSize(),
+        color = Color.White,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.width(fieldWidth()),
+    )
 }
 
 @Composable
