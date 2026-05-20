@@ -58,7 +58,7 @@ class DashingPhantom(
     private var phase = WraithPhase.HOVERING
     private var phaseTimer = 0f
 
-    private val detectionRange = 500f
+    private val detectionRange = 400f
     private val detectionRangeSq = detectionRange * detectionRange
     private val hoverSpeed = 20f
     private val dashSpeed = 1500f
@@ -108,6 +108,10 @@ class DashingPhantom(
         enemyFacing = if (hoverDirection.x >= 0) EnemyFacing.RIGHT else EnemyFacing.LEFT
 
         if (Vec2.fastDistance(center, player.center) <= detectionRangeSq) {
+            dashDirection = (player.center - center).normalized()
+            dashMaxDistance = Vec2.distance(center, player.center) + 50f
+            dashTravelled = 0f
+            hasHitPlayer = false
             phase = WraithPhase.SHAKING
             phaseTimer = shakeDuration
         }
@@ -126,10 +130,6 @@ class DashingPhantom(
 
         if (phaseTimer <= 0f) {
             renderOffset = Vec2.zero()
-            dashDirection = (player.center - center).normalized()
-            dashMaxDistance = Vec2.distance(center, player.center) + 50f
-            dashTravelled = 0f
-            hasHitPlayer = false
             phase = WraithPhase.DASHING
         }
     }

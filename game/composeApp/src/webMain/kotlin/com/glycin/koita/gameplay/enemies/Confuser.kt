@@ -4,7 +4,6 @@ import com.glycin.koita.core.Player
 import com.glycin.koita.core.SpriteAnimator
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.physics.CollisionDetector
-import com.glycin.koita.physics.FluidSimulator
 import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
@@ -22,7 +21,6 @@ class Confuser(
     collisionDetector: CollisionDetector,
     world: World,
     private val player: Player,
-    private val fluidSimulator: FluidSimulator,
     health: Float = 24f,
 ) : Enemy(
     position = position,
@@ -60,7 +58,9 @@ class Confuser(
     private val pullRadius = 150f
     private val shootSpeed = 500f
     private val maxPulledTiles = 256
-    private val tilesPerVolley = 64
+    private val tilesPerVolley = 32
+    private val volleyCooldown = 1.5f
+    private var volleyCooldownTimer = 0f
 
     // Gravity field: pulled tile positions orbiting around the confuser
     private val pulledTiles = FloatArray(maxPulledTiles * 2) // x, y pairs
@@ -71,7 +71,6 @@ class Confuser(
     private val orbitRadius = 60f
     private var orbitAngle = 0f
 
-    // Lava projectiles shot toward the player
     private val maxProjectiles = 64
     private val projectilePositions = FloatArray(maxProjectiles * 2)
     private val projectileVelocities = FloatArray(maxProjectiles * 2)
@@ -109,8 +108,11 @@ class Confuser(
             Vec2.zero()
         }
 
-        if (pulledCount >= maxPulledTiles) {
+        volleyCooldownTimer -= deltaTime
+
+        if (pulledCount >= maxPulledTiles && volleyCooldownTimer <= 0f) {
             shootAllTiles()
+            volleyCooldownTimer = volleyCooldown
         }
     }
 
@@ -120,7 +122,7 @@ class Confuser(
             if (!pulledActive[i]) continue
             pulledActive[i] = false
             pulledCount--
-            spawnLavaProjectile(pulledTiles[i * 2], pulledTiles[i * 2 + 1])
+            spawnSlimeProjectile(pulledTiles[i * 2], pulledTiles[i * 2 + 1])
             shot++
             if (shot >= tilesPerVolley) break
         }
@@ -195,7 +197,7 @@ class Confuser(
         }
     }
 
-    private fun spawnLavaProjectile(fromX: Float, fromY: Float) {
+    private fun spawnSlimeProjectile(fromX: Float, fromY: Float) {
         val index = findFreeSlot(projectileActive) ?: return
         val i2 = index * 2
 
@@ -246,24 +248,17 @@ class Confuser(
             }
 
             val tile = world[tileX, tileY]
-            if (tile.isSolid || tile == Tile.WATER) {
+            if (tile.isSolid) {
                 projectileActive[i] = false
                 val aboveY = tileY - 1
                 if (aboveY in 0 until WorldConstants.WORLD_HEIGHT_TILES && world[tileX, aboveY] == Tile.AIR) {
-                    world[tileX, aboveY] = Tile.LAVA
-                    fluidSimulator.registerFluid(tileX, aboveY)
-                } else {
-                    if (!tile.isIndestructible) {
-                        world[tileX, tileY] = Tile.LAVA
-                        fluidSimulator.registerFluid(tileX, tileY)
-                    }
+                    world[tileX, aboveY] = Tile.SLIME
                 }
                 continue
             }
-
-            if (tile == Tile.AIR && Random.nextFloat() < 0.02f) {
-                world[tileX, tileY] = Tile.LAVA
-                fluidSimulator.registerFluid(tileX, tileY)
+            if (tile == Tile.WATER) {
+                projectileActive[i] = false
+                continue
             }
         }
     }

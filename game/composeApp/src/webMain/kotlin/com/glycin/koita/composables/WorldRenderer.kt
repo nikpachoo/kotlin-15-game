@@ -292,7 +292,7 @@ fun WorldRenderer(
                 e.forEachProjectile { x, y ->
                     val projScreenPos = camera.worldToScreen(x, y)
                     drawRect(
-                        color = Tile.LAVA.color,
+                        color = Tile.SLIME.color,
                         topLeft = projScreenPos,
                         size = Size(8f, 8f),
                     )

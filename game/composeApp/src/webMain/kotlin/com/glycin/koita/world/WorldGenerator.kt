@@ -112,7 +112,7 @@ class WorldGenerator(
             }
 
             spawn(findAir(zone.confuser.random() * countMultiplier, 48f, 48f)) { pos ->
-                enemyManager.add(Confuser(pos, collisionDetector, world, player, fluidSimulator))
+                enemyManager.add(Confuser(pos, collisionDetector, world, player))
             }
         }
     }

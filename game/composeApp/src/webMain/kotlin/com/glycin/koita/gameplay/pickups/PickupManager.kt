@@ -46,7 +46,7 @@ class PickupManager(
         val roll = Random.nextInt(totalWeight)
         val pickup = when {
             roll < GameSettings.PICKUP_WEIGHT_DAMAGE ->
-                DamagePickup(onPickup = { gameState.damageMultiplier += 0.5f }, position = pos)
+                DamagePickup(onPickup = { gameState.damageMultiplier += 1.0f }, position = pos)
             roll < GameSettings.PICKUP_WEIGHT_DAMAGE + GameSettings.PICKUP_WEIGHT_VISION ->
                 VisionPickup(onPickup = { gameState.visionMultiplier += 0.25f }, position = pos)
             else ->
