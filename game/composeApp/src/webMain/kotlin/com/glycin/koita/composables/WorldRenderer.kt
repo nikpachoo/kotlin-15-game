@@ -233,6 +233,14 @@ fun WorldRenderer(
                 )
             }
 
+            forEachShieldRect { x, y ->
+                val rectScreenPos = camera.worldToScreen(x, y)
+                drawRect(
+                    color = Tile.SHIELD.color,
+                    topLeft = rectScreenPos,
+                    size = WorldConstants.STANDARD_SIZE,
+                )
+            }
         }
 
         val nearbyEnemies = enemyManager.getEnemiesInRange(player.center, 1000f)

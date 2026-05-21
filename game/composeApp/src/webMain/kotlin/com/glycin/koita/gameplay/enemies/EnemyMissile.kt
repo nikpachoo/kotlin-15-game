@@ -3,9 +3,8 @@ package com.glycin.koita.gameplay.enemies
 import com.glycin.koita.core.Vec2
 import com.glycin.koita.physics.CollisionDetector
 import com.glycin.koita.physics.ParticleSystem
-import com.glycin.koita.util.activate
+import com.glycin.koita.util.explodeTerrain
 import com.glycin.koita.util.isOutOfWorldBounds
-import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 
 class EnemyMissile(
@@ -28,7 +27,7 @@ class EnemyMissile(
 
         val newPos = position + (direction * speed * deltaTime)
 
-        if (collisionDetector.isSolidOrShieldAtPosition(newPos)) {
+        if (collisionDetector.isSolidAtPosition(newPos)) {
             explode()
             isAlive = false
             return
@@ -44,19 +43,7 @@ class EnemyMissile(
 
     private fun explode() {
         val affectedTiles = collisionDetector.getTilesInRadius(position, impactRadius)
-        affectedTiles.forEach { (tileX, tileY) ->
-            val tile = world[tileX, tileY]
-            when {
-                tile == Tile.SHIELD -> {
-                    Tile.STONE.activate(tileX, tileY, position, particleSystem, impactRadius)
-                    world[tileX, tileY] = Tile.AIR
-                }
-                tile != Tile.AIR && !tile.isIndestructible -> {
-                    tile.activate(tileX, tileY, position, particleSystem, impactRadius)
-                    world[tileX, tileY] = Tile.AIR
-                }
-            }
-        }
+        explodeTerrain(affectedTiles, position, impactRadius, world, particleSystem)
     }
 
     fun checkPlayerCollision(playerPos: Vec2, playerWidth: Float, playerHeight: Float): Boolean {

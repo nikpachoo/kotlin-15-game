@@ -160,7 +160,9 @@ class Player(
     private var attackTimer = 0f
     private val attackDuration = 0.3f
 
-    private val resourceShield = ResourceShield(this, gameState, world)
+    private val resourceShield = ResourceShield(this, gameState, particleSystem)
+
+    fun forEachShieldRect(action: (x: Float, y: Float) -> Unit) = resourceShield.forEachActiveRect(action)
 
     init {
         drone.getMiningMode()?.onCollectHit = ::applyDigBoost
@@ -256,6 +258,11 @@ class Player(
         if (gameState.ultimateActive) return
         if (isAnchorLocked) return
         if (invulnerabilityTimer > 0f) return
+        if (resourceShield.tryAbsorbHit()) {
+            SoundManager.playOneShot(Sounds.HIT)
+            invulnerabilityTimer = PlayerSettings.INVULNERABILITY_DURATION
+            return
+        }
         health = (health - amount).coerceAtLeast(0)
         SoundManager.playOneShot(Sounds.HIT)
         droneState = getDroneIdleState()

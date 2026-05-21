@@ -7,6 +7,8 @@ import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import com.glycin.koita.world.isOutOfWorldBounds
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 fun Float.lerp(b: Float, t: Float) = this + t * (b - this)
 
@@ -75,6 +77,26 @@ fun Player.overlapsWith(otherPos: Vec2, otherWidth: Int, otherHeight: Int): Bool
             otherPos.x + otherWidth > position.x &&
             otherPos.y < position.y + height &&
             otherPos.y + otherHeight > position.y
+}
+
+fun ParticleSystem.spawnRadialBurst(
+    originX: Float,
+    originY: Float,
+    centerX: Float,
+    centerY: Float,
+    tile: Tile,
+) {
+    val dx = originX - centerX
+    val dy = originY - centerY
+    val mag = sqrt(dx * dx + dy * dy)
+    val speed = 80f + Random.nextFloat() * 80f
+    val vx = if (mag > 0.001f) dx / mag * speed else 0f
+    val vy = if (mag > 0.001f) dy / mag * speed else -speed
+    addParticle(
+        position = Vec2(originX, originY),
+        velocity = Vec2(vx, vy),
+        tile = tile,
+    )
 }
 
 fun explodeTerrain(

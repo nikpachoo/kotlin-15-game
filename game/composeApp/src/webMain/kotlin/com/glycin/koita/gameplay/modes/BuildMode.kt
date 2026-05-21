@@ -82,11 +82,17 @@ class BuildMode(
     }
 
     private fun placeBlock() {
-        if (!isGhostValid) return
+        val selected = gameState.selectedBlock
+        if (!isGhostValid) {
+            val cost = costFor(selected)
+            if (gameState.collectedSimple < cost) {
+                gameState.pickupNotification = "Not enough materials for ${selected.displayName} ($cost)"
+            }
+            return
+        }
         val tileX = ghostTileX ?: return
         val tileY = ghostTileY ?: return
 
-        val selected = gameState.selectedBlock
         writeTiles(selected.tile, tileX, tileY)
         if (selected == BuildBlock.TURRET) {
             turretManager.addTurret(tileX, tileY)

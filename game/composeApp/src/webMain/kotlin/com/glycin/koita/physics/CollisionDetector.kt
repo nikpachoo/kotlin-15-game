@@ -1,7 +1,6 @@
 package com.glycin.koita.physics
 
 import com.glycin.koita.core.Vec2
-import com.glycin.koita.world.Tile
 import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 
@@ -79,16 +78,6 @@ class CollisionDetector(
         if (isOutOfWorldBounds(tileX, tileY)) return true
 
         return world[tileX, tileY].isSolid
-    }
-
-    fun isSolidOrShieldAtPosition(position: Vec2): Boolean {
-        val tileX = (position.x / WorldConstants.TILE_SIZE).toInt()
-        val tileY = (position.y / WorldConstants.TILE_SIZE).toInt()
-
-        if(isOutOfWorldBounds(tileX, tileY)) return true
-
-        val tile = world[tileX, tileY]
-        return tile.isSolid || tile == Tile.SHIELD
     }
 
     fun getTilesInRadius(center: Vec2, radius: Float): List<Pair<Int, Int>> {

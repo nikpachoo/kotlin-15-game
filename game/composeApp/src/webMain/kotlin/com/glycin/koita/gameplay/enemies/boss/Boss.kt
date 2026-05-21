@@ -17,6 +17,7 @@ import com.glycin.koita.world.World
 import com.glycin.koita.world.WorldConstants
 import com.glycin.koita.util.TWO_PI
 import com.glycin.koita.util.lerp
+import com.glycin.koita.util.spawnRadialBurst
 import koita.composeapp.generated.resources.Res
 import koita.composeapp.generated.resources.boss_sheet
 import kotlin.math.cos
@@ -552,18 +553,7 @@ class Boss(
         shieldCount--
         shieldRegenQueue[i] = shieldRegenDelay
         regenPending++
-
-        val dx = sx - center.x
-        val dy = sy - center.y
-        val mag = sqrt(dx * dx + dy * dy)
-        val speed = 80f + Random.nextFloat() * 80f
-        val vx = if (mag > 0.001f) dx / mag * speed else 0f
-        val vy = if (mag > 0.001f) dy / mag * speed else -speed
-        particleSystem.addParticle(
-            position = Vec2(sx, sy),
-            velocity = Vec2(vx, vy),
-            tile = Tile.GOLD_ORE,
-        )
+        particleSystem.spawnRadialBurst(sx, sy, center.x, center.y, Tile.GOLD_ORE)
     }
 
     private fun updateShieldRegen(deltaTime: Float) {
