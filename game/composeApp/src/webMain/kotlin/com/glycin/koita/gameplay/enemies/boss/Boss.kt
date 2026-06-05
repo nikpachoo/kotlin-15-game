@@ -54,7 +54,7 @@ class Boss(
     private val collisionDetector: CollisionDetector,
     private val particleSystem: ParticleSystem,
     private val gameState: GameState,
-    private val maxHealth: Float = 100f,
+    private val maxHealth: Float = 200f,
 ) {
 
     val spriteAnimator = SpriteAnimator(
