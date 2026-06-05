@@ -6,8 +6,8 @@ ktor:
     port: "$PORT:9001"
 postgres:
   url: "$POSTGRES_URL:jdbc:postgresql://localhost:5432/default"
-  user: "$POSTGRES_USER:username"
-  password: "$POSTGRES_PASSWORD:123"
+  user: "$POSTGRES_USER"
+  password: "$POSTGRES_PASSWORD"
 auth:
-  username: "$AUTH_USERNAME:admin"
-  password: "$AUTH_PASSWORD:admin"
+  username: "$AUTH_USERNAME"
+  password: "$AUTH_PASSWORD"
