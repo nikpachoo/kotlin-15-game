@@ -40,6 +40,7 @@ fun MainMenu(gameState: GameState) {
             .background(rememberMenuBackgroundBrush()),
     ) {
         MainMenuPanel(gameState, modifier = Modifier.align(Alignment.Center))
+        GithubCorner(modifier = Modifier.align(Alignment.TopEnd))
         if (isPortrait()) {
             PortraitWarningBanner(modifier = Modifier.align(Alignment.TopCenter))
         }
