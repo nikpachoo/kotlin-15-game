@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +30,8 @@ import com.glycin.koita.ui_composables.MenuOutlinedButton
 import com.glycin.koita.ui_composables.compactOr
 import com.glycin.koita.ui_composables.pixelFont
 import com.glycin.koita.ui_composables.rememberMenuBackgroundBrush
+
+private const val KOTLIN_EFFECT_URL = "https://kotlinlang.org/kotlin-effect/"
 
 @Composable
 fun GameOverScreen(gameState: GameState) {
@@ -136,8 +139,23 @@ private fun EndScreenCard(
         MenuOutlinedButton(
             text = "Main Menu",
             onClick = { gameState.endRunAndGoTo(Screen.MAIN_MENU) },
+            width = compactOr(240.dp, 320.dp),
         )
+
+        Spacer(modifier = Modifier.height(compactOr(12.dp, 20.dp)))
+        KotlinEffectLink()
     }
+}
+
+@Composable
+private fun KotlinEffectLink() {
+    val uriHandler = LocalUriHandler.current
+    MenuOutlinedButton(
+        text = "Explore the Kotlin Effect",
+        onClick = { uriHandler.openUri(KOTLIN_EFFECT_URL) },
+        width = compactOr(240.dp, 320.dp),
+        containerColor = MenuColors.MAIN_BACKGROUND_LIGHT,
+    )
 }
 
 @Composable
