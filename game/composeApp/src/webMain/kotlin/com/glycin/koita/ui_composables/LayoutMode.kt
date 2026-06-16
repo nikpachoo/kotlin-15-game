@@ -1,6 +1,7 @@
 package com.glycin.koita.ui_composables
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -108,6 +110,7 @@ internal fun MenuHeader(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MenuOutlinedButton(
     text: String,
@@ -132,7 +135,12 @@ fun MenuOutlinedButton(
         Text(
             text = text,
             fontFamily = pixelFont(),
-            fontSize = if (compact) 14.sp else 16.sp,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 9.sp,
+                maxFontSize = if (compact) 14.sp else 16.sp,
+                stepSize = 1.sp,
+            ),
         )
     }
 }
